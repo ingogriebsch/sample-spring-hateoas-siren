@@ -1,0 +1,2 @@
+org.springframework.hateoas.config.MediaTypeConfigurationProvider=\
+  com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype.SirenMediaTypeConfigurationProvider
