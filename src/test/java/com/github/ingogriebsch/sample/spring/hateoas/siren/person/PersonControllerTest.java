@@ -22,7 +22,6 @@ package com.github.ingogriebsch.sample.spring.hateoas.siren.person;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
-import static com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype.MediaTypes.SIREN_JSON;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_DELETE;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_FIND_ALL;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_FIND_ONE;
@@ -36,6 +35,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
+import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

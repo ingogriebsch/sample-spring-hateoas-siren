@@ -17,14 +17,16 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import static org.springframework.http.MediaType.parseMediaType;
 
-import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.hal.RepresentationModelMixin;
+import org.springframework.http.MediaType;
 
-@JsonSerialize(using = SirenRepresentationModelSerializer.class)
-public abstract class RepresentationModelMixIn extends RepresentationModel<RepresentationModelMixin> {
+public class MediaTypes {
+
+    public static final String SIREN_JSON_VALUE = "application/vnd.siren+json";
+
+    public static final MediaType SIREN_JSON = parseMediaType(SIREN_JSON_VALUE);
 
 }

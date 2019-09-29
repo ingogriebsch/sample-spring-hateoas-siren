@@ -17,8 +17,14 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
-public class SirenConfiguration {
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.hal.RepresentationModelMixin;
+
+@JsonSerialize(using = SirenRepresentationModelSerializer.class)
+public abstract class RepresentationModelMixIn extends RepresentationModel<RepresentationModelMixin> {
 
 }

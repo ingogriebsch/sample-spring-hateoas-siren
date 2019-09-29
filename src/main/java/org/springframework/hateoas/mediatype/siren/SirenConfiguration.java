@@ -17,8 +17,8 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
-public class SirenEntity {
+public class SirenConfiguration {
 
 }

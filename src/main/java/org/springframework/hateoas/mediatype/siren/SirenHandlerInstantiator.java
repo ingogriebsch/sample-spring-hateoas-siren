@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
 import static org.springframework.beans.BeanUtils.instantiateClass;
 

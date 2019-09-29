@@ -17,12 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
 import static java.util.stream.Collectors.toList;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.apache.commons.lang3.StringUtils.uncapitalize;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,32 +36,32 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContainerSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 
-public class SirenEntityModelSerializer extends ContainerSerializer<EntityModel<?>> implements ContextualSerializer {
+public class SirenRepresentationModelSerializer extends ContainerSerializer<RepresentationModel<?>>
+    implements ContextualSerializer {
 
     private static final long serialVersionUID = 2893716845519287714L;
     private final BeanProperty property;
 
-    public SirenEntityModelSerializer() {
+    public SirenRepresentationModelSerializer() {
         this(null);
     }
 
-    public SirenEntityModelSerializer(BeanProperty property) {
-        super(EntityModel.class, false);
+    public SirenRepresentationModelSerializer(BeanProperty property) {
+        super(RepresentationModel.class, false);
         this.property = property;
     }
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenEntityModelSerializer(property);
+        return new SirenRepresentationModelSerializer(property);
     }
 
     @Override
-    public void serialize(EntityModel<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        SirenDocument doc =
-            SirenDocument.builder().classes(classes(value)).content(value.getContent()).links(links(value)).build();
+    public void serialize(RepresentationModel<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        SirenDocument doc = SirenDocument.builder().links(links(value)).build();
         provider.findValueSerializer(SirenDocument.class, property).serialize(doc, gen, provider);
     }
 
@@ -77,7 +76,7 @@ public class SirenEntityModelSerializer extends ContainerSerializer<EntityModel<
     }
 
     @Override
-    public boolean hasSingleElement(EntityModel<?> value) {
+    public boolean hasSingleElement(RepresentationModel<?> value) {
         return false;
     }
 
@@ -86,11 +85,7 @@ public class SirenEntityModelSerializer extends ContainerSerializer<EntityModel<
         return null;
     }
 
-    private List<String> classes(EntityModel<?> value) {
-        return newArrayList(uncapitalize(value.getContent().getClass().getSimpleName()));
-    }
-
-    private List<SirenLink> links(EntityModel<?> value) {
+    private List<SirenLink> links(RepresentationModel<?> value) {
         return value.getLinks().stream().map(l -> link(l)).collect(toList());
     }
 

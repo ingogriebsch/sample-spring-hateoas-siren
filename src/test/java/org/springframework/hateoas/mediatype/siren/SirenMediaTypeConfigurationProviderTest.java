@@ -17,12 +17,12 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
-import static com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype.MediaTypes.SIREN_JSON;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.MediaTypes.HAL_FORMS_JSON;
+import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;

@@ -17,16 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
-
-import static org.springframework.http.MediaType.parseMediaType;
-
-import org.springframework.http.MediaType;
-
-public class MediaTypes {
-
-    public static final String SIREN_JSON_VALUE = "application/vnd.siren+json";
-
-    public static final MediaType SIREN_JSON = parseMediaType(SIREN_JSON_VALUE);
-
-}
+/**
+ * Siren-specific extensions, SPIs and Jackson customizations.
+ *
+ * @see https://github.com/kevinswiber/siren
+ */
+@org.springframework.lang.NonNullApi
+package org.springframework.hateoas.mediatype.siren;

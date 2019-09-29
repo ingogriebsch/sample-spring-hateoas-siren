@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -28,26 +28,23 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import org.springframework.http.HttpMethod;
-
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 @Builder
-@JsonPropertyOrder({ "name", "class", "method", "href", "title", "type", "fields" })
+@JsonPropertyOrder({ "rel", "class", "href", "title", "type" })
 @Value
-public class SirenAction {
+public class SirenLink {
 
+    @JsonInclude(NON_EMPTY)
+    @JsonProperty("rel")
     @NonNull
-    private String name;
+    private List<String> rels;
 
     @JsonInclude(NON_EMPTY)
     @JsonProperty("class")
     private List<String> classes;
-
-    @JsonInclude(NON_NULL)
-    private HttpMethod method;
 
     @NonNull
     private String href;
@@ -57,29 +54,4 @@ public class SirenAction {
 
     @JsonInclude(NON_NULL)
     private String type;
-
-    @JsonInclude(NON_EMPTY)
-    private List<Field> fields;
-
-    @Builder
-    @JsonPropertyOrder({ "name", "class", "type", "value", "title" })
-    @Value
-    public static final class Field {
-
-        @NonNull
-        private String name;
-
-        @JsonInclude(NON_EMPTY)
-        @JsonProperty("class")
-        private List<String> classes;
-
-        @JsonInclude(NON_NULL)
-        private String type;
-
-        @JsonInclude(NON_NULL)
-        private Object value;
-
-        @JsonInclude(NON_NULL)
-        private String title;
-    }
 }

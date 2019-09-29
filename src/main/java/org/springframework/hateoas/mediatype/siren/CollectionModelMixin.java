@@ -17,13 +17,14 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.hateoas.CollectionModel;
 
-import org.springframework.hateoas.EntityModel;
+public abstract class CollectionModelMixin<T> extends CollectionModel<T> {
 
-@JsonSerialize(using = SirenEntityModelSerializer.class)
-public abstract class EntityModelMixIn<T> extends EntityModel<T> {
-
+    // @Override
+    // @JsonProperty("__embedded__")
+    // @JsonInclude(Include.NON_EMPTY)
+    // public abstract Collection<T> getContent();
 }

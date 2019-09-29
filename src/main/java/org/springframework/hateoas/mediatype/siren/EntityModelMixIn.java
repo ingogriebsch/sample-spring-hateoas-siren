@@ -17,10 +17,13 @@
  * limitations under the License.
  * #L%
  */
-/**
- * Siren-specific extensions, SPIs and Jackson customizations.
- *
- * @see https://github.com/kevinswiber/siren
- */
-@org.springframework.lang.NonNullApi
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.springframework.hateoas.EntityModel;
+
+@JsonSerialize(using = SirenEntityModelSerializer.class)
+public abstract class EntityModelMixIn<T> extends EntityModel<T> {
+
+}

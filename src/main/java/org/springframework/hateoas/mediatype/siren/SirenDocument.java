@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -29,29 +29,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 
 @Builder
-@JsonPropertyOrder({ "rel", "class", "href", "title", "type" })
+@JsonPropertyOrder({ "class", "properties", "entities", "links", "actions", "title" })
 @Value
-public class SirenLink {
-
-    @JsonInclude(NON_EMPTY)
-    @JsonProperty("rel")
-    @NonNull
-    private List<String> rels;
+public class SirenDocument {
 
     @JsonInclude(NON_EMPTY)
     @JsonProperty("class")
     private List<String> classes;
 
-    @NonNull
-    private String href;
+    @JsonInclude(NON_NULL)
+    @JsonProperty("properties")
+    private Object content;
+
+    @JsonInclude(NON_EMPTY)
+    private List<SirenEntity> entities;
+
+    @JsonInclude(NON_EMPTY)
+    private List<SirenLink> links;
+
+    @JsonInclude(NON_EMPTY)
+    private List<SirenAction> actions;
 
     @JsonInclude(NON_NULL)
     private String title;
 
-    @JsonInclude(NON_NULL)
-    private String type;
 }

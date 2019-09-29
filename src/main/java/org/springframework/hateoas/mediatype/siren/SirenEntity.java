@@ -17,14 +17,8 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
+package org.springframework.hateoas.mediatype.siren;
 
-import org.springframework.hateoas.CollectionModel;
+public class SirenEntity {
 
-public abstract class CollectionModelMixin<T> extends CollectionModel<T> {
-
-    // @Override
-    // @JsonProperty("__embedded__")
-    // @JsonInclude(Include.NON_EMPTY)
-    // public abstract Collection<T> getContent();
 }
