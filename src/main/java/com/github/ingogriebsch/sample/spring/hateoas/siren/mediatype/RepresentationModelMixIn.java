@@ -19,9 +19,12 @@
  */
 package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.hal.RepresentationModelMixin;
 
+@JsonSerialize(using = SirenRepresentationModelSerializer.class)
 public abstract class RepresentationModelMixIn extends RepresentationModel<RepresentationModelMixin> {
 
 }

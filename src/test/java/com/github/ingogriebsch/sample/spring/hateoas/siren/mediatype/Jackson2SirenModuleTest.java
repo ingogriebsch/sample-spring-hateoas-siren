@@ -20,6 +20,7 @@
 package com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.hateoas.IanaLinkRelations.ABOUT;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
 
 import java.io.StringWriter;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.LinkRelationProvider;
 import org.springframework.hateoas.server.core.AnnotationLinkRelationProvider;
 import org.springframework.hateoas.server.core.DefaultLinkRelationProvider;
@@ -54,6 +56,19 @@ public class Jackson2SirenModuleTest {
 
     @Nested
     class Serialize {
+
+        @Nested
+        class Representation {
+
+            @Test
+            public void should_return_matching_link() throws Exception {
+                RepresentationModel<?> source = new RepresentationModel<>(new Link("/about", ABOUT));
+                String expected = "{\"links\":[{\"rel\":[\"about\"],\"href\":\"/about\"}]}";
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+        }
 
         @Nested
         class Entity {
@@ -85,6 +100,19 @@ public class Jackson2SirenModuleTest {
     class Deserialize {
 
         @Nested
+        class Representation {
+
+            @Test
+            public void should_return_representation_model_containing_link() throws Exception {
+                String source = "{\"link\":[\"about\"],\"href\":\"/about\"}";
+                RepresentationModel<?> expected = new RepresentationModel<>(new Link("/about", ABOUT));
+
+                RepresentationModel<?> actual = read(source, RepresentationModel.class);
+                assertThat(actual).isEqualTo(expected);
+            }
+        }
+
+        @Nested
         class Entity {
 
             @Test
@@ -106,6 +134,10 @@ public class Jackson2SirenModuleTest {
     }
 
     private static <T> T read(String str, JavaType type) throws Exception {
+        return objectMapper.readValue(str, type);
+    }
+
+    private static <T> T read(String str, Class<T> type) throws Exception {
         return objectMapper.readValue(str, type);
     }
 }

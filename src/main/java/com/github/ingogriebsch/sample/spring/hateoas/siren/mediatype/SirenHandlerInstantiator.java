@@ -53,6 +53,7 @@ public class SirenHandlerInstantiator extends HandlerInstantiator {
         this.linkRelationProvider = linkRelationProvider;
         this.sirenConfiguration = sirenConfiguration;
 
+        serializers.put(SirenRepresentationModelSerializer.class, new SirenRepresentationModelSerializer());
         serializers.put(SirenEntityModelSerializer.class, new SirenEntityModelSerializer());
     }
 
