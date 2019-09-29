@@ -22,6 +22,7 @@ package com.github.ingogriebsch.sample.spring.hateoas.siren.person;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
+import static com.github.ingogriebsch.sample.spring.hateoas.siren.mediatype.MediaTypes.SIREN_JSON;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_DELETE;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_FIND_ALL;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_FIND_ONE;
@@ -118,9 +119,9 @@ public class PersonControllerTest {
             Person person = new Person(1L, "Kamil", 32);
             given(personService.findOne(person.getId())).willReturn(of(person));
 
-            ResultActions actions = mockMvc.perform(get(PATH_FIND_ONE, person.getId()).accept(HAL_JSON));
+            ResultActions actions = mockMvc.perform(get(PATH_FIND_ONE, person.getId()).accept(SIREN_JSON));
             actions.andExpect(status().isOk());
-            actions.andExpect(content().contentType(HAL_JSON));
+            actions.andExpect(content().contentType(SIREN_JSON));
 
             verify(personService, times(1)).findOne(person.getId());
             verifyNoMoreInteractions(personService);
