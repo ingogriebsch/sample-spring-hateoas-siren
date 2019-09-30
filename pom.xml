@@ -55,6 +55,7 @@
         <project.plugin.license-maven-plugin.version>1.17</project.plugin.license-maven-plugin.version>
         <project.plugin.tidy-maven-plugin.version>1.1.0</project.plugin.tidy-maven-plugin.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-hateoas.version>1.1.0.BUILD-SNAPSHOT</spring-hateoas.version>
     </properties>
 
     <dependencies>
