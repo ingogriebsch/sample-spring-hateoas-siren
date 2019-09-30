@@ -62,7 +62,7 @@ public class SirenEntityModelSerializer extends ContainerSerializer<EntityModel<
     @Override
     public void serialize(EntityModel<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         SirenDocument doc =
-            SirenDocument.builder().classes(classes(value)).content(value.getContent()).links(links(value)).build();
+            SirenDocument.builder().classes(classes(value)).properties(properties(value)).links(links(value)).build();
         provider.findValueSerializer(SirenDocument.class, property).serialize(doc, gen, provider);
     }
 
@@ -88,6 +88,10 @@ public class SirenEntityModelSerializer extends ContainerSerializer<EntityModel<
 
     private List<String> classes(EntityModel<?> value) {
         return newArrayList(uncapitalize(value.getContent().getClass().getSimpleName()));
+    }
+
+    private Object properties(EntityModel<?> value) {
+        return value.getContent();
     }
 
     private List<SirenLink> links(EntityModel<?> value) {

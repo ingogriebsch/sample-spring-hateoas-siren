@@ -41,8 +41,7 @@ public class SirenDocument {
     private List<String> classes;
 
     @JsonInclude(NON_NULL)
-    @JsonProperty("properties")
-    private Object content;
+    private Object properties;
 
     @JsonInclude(NON_EMPTY)
     private List<SirenEntity> entities;
