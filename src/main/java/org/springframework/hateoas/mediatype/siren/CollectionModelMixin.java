@@ -26,8 +26,4 @@ import org.springframework.hateoas.CollectionModel;
 @JsonSerialize(using = SirenCollectionModelSerializer.class)
 public abstract class CollectionModelMixin<T> extends CollectionModel<T> {
 
-    // @Override
-    // @JsonProperty("__embedded__")
-    // @JsonInclude(Include.NON_EMPTY)
-    // public abstract Collection<T> getContent();
 }
