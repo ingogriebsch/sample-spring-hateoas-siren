@@ -37,7 +37,6 @@ import lombok.Value;
 @Value
 public class SirenLink {
 
-    @JsonInclude(NON_EMPTY)
     @JsonProperty("rel")
     @NonNull
     private List<String> rels;
