@@ -19,39 +19,23 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static java.util.stream.Collectors.toList;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static org.apache.commons.lang3.StringUtils.uncapitalize;
-
-import java.io.IOException;
-import java.util.List;
-
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.ser.ContainerSerializer;
-import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 
-public class SirenEntityModelSerializer extends ContainerSerializer<EntityModel<?>> implements ContextualSerializer {
+public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityModel<?>> {
 
     private static final long serialVersionUID = 2893716845519287714L;
-    private final BeanProperty property;
 
     public SirenEntityModelSerializer() {
         this(null);
     }
 
     public SirenEntityModelSerializer(BeanProperty property) {
-        super(EntityModel.class, false);
-        this.property = property;
+        super(EntityModel.class, property);
     }
 
     @Override
@@ -60,46 +44,7 @@ public class SirenEntityModelSerializer extends ContainerSerializer<EntityModel<
     }
 
     @Override
-    public void serialize(EntityModel<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        SirenDocument doc =
-            SirenDocument.builder().classes(classes(value)).properties(properties(value)).links(links(value)).build();
-        provider.findValueSerializer(SirenDocument.class, property).serialize(doc, gen, provider);
+    protected SirenEntity convert(EntityModel<?> model, SirenEntityConverter converter) {
+        return converter.from(model);
     }
-
-    @Override
-    public JavaType getContentType() {
-        return null;
-    }
-
-    @Override
-    public JsonSerializer<?> getContentSerializer() {
-        return null;
-    }
-
-    @Override
-    public boolean hasSingleElement(EntityModel<?> value) {
-        return false;
-    }
-
-    @Override
-    protected ContainerSerializer<?> _withValueTypeSerializer(TypeSerializer vts) {
-        return null;
-    }
-
-    private List<String> classes(EntityModel<?> value) {
-        return newArrayList(uncapitalize(value.getContent().getClass().getSimpleName()));
-    }
-
-    private Object properties(EntityModel<?> value) {
-        return value.getContent();
-    }
-
-    private List<SirenLink> links(EntityModel<?> value) {
-        return value.getLinks().stream().map(l -> link(l)).collect(toList());
-    }
-
-    private SirenLink link(Link link) {
-        return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref()).build();
-    }
-
 }
