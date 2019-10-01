@@ -19,39 +19,23 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static java.util.stream.Collectors.toList;
-
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.io.IOException;
-import java.util.List;
-
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.ser.ContainerSerializer;
-import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 
-public class SirenRepresentationModelSerializer extends ContainerSerializer<RepresentationModel<?>>
-    implements ContextualSerializer {
+public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<RepresentationModel<?>> {
 
     private static final long serialVersionUID = 2893716845519287714L;
-    private final BeanProperty property;
 
     public SirenRepresentationModelSerializer() {
         this(null);
     }
 
     public SirenRepresentationModelSerializer(BeanProperty property) {
-        super(RepresentationModel.class, false);
-        this.property = property;
+        super(RepresentationModel.class, property);
     }
 
     @Override
@@ -60,37 +44,8 @@ public class SirenRepresentationModelSerializer extends ContainerSerializer<Repr
     }
 
     @Override
-    public void serialize(RepresentationModel<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        SirenDocument doc = SirenDocument.builder().links(links(value)).build();
-        provider.findValueSerializer(SirenDocument.class, property).serialize(doc, gen, provider);
-    }
-
-    @Override
-    public JavaType getContentType() {
-        return null;
-    }
-
-    @Override
-    public JsonSerializer<?> getContentSerializer() {
-        return null;
-    }
-
-    @Override
-    public boolean hasSingleElement(RepresentationModel<?> value) {
-        return false;
-    }
-
-    @Override
-    protected ContainerSerializer<?> _withValueTypeSerializer(TypeSerializer vts) {
-        return null;
-    }
-
-    private List<SirenLink> links(RepresentationModel<?> value) {
-        return value.getLinks().stream().map(l -> link(l)).collect(toList());
-    }
-
-    private SirenLink link(Link link) {
-        return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref()).build();
+    protected SirenEntity convert(RepresentationModel<?> model, SirenEntityConverter converter) {
+        return converter.from(model);
     }
 
 }
