@@ -35,7 +35,7 @@ import lombok.Value;
 @Builder
 @JsonPropertyOrder({ "rel", "class", "href", "title", "type" })
 @Value
-public class SirenLink {
+public class SirenLink implements SirenEmbeddable {
 
     @JsonProperty("rel")
     @NonNull
