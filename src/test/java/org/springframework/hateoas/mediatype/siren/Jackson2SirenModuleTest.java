@@ -58,9 +58,9 @@ public class Jackson2SirenModuleTest {
         "{\"class\":[\"person\"],\"properties\":{\"name\":\"Peter\",\"age\":42},\"links\":[{\"rel\":[\"self\"],\"href\":\"/persons/1\"}]}";
     private static final String COLLECTION_MODEL_WITHOUT_CONTENT = "{\"class\":[\"collection\"],\"properties\":{\"size\":0}}";
     private static final String COLLECTION_MODEL_CONTAINING_ENTITY_MODEL_CONTAINING_POJO =
-        "{\"class\":[\"collection\"],\"properties\":{\"size\":1},\"entities\":[{\"rel\":[\"item\"],\"class\":[\"person\"],\"properties\":{\"name\":\"Peter\",\"age\":42}}]}";
+        "{\"class\":[\"collection\"],\"properties\":{\"size\":1},\"entities\":[{\"class\":[\"person\"],\"rel\":[\"item\"],\"properties\":{\"name\":\"Peter\",\"age\":42}}]}";
     private static final String COLLECTION_MODEL_CONTAINING_ENTITY_MODEL_CONTAINING_POJO_AND_SELF_LINK =
-        "{\"class\":[\"collection\"],\"properties\":{\"size\":1},\"entities\":[{\"rel\":[\"item\"],\"class\":[\"person\"],\"properties\":{\"name\":\"Peter\",\"age\":42},links:[{\"rel\":[\"self\"],\"href\":\"/persons/1\"}]}";
+        "{\"class\":[\"collection\"],\"properties\":{\"size\":1},\"entities\":[{\"class\":[\"person\"],\"rel\":[\"item\"],\"properties\":{\"name\":\"Peter\",\"age\":42},\"links\":[{\"rel\":[\"self\"],\"href\":\"/persons/1\"}]}]}";
 
     private static ObjectMapper objectMapper;
 
