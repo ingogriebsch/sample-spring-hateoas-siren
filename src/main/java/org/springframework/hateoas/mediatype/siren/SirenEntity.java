@@ -19,6 +19,7 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.util.List;
@@ -26,26 +27,36 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 
 @Builder
-@JsonPropertyOrder({ "class", "rel", "href", "properties", "entities", "links", "actions", "title" })
+@JsonPropertyOrder({ "class", "rel", "properties", "entities", "links", "actions", "title" })
 @Value
-public class SirenEntity {
+public class SirenEntity implements SirenEmbeddable {
 
+    @JsonInclude(NON_EMPTY)
+    @JsonProperty("class")
+    private List<String> classes;
+
+    @JsonInclude(NON_EMPTY)
     @JsonProperty("rel")
-    @NonNull
     private List<String> rels;
 
-    @JsonProperty("nested")
-    // FIXME https://stackoverflow.com/questions/30846404/jackson-jsonunwrapped-behaviour-with-custom-jsonserializer/30863670
-    // FIXME https://michael-simons.github.io/simple-meetup/unwrapping-custom-jackson-serializer
-    @JsonUnwrapped
     @JsonInclude(NON_NULL)
-    private Object entity;
+    private Object properties;
+
+    @JsonInclude(NON_EMPTY)
+    private List<SirenEmbeddable> entities;
+
+    @JsonInclude(NON_EMPTY)
+    private List<SirenLink> links;
+
+    @JsonInclude(NON_EMPTY)
+    private List<SirenAction> actions;
+
+    @JsonInclude(NON_NULL)
+    private String title;
 
 }
