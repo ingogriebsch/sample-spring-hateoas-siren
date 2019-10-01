@@ -19,40 +19,23 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static java.util.stream.Collectors.toList;
-
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.ser.ContainerSerializer;
-import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 
-public class SirenCollectionModelSerializer extends ContainerSerializer<CollectionModel<?>> implements ContextualSerializer {
+public class SirenCollectionModelSerializer extends AbstractSirenSerializer<CollectionModel<?>> {
 
     private static final long serialVersionUID = 9054285190464802945L;
-    private final BeanProperty property;
 
     public SirenCollectionModelSerializer() {
         this(null);
     }
 
     public SirenCollectionModelSerializer(BeanProperty property) {
-        super(CollectionModel.class, false);
-        this.property = property;
+        super(CollectionModel.class, property);
     }
 
     @Override
@@ -61,58 +44,8 @@ public class SirenCollectionModelSerializer extends ContainerSerializer<Collecti
     }
 
     @Override
-    public void serialize(CollectionModel<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        SirenDocument doc = SirenDocument.builder().classes(classes(value)).properties(properties(value))
-            .entities(entities(value)).links(links(value)).build();
-        provider.findValueSerializer(SirenDocument.class, property).serialize(doc, gen, provider);
-    }
-
-    @Override
-    public JavaType getContentType() {
-        return null;
-    }
-
-    @Override
-    public JsonSerializer<?> getContentSerializer() {
-        return null;
-    }
-
-    @Override
-    public boolean hasSingleElement(CollectionModel<?> value) {
-        return false;
-    }
-
-    @Override
-    protected ContainerSerializer<?> _withValueTypeSerializer(TypeSerializer vts) {
-        return null;
-    }
-
-    private List<String> classes(CollectionModel<?> value) {
-        return newArrayList("collection");
-    }
-
-    private Object properties(CollectionModel<?> value) {
-        Map<Object, Object> content = new HashMap<>();
-        content.put("size", value.getContent().size());
-        return content;
-    }
-
-    private List<SirenEntity> entities(CollectionModel<?> value) {
-        // FIXME content must be either of type RepresentationModel or of type EntityModel. 'Simple' pojo's are not allowed. Can
-        // be a mixed list containing both types of model.
-        return value.getContent().stream().map(c -> entity(c)).collect(toList());
-    }
-
-    private SirenEntity entity(Object entity) {
-        return SirenEntity.builder().rels(newArrayList("item")).entity(entity).build();
-    }
-
-    private List<SirenLink> links(CollectionModel<?> value) {
-        return value.getLinks().stream().map(l -> link(l)).collect(toList());
-    }
-
-    private SirenLink link(Link link) {
-        return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref()).build();
+    protected SirenEntity convert(CollectionModel<?> model, SirenEntityConverter converter) {
+        return converter.from(model);
     }
 
 }
