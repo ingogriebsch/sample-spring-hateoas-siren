@@ -20,12 +20,14 @@
 package org.springframework.hateoas.mediatype.siren;
 
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.hal.RepresentationModelMixin;
 
 public class Jackson2SirenModule extends SimpleModule {
 
@@ -38,6 +40,22 @@ public class Jackson2SirenModule extends SimpleModule {
         setMixInAnnotation(EntityModel.class, EntityModelMixIn.class);
         setMixInAnnotation(CollectionModel.class, CollectionModelMixIn.class);
         setMixInAnnotation(PagedModel.class, PagedModelMixIn.class);
+    }
+
+    @JsonSerialize(using = SirenRepresentationModelSerializer.class)
+    public abstract class RepresentationModelMixIn extends RepresentationModel<RepresentationModelMixin> {
+    }
+
+    @JsonSerialize(using = SirenEntityModelSerializer.class)
+    public abstract class EntityModelMixIn<T> extends EntityModel<T> {
+    }
+
+    @JsonSerialize(using = SirenCollectionModelSerializer.class)
+    abstract class CollectionModelMixIn<T> extends CollectionModel<T> {
+    }
+
+    @JsonSerialize(using = SirenPagedModelSerializer.class)
+    public abstract class PagedModelMixIn<T> extends PagedModel<T> {
     }
 
 }
