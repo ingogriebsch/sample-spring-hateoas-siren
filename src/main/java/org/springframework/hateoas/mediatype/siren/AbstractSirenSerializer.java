@@ -43,13 +43,11 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
 
     private final SirenConfiguration sirenConfiguration;
     private final MessageResolver messageResolver;
-    private final SirenEntityConverter converter;
     private final BeanProperty property;
 
     protected AbstractSirenSerializer(Class<?> type, SirenConfiguration sirenConfiguration,
         @NonNull MessageResolver messageResolver, BeanProperty property) {
         super(type, false);
-        this.converter = new SirenEntityConverter(messageResolver);
         this.sirenConfiguration = sirenConfiguration;
         this.messageResolver = messageResolver;
         this.property = property;
@@ -77,13 +75,13 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
 
     @Override
     public void serialize(T value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        provider.findValueSerializer(SirenEntity.class, property).serialize(convert(value, converter), gen, provider);
+        provider.findValueSerializer(SirenEntity.class, property).serialize(convert(value, messageResolver), gen, provider);
     }
 
     protected abstract JsonSerializer<?> newInstance(SirenConfiguration sirenConfiguration, MessageResolver messageResolver,
         BeanProperty property);
 
-    protected abstract SirenEntity convert(T value, SirenEntityConverter converter);
+    protected abstract SirenEntity convert(T value, MessageResolver messageResolver);
 
     @Override
     protected ContainerSerializer<?> _withValueTypeSerializer(TypeSerializer vts) {
