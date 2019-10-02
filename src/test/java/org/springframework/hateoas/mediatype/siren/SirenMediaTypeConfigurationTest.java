@@ -21,15 +21,12 @@ package org.springframework.hateoas.mediatype.siren;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
 import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.hateoas.server.LinkRelationProvider;
-import org.springframework.hateoas.server.core.AnnotationLinkRelationProvider;
-import org.springframework.hateoas.server.core.DefaultLinkRelationProvider;
-import org.springframework.hateoas.server.core.DelegatingLinkRelationProvider;
 
 public class SirenMediaTypeConfigurationTest {
 
@@ -37,10 +34,7 @@ public class SirenMediaTypeConfigurationTest {
 
     @BeforeAll
     public static void beforeAll() {
-        LinkRelationProvider linkRelationProvider =
-            new DelegatingLinkRelationProvider(new AnnotationLinkRelationProvider(), new DefaultLinkRelationProvider());
-        configuration =
-            new SirenMediaTypeConfiguration(linkRelationProvider, new SimpleObjectProvider<>(new SirenConfiguration()));
+        configuration = new SirenMediaTypeConfiguration(new SimpleObjectProvider<>(new SirenConfiguration()), DEFAULTS_ONLY);
     }
 
     @Nested

@@ -20,31 +20,34 @@
 package org.springframework.hateoas.mediatype.siren;
 
 import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.mediatype.MessageResolver;
+
+import lombok.NonNull;
 
 public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityModel<?>> {
 
     private static final long serialVersionUID = 2893716845519287714L;
 
-    public SirenEntityModelSerializer() {
-        this(null);
+    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, messageResolver, null);
     }
 
-    public SirenEntityModelSerializer(BeanProperty property) {
-        super(EntityModel.class, property);
-    }
-
-    @Override
-    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenEntityModelSerializer(property);
+    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver,
+        BeanProperty property) {
+        super(EntityModel.class, sirenConfiguration, messageResolver, property);
     }
 
     @Override
     protected SirenEntity convert(EntityModel<?> model, SirenEntityConverter converter) {
         return converter.from(model);
+    }
+
+    @Override
+    protected JsonSerializer<?> newInstance(SirenConfiguration sirenConfiguration, MessageResolver messageResolver,
+        BeanProperty property) {
+        return new SirenEntityModelSerializer(sirenConfiguration, messageResolver, property);
     }
 }

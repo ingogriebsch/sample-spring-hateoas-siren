@@ -33,8 +33,17 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.MessageResolver;
+
+import lombok.NonNull;
 
 public class SirenEntityConverter {
+
+    private final MessageResolver messageResolver;
+
+    public SirenEntityConverter(@NonNull MessageResolver messageResolver) {
+        this.messageResolver = messageResolver;
+    }
 
     public SirenEntity from(RepresentationModel<?> model) {
         return SirenEntity.builder().links(links(model)).build();

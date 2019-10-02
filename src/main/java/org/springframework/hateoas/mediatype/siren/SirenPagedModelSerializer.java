@@ -20,33 +20,36 @@
 package org.springframework.hateoas.mediatype.siren;
 
 import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.mediatype.MessageResolver;
+
+import lombok.NonNull;
 
 public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedModel<?>> {
 
     private static final long serialVersionUID = 9054285190464802945L;
 
-    public SirenPagedModelSerializer() {
-        this(null);
+    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, messageResolver, null);
     }
 
-    public SirenPagedModelSerializer(BeanProperty property) {
-        super(CollectionModel.class, property);
-    }
-
-    @Override
-    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenPagedModelSerializer(property);
+    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver,
+        BeanProperty property) {
+        super(CollectionModel.class, sirenConfiguration, messageResolver, property);
     }
 
     @Override
     protected SirenEntity convert(PagedModel<?> model, SirenEntityConverter converter) {
         return converter.from(model);
+    }
+
+    @Override
+    protected JsonSerializer<?> newInstance(SirenConfiguration sirenConfiguration, MessageResolver messageResolver,
+        BeanProperty property) {
+        return new SirenPagedModelSerializer(sirenConfiguration, messageResolver, property);
     }
 
 }

@@ -26,6 +26,7 @@ import static org.springframework.hateoas.IanaLinkRelations.ABOUT;
 import static org.springframework.hateoas.IanaLinkRelations.HELP;
 import static org.springframework.hateoas.IanaLinkRelations.LICENSE;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
+import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -43,10 +44,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.PagedModel.PageMetadata;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.server.LinkRelationProvider;
-import org.springframework.hateoas.server.core.AnnotationLinkRelationProvider;
-import org.springframework.hateoas.server.core.DefaultLinkRelationProvider;
-import org.springframework.hateoas.server.core.DelegatingLinkRelationProvider;
 
 public class Jackson2SirenModuleTest {
 
@@ -74,10 +71,8 @@ public class Jackson2SirenModuleTest {
 
     @BeforeAll
     public static void beforeAll() {
-        LinkRelationProvider linkRelationProvider =
-            new DelegatingLinkRelationProvider(new AnnotationLinkRelationProvider(), new DefaultLinkRelationProvider());
         SirenMediaTypeConfiguration sirenMediaTypeConfiguration =
-            new SirenMediaTypeConfiguration(linkRelationProvider, new SimpleObjectProvider<>(new SirenConfiguration()));
+            new SirenMediaTypeConfiguration(new SimpleObjectProvider<>(new SirenConfiguration()), DEFAULTS_ONLY);
         objectMapper = sirenMediaTypeConfiguration.configureObjectMapper(new ObjectMapper());
     }
 

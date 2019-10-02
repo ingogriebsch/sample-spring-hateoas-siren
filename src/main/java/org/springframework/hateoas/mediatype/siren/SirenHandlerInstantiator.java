@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.hateoas.server.LinkRelationProvider;
+import org.springframework.hateoas.mediatype.MessageResolver;
 import org.springframework.lang.Nullable;
 
 import lombok.NonNull;
@@ -44,18 +44,18 @@ import lombok.NonNull;
 public class SirenHandlerInstantiator extends HandlerInstantiator {
 
     private final Map<Class<?>, Object> serializers = new HashMap<>();
-    private final LinkRelationProvider linkRelationProvider;
-    private final SirenConfiguration sirenConfiguration;
     private final AutowireCapableBeanFactory beanFactory = null;
+    private @NonNull MessageResolver messageResolver;
 
-    public SirenHandlerInstantiator(@NonNull LinkRelationProvider linkRelationProvider,
-        @NonNull SirenConfiguration sirenConfiguration) {
-        this.linkRelationProvider = linkRelationProvider;
-        this.sirenConfiguration = sirenConfiguration;
+    public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver) {
+        this.messageResolver = messageResolver;
 
-        serializers.put(SirenRepresentationModelSerializer.class, new SirenRepresentationModelSerializer());
-        serializers.put(SirenEntityModelSerializer.class, new SirenEntityModelSerializer());
-        serializers.put(SirenCollectionModelSerializer.class, new SirenCollectionModelSerializer());
+        serializers.put(SirenRepresentationModelSerializer.class,
+            new SirenRepresentationModelSerializer(sirenConfiguration, messageResolver));
+        serializers.put(SirenEntityModelSerializer.class, new SirenEntityModelSerializer(sirenConfiguration, messageResolver));
+        serializers.put(SirenCollectionModelSerializer.class,
+            new SirenCollectionModelSerializer(sirenConfiguration, messageResolver));
+        serializers.put(SirenPagedModelSerializer.class, new SirenPagedModelSerializer(sirenConfiguration, messageResolver));
     }
 
     @Override
