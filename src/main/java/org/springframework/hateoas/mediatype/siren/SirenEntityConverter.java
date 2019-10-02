@@ -45,20 +45,20 @@ public class SirenEntityConverter {
         this.messageResolver = messageResolver;
     }
 
-    public SirenEntity from(RepresentationModel<?> model) {
+    public SirenEntity from(@NonNull RepresentationModel<?> model) {
         return SirenEntity.builder().links(links(model)).build();
     }
 
-    public SirenEntity from(EntityModel<?> model) {
+    public SirenEntity from(@NonNull EntityModel<?> model) {
         return SirenEntity.builder().classes(classes(model)).properties(properties(model)).links(links(model)).build();
     }
 
-    public SirenEntity from(CollectionModel<?> model) {
+    public SirenEntity from(@NonNull CollectionModel<?> model) {
         return SirenEntity.builder().classes(classes(model)).properties(properties(model)).entities(entities(model))
             .links(links(model)).build();
     }
 
-    public SirenEntity from(PagedModel<?> model) {
+    public SirenEntity from(@NonNull PagedModel<?> model) {
         return SirenEntity.builder().classes(classes(model)).properties(properties(model)).entities(entities(model)).build();
     }
 
