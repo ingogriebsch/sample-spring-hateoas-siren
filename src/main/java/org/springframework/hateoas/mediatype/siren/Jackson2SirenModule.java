@@ -35,7 +35,7 @@ public class Jackson2SirenModule extends SimpleModule {
 
         setMixInAnnotation(RepresentationModel.class, RepresentationModelMixIn.class);
         setMixInAnnotation(EntityModel.class, EntityModelMixIn.class);
-        setMixInAnnotation(CollectionModel.class, CollectionModelMixin.class);
+        setMixInAnnotation(CollectionModel.class, CollectionModelMixIn.class);
     }
 
 }

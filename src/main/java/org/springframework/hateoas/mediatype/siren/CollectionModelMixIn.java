@@ -24,6 +24,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.hateoas.CollectionModel;
 
 @JsonSerialize(using = SirenCollectionModelSerializer.class)
-public abstract class CollectionModelMixin<T> extends CollectionModel<T> {
+public abstract class CollectionModelMixIn<T> extends CollectionModel<T> {
 
 }
