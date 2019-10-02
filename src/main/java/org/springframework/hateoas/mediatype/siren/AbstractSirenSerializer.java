@@ -40,11 +40,11 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
     implements ContextualSerializer {
 
     private static final long serialVersionUID = -8665900081601124431L;
-    private final BeanProperty property;
 
-    protected final SirenConfiguration sirenConfiguration;
-    protected final MessageResolver messageResolver;
+    private final SirenConfiguration sirenConfiguration;
+    private final MessageResolver messageResolver;
     private final SirenEntityConverter converter;
+    private final BeanProperty property;
 
     protected AbstractSirenSerializer(Class<?> type, SirenConfiguration sirenConfiguration,
         @NonNull MessageResolver messageResolver, BeanProperty property) {
