@@ -44,7 +44,7 @@ public class SirenMediaTypeConfigurationProviderTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            Assertions.assertThrows(NullPointerException.class,
+            Assertions.assertThrows(IllegalArgumentException.class,
                 () -> new SirenMediaTypeConfigurationProvider().supportsAny(null));
         }
 

@@ -60,7 +60,7 @@ public class SirenMediaTypeConfigurationTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(NullPointerException.class, () -> configuration.configureObjectMapper(null));
+            assertThrows(IllegalArgumentException.class, () -> configuration.configureObjectMapper(null));
         }
     }
 

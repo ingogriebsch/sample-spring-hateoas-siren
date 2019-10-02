@@ -61,7 +61,7 @@ public class PersonServiceTest {
 
         @Test
         public void should_throw_exception_if_called_with_null() throws Exception {
-            assertThrows(NullPointerException.class, () -> new PersonService().findOne(null));
+            assertThrows(IllegalArgumentException.class, () -> new PersonService().findOne(null));
         }
 
         @Test
@@ -93,7 +93,7 @@ public class PersonServiceTest {
 
         @Test
         public void should_throw_exception_if_called_with_null() throws Exception {
-            assertThrows(NullPointerException.class, () -> new PersonService().insert(null));
+            assertThrows(IllegalArgumentException.class, () -> new PersonService().insert(null));
         }
 
         @Test
@@ -112,12 +112,12 @@ public class PersonServiceTest {
 
         @Test
         public void should_throw_exception_if_called_with_null_id() throws Exception {
-            assertThrows(NullPointerException.class, () -> new PersonService().update(null, new PersonInput("name", 23)));
+            assertThrows(IllegalArgumentException.class, () -> new PersonService().update(null, new PersonInput("name", 23)));
         }
 
         @Test
         public void should_throw_exception_if_called_with_null_input() throws Exception {
-            assertThrows(NullPointerException.class, () -> new PersonService().update(1L, null));
+            assertThrows(IllegalArgumentException.class, () -> new PersonService().update(1L, null));
         }
 
         @Test
@@ -151,7 +151,7 @@ public class PersonServiceTest {
 
         @Test
         public void should_throw_exception_if_called_with_null() throws Exception {
-            assertThrows(NullPointerException.class, () -> new PersonService().delete(null));
+            assertThrows(IllegalArgumentException.class, () -> new PersonService().delete(null));
         }
 
         @Test
