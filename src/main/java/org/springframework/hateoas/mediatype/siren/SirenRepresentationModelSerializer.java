@@ -19,16 +19,9 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static java.util.stream.Collectors.toList;
-
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.util.List;
-
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
@@ -50,30 +43,13 @@ public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<
 
     @Override
     protected SirenEntity convert(RepresentationModel<?> model, MessageResolver messageResolver) {
-        return SirenEntity.builder().links(links(model, messageResolver)).title(title(model, messageResolver)).build();
+        return new SirenRepresentationModelConverter(new SirenLinkConverter(messageResolver), messageResolver).convert(model);
     }
 
     @Override
     protected JsonSerializer<?> newInstance(SirenConfiguration sirenConfiguration, MessageResolver messageResolver,
         BeanProperty property) {
         return new SirenRepresentationModelSerializer(sirenConfiguration, messageResolver, property);
-    }
-
-    private static String title(RepresentationModel<?> model, MessageResolver messageResolver) {
-        return messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getClass()));
-    }
-
-    private static List<SirenLink> links(RepresentationModel<?> model, MessageResolver messageResolver) {
-        return model.getLinks().stream().map(l -> link(l, messageResolver)).collect(toList());
-    }
-
-    private static SirenLink link(Link link, MessageResolver messageResolver) {
-        return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref())
-            .title(title(link, messageResolver)).build();
-    }
-
-    private static String title(Link link, MessageResolver messageResolver) {
-        return link.getTitle() != null ? link.getTitle() : messageResolver.resolve(SirenLink.TitleResolvable.of(link.getRel()));
     }
 
 }

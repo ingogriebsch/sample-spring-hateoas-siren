@@ -19,19 +19,10 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static java.util.stream.Collectors.toList;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static org.apache.commons.lang3.StringUtils.uncapitalize;
-
-import java.util.List;
-
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
@@ -51,39 +42,13 @@ public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityMo
 
     @Override
     protected SirenEntity convert(EntityModel<?> model, MessageResolver messageResolver) {
-        return SirenEntity.builder().classes(classes(model)).properties(properties(model)).links(links(model, messageResolver))
-            .title(title(model, messageResolver)).build();
+        return new SirenEntityModelConverter(new SirenLinkConverter(messageResolver), messageResolver).convert(model);
     }
 
     @Override
     protected JsonSerializer<?> newInstance(SirenConfiguration sirenConfiguration, MessageResolver messageResolver,
         BeanProperty property) {
         return new SirenEntityModelSerializer(sirenConfiguration, messageResolver, property);
-    }
-
-    private static List<String> classes(EntityModel<?> model) {
-        return newArrayList(uncapitalize(model.getContent().getClass().getSimpleName()));
-    }
-
-    private static Object properties(EntityModel<?> model) {
-        return model.getContent();
-    }
-
-    private static String title(EntityModel<?> model, MessageResolver messageResolver) {
-        return messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()));
-    }
-
-    private static List<SirenLink> links(RepresentationModel<?> model, MessageResolver messageResolver) {
-        return model.getLinks().stream().map(l -> link(l, messageResolver)).collect(toList());
-    }
-
-    private static SirenLink link(Link link, MessageResolver messageResolver) {
-        return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref())
-            .title(title(link, messageResolver)).build();
-    }
-
-    private static String title(Link link, MessageResolver messageResolver) {
-        return link.getTitle() != null ? link.getTitle() : messageResolver.resolve(SirenLink.TitleResolvable.of(link.getRel()));
     }
 
 }
