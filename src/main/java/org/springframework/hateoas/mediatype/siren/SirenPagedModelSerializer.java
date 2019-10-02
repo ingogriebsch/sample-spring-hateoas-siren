@@ -22,7 +22,6 @@ package org.springframework.hateoas.mediatype.siren;
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
@@ -38,7 +37,7 @@ public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedMode
 
     public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver,
         BeanProperty property) {
-        super(CollectionModel.class, sirenConfiguration, messageResolver, property);
+        super(PagedModel.class, sirenConfiguration, messageResolver, property);
     }
 
     @Override
