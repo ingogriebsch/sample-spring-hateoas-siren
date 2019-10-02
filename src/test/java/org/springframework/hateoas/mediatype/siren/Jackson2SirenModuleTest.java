@@ -40,6 +40,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.PagedModel.PageMetadata;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.LinkRelationProvider;
 import org.springframework.hateoas.server.core.AnnotationLinkRelationProvider;
@@ -61,6 +63,12 @@ public class Jackson2SirenModuleTest {
         "{\"class\":[\"collection\"],\"properties\":{\"size\":1},\"entities\":[{\"class\":[\"person\"],\"rel\":[\"item\"],\"properties\":{\"name\":\"Peter\",\"age\":42}}]}";
     private static final String COLLECTION_MODEL_CONTAINING_ENTITY_MODEL_CONTAINING_POJO_AND_SELF_LINK =
         "{\"class\":[\"collection\"],\"properties\":{\"size\":1},\"entities\":[{\"class\":[\"person\"],\"rel\":[\"item\"],\"properties\":{\"name\":\"Peter\",\"age\":42},\"links\":[{\"rel\":[\"self\"],\"href\":\"/persons/1\"}]}]}";
+    private static final String PAGED_MODEL_WITHOUT_CONTENT =
+        "{\"class\":[\"page\"],\"properties\":{\"size\":0,\"totalElements\":0,\"totalPages\":0,\"number\":0}}";
+    private static final String PAGED_MODEL_CONTAINING_ENTITY_MODEL_CONTAINING_POJO =
+        "{\"class\":[\"page\"],\"properties\":{\"size\":1,\"totalElements\":1,\"totalPages\":1,\"number\":0},\"entities\":[{\"class\":[\"person\"],\"rel\":[\"item\"],\"properties\":{\"name\":\"Peter\",\"age\":42}}]}";
+    private static final String PAGED_MODEL_CONTAINING_ENTITY_MODEL_CONTAINING_POJO_AND_SELF_LINK =
+        "{\"class\":[\"page\"],\"properties\":{\"size\":1,\"totalElements\":1,\"totalPages\":1,\"number\":0},\"entities\":[{\"class\":[\"person\"],\"rel\":[\"item\"],\"properties\":{\"name\":\"Peter\",\"age\":42},\"links\":[{\"rel\":[\"self\"],\"href\":\"/persons/1\"}]}]}";
 
     private static ObjectMapper objectMapper;
 
@@ -161,6 +169,40 @@ public class Jackson2SirenModuleTest {
                 assertThat(actual).isEqualTo(expected);
             }
         }
+
+        @Nested
+        class Paged {
+
+            @Test
+            public void without_content() throws Exception {
+                PagedModel<?> source = new PagedModel<>(newArrayList(), new PageMetadata(0, 0, 0));
+                String expected = PAGED_MODEL_WITHOUT_CONTENT;
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_entity_model_containing_pojo() throws Exception {
+                PagedModel<?> source =
+                    new PagedModel<>(newArrayList(new EntityModel<>(new Person("Peter", 42))), new PageMetadata(1, 0, 1));
+                String expected = PAGED_MODEL_CONTAINING_ENTITY_MODEL_CONTAINING_POJO;
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_entity_model_containing_pojo_and_self_link() throws Exception {
+                PagedModel<?> source =
+                    new PagedModel<>(newArrayList(new EntityModel<>(new Person("Peter", 42), new Link("/persons/1", SELF))),
+                        new PageMetadata(1, 0, 1));
+                String expected = PAGED_MODEL_CONTAINING_ENTITY_MODEL_CONTAINING_POJO_AND_SELF_LINK;
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+        }
     }
 
     @Nested
@@ -225,6 +267,25 @@ public class Jackson2SirenModuleTest {
 
         @Nested
         class Collection {
+
+            @Test
+            public void without_content() throws Exception {
+                fail("Implement me... :)");
+            }
+
+            @Test
+            public void containing_entity_model_containing_pojo() throws Exception {
+                fail("Implement me... :)");
+            }
+
+            @Test
+            public void containing_entity_model_containing_pojo_and_self_link() throws Exception {
+                fail("Implement me... :)");
+            }
+        }
+
+        @Nested
+        class Paged {
 
             @Test
             public void without_content() throws Exception {

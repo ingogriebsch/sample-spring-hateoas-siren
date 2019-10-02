@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 
 public class Jackson2SirenModule extends SimpleModule {
@@ -36,6 +37,7 @@ public class Jackson2SirenModule extends SimpleModule {
         setMixInAnnotation(RepresentationModel.class, RepresentationModelMixIn.class);
         setMixInAnnotation(EntityModel.class, EntityModelMixIn.class);
         setMixInAnnotation(CollectionModel.class, CollectionModelMixIn.class);
+        setMixInAnnotation(PagedModel.class, PagedModelMixIn.class);
     }
 
 }

@@ -50,7 +50,11 @@ public class SirenEntityConverter {
     }
 
     public SirenEntity from(PagedModel<?> model) {
-        return null;
+        return SirenEntity.builder().classes(classes(model)).properties(properties(model)).entities(entities(model)).build();
+    }
+
+    private static List<String> classes(PagedModel<?> model) {
+        return newArrayList("page");
     }
 
     private static List<String> classes(CollectionModel<?> model) {
@@ -59,6 +63,10 @@ public class SirenEntityConverter {
 
     private static List<String> classes(EntityModel<?> model) {
         return newArrayList(uncapitalize(model.getContent().getClass().getSimpleName()));
+    }
+
+    private static Object properties(PagedModel<?> model) {
+        return model.getMetadata();
     }
 
     private static Map<String, Object> properties(CollectionModel<?> model) {
