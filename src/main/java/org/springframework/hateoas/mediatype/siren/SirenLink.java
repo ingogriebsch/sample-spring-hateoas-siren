@@ -23,10 +23,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.hateoas.LinkRelation;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -53,4 +57,16 @@ public class SirenLink implements SirenEmbeddable {
 
     @JsonInclude(NON_NULL)
     private String type;
+
+    @Value(staticConstructor = "of")
+    public static final class TitleResolvable implements MessageSourceResolvable {
+
+        private LinkRelation rel;
+
+        @Override
+        public String[] getCodes() {
+            return Stream.of(rel.value(), "default").map(it -> String.format("_link.%s.title", it)).toArray(String[]::new);
+        }
+
+    }
 }
