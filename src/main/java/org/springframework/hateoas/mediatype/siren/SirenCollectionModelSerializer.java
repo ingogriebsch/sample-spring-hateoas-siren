@@ -43,7 +43,8 @@ public class SirenCollectionModelSerializer extends AbstractSirenSerializer<Coll
 
     @Override
     protected SirenEntity convert(CollectionModel<?> model, MessageResolver messageResolver) {
-        return new SirenCollectionModelConverter(new SirenEntityModelConverter(new SirenLinkConverter(messageResolver), messageResolver),
+        return new SirenCollectionModelConverter(
+            new SirenEntityModelConverter(new SirenLinkConverter(messageResolver), messageResolver),
             new SirenLinkConverter(messageResolver), messageResolver).convert(model);
     }
 

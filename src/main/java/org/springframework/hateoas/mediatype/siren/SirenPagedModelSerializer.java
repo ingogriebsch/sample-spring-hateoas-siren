@@ -42,7 +42,8 @@ public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedMode
 
     @Override
     protected SirenEntity convert(PagedModel<?> model, MessageResolver messageResolver) {
-        return new SirenPagedModelConverter(new SirenEntityModelConverter(new SirenLinkConverter(messageResolver), messageResolver),
+        return new SirenPagedModelConverter(
+            new SirenEntityModelConverter(new SirenLinkConverter(messageResolver), messageResolver),
             new SirenLinkConverter(messageResolver), messageResolver).convert(model);
     }
 
