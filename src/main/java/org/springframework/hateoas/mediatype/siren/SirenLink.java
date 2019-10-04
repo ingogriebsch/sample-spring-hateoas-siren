@@ -34,6 +34,7 @@ import org.springframework.hateoas.LinkRelation;
 
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.Singular;
 import lombok.Value;
 
 @Builder
@@ -43,10 +44,12 @@ public class SirenLink implements SirenEmbeddable {
 
     @JsonProperty("rel")
     @NonNull
+    @Singular
     private List<String> rels;
 
     @JsonInclude(NON_EMPTY)
     @JsonProperty("class")
+    @Singular
     private List<String> classes;
 
     @NonNull

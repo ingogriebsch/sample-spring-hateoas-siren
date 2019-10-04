@@ -34,6 +34,7 @@ import org.springframework.http.HttpMethod;
 
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.Singular;
 import lombok.Value;
 
 @Builder
@@ -46,6 +47,7 @@ public class SirenAction {
 
     @JsonInclude(NON_EMPTY)
     @JsonProperty("class")
+    @Singular
     private List<String> classes;
 
     @JsonInclude(NON_NULL)
@@ -61,6 +63,7 @@ public class SirenAction {
     private String type;
 
     @JsonInclude(NON_EMPTY)
+    @Singular
     private List<Field> fields;
 
     @Builder
@@ -73,6 +76,7 @@ public class SirenAction {
 
         @JsonInclude(NON_EMPTY)
         @JsonProperty("class")
+        @Singular
         private List<String> classes;
 
         @JsonInclude(NON_NULL)
