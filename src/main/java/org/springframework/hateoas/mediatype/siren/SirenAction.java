@@ -21,6 +21,7 @@ package org.springframework.hateoas.mediatype.siren;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static org.springframework.http.HttpMethod.GET;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -33,6 +34,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpMethod;
 
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
@@ -50,8 +52,10 @@ public class SirenAction {
     @Singular
     private List<String> classes;
 
+    @Default
     @JsonInclude(NON_NULL)
-    private HttpMethod method;
+    @NonNull
+    private HttpMethod method = GET;
 
     @NonNull
     private String href;
