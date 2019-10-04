@@ -45,17 +45,27 @@ public class SirenHandlerInstantiator extends HandlerInstantiator {
 
     private final Map<Class<?>, Object> serializers = new HashMap<>();
     private final AutowireCapableBeanFactory beanFactory = null;
-    private @NonNull MessageResolver messageResolver;
 
     public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver) {
-        this.messageResolver = messageResolver;
+        SirenLinkConverter linkConverter = new SirenLinkConverter(messageResolver);
 
+        SirenRepresentationModelConverter representationModelConverter =
+            new SirenRepresentationModelConverter(linkConverter, messageResolver);
         serializers.put(SirenRepresentationModelSerializer.class,
-            new SirenRepresentationModelSerializer(sirenConfiguration, messageResolver));
-        serializers.put(SirenEntityModelSerializer.class, new SirenEntityModelSerializer(sirenConfiguration, messageResolver));
+            new SirenRepresentationModelSerializer(sirenConfiguration, representationModelConverter));
+
+        SirenEntityModelConverter entityModelConverter = new SirenEntityModelConverter(linkConverter, messageResolver);
+        serializers.put(SirenEntityModelSerializer.class,
+            new SirenEntityModelSerializer(sirenConfiguration, entityModelConverter));
+
+        SirenCollectionModelConverter collectionModelConverter =
+            new SirenCollectionModelConverter(entityModelConverter, linkConverter, messageResolver);
         serializers.put(SirenCollectionModelSerializer.class,
-            new SirenCollectionModelSerializer(sirenConfiguration, messageResolver));
-        serializers.put(SirenPagedModelSerializer.class, new SirenPagedModelSerializer(sirenConfiguration, messageResolver));
+            new SirenCollectionModelSerializer(sirenConfiguration, collectionModelConverter));
+
+        SirenPagedModelConverter pagedModelConverter =
+            new SirenPagedModelConverter(entityModelConverter, linkConverter, messageResolver);
+        serializers.put(SirenPagedModelSerializer.class, new SirenPagedModelSerializer(sirenConfiguration, pagedModelConverter));
     }
 
     @Override

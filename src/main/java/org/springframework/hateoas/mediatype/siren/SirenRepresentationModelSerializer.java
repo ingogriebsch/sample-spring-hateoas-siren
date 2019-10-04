@@ -20,36 +20,37 @@
 package org.springframework.hateoas.mediatype.siren;
 
 import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
 
 public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<RepresentationModel<?>> {
 
     private static final long serialVersionUID = 2893716845519287714L;
+    private final SirenRepresentationModelConverter converter;
 
     public SirenRepresentationModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, messageResolver, null);
+        @NonNull SirenRepresentationModelConverter converter) {
+        this(sirenConfiguration, converter, null);
     }
 
     public SirenRepresentationModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull MessageResolver messageResolver, BeanProperty property) {
-        super(RepresentationModel.class, sirenConfiguration, messageResolver, property);
+        @NonNull SirenRepresentationModelConverter converter, BeanProperty property) {
+        super(RepresentationModel.class, sirenConfiguration, property);
+        this.converter = converter;
     }
 
     @Override
-    protected SirenEntity convert(RepresentationModel<?> model, MessageResolver messageResolver) {
-        return new SirenRepresentationModelConverter(new SirenLinkConverter(messageResolver), messageResolver).convert(model);
+    protected SirenEntity convert(RepresentationModel<?> model, SirenConfiguration sirenConfiguration) {
+        return converter.convert(model);
     }
 
     @Override
-    protected JsonSerializer<?> newInstance(SirenConfiguration sirenConfiguration, MessageResolver messageResolver,
-        BeanProperty property) {
-        return new SirenRepresentationModelSerializer(sirenConfiguration, messageResolver, property);
+    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
+        return new SirenRepresentationModelSerializer(sirenConfiguration, converter, property);
     }
-
 }
