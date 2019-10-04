@@ -39,12 +39,28 @@ public class SirenEntityModelConverter {
     private final MessageResolver messageResolver;
 
     public SirenEntity convert(@NonNull EntityModel<?> model) {
-        return convert(model, null);
+        return convert(model, new RelSupplier() {
+
+            @Override
+            public List<String> getRels() {
+                return null;
+            }
+        });
     }
 
-    public SirenEntity convert(@NonNull EntityModel<?> model, List<String> rels) {
+    public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull List<String> rels) {
+        return convert(model, new RelSupplier() {
+
+            @Override
+            public List<String> getRels() {
+                return rels;
+            }
+        });
+    }
+
+    public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull RelSupplier relSupplier) {
         return SirenEntity.builder().classes(classes(model)).properties(properties(model))
-            .links(sirenLinkConverter.convert(model.getLinks())).rels(rels)
+            .links(sirenLinkConverter.convert(model.getLinks())).rels(relSupplier.getRels())
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))).build();
     }
 
@@ -54,5 +70,11 @@ public class SirenEntityModelConverter {
 
     private static Object properties(EntityModel<?> model) {
         return model.getContent();
+    }
+
+    @FunctionalInterface
+    public static interface RelSupplier {
+
+        List<String> getRels();
     }
 }
