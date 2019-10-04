@@ -40,13 +40,13 @@ public class SirenPagedModelConverter {
     @NonNull
     private final SirenEntityModelConverter entityConverter;
     @NonNull
-    private final SirenLinkConverter sirenLinkConverter;
+    private final SirenLinkConverter linkConverter;
     @NonNull
     private final MessageResolver messageResolver;
 
     public SirenEntity convert(@NonNull PagedModel<?> model) {
         return SirenEntity.builder().classes(classes(model)).properties(properties(model)).entities(entities(model))
-            .links(sirenLinkConverter.convert(model.getLinks()))
+            .links(linkConverter.convert(model.getLinks()))
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))).build();
     }
 

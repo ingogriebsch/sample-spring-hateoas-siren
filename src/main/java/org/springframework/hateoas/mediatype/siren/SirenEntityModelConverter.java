@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class SirenEntityModelConverter {
 
     @NonNull
-    private final SirenLinkConverter sirenLinkConverter;
+    private final SirenLinkConverter linkConverter;
     @NonNull
     private final MessageResolver messageResolver;
 
@@ -60,7 +60,7 @@ public class SirenEntityModelConverter {
 
     public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull RelSupplier relSupplier) {
         return SirenEntity.builder().classes(classes(model)).properties(properties(model))
-            .links(sirenLinkConverter.convert(model.getLinks())).rels(relSupplier.getRels())
+            .links(linkConverter.convert(model.getLinks())).rels(relSupplier.getRels())
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))).build();
     }
 

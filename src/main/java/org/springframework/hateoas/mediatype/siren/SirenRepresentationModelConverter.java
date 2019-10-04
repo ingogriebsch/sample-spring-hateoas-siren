@@ -29,12 +29,12 @@ import lombok.RequiredArgsConstructor;
 public class SirenRepresentationModelConverter {
 
     @NonNull
-    private final SirenLinkConverter sirenLinkConverter;
+    private final SirenLinkConverter linkConverter;
     @NonNull
     private final MessageResolver messageResolver;
 
     public SirenEntity convert(@NonNull RepresentationModel<?> model) {
-        return SirenEntity.builder().links(sirenLinkConverter.convert(model.getLinks()))
+        return SirenEntity.builder().links(linkConverter.convert(model.getLinks()))
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getClass()))).build();
     }
 
