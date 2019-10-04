@@ -19,11 +19,15 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static lombok.AccessLevel.PRIVATE;
 import static org.springframework.http.MediaType.parseMediaType;
 
 import org.springframework.http.MediaType;
 
-public class MediaTypes {
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = PRIVATE)
+public final class MediaTypes {
 
     public static final String SIREN_JSON_VALUE = "application/vnd.siren+json";
 
