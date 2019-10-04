@@ -43,7 +43,7 @@ public class SirenEntityModelConverter {
 
             @Override
             public List<String> getRels() {
-                return null;
+                return newArrayList();
             }
         });
     }
