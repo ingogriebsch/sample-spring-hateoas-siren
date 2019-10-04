@@ -84,13 +84,18 @@ public class SirenAction {
         private List<String> classes;
 
         @JsonInclude(NON_NULL)
-        private String type;
+        private Type type;
 
         @JsonInclude(NON_NULL)
         private Object value;
 
         @JsonInclude(NON_NULL)
         private String title;
+
+        public static enum Type {
+                CHECKBOX, COLOR, DATE, DATETIME, DATETIME_LOCAL, EMAIL, FILE, HIDDEN, MONTH, NUMBER, PASSWORD, RADIO, RANGE,
+                SEARCH, TEL, TEXT, TIME, URL, WEEK
+        }
 
         @Value(staticConstructor = "of")
         public static final class TitleResolvable implements MessageSourceResolvable {
