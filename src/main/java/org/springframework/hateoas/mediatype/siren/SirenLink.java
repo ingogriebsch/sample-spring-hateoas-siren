@@ -43,7 +43,6 @@ import lombok.Value;
 public class SirenLink implements SirenEmbeddable {
 
     @JsonProperty("rel")
-    @NonNull
     @Singular
     private List<String> rels;
 
