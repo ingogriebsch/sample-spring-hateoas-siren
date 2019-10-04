@@ -32,8 +32,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -170,7 +170,7 @@ public class PersonControllerTest {
 
             actions.andExpect(status().isBadRequest());
 
-            verifyZeroInteractions(personService);
+            verifyNoInteractions(personService);
         }
     }
 
