@@ -27,6 +27,7 @@ import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.hateoas.mediatype.SimpleObjectProvider;
 
 public class SirenMediaTypeConfigurationTest {
 

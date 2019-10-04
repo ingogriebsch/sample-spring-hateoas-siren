@@ -43,6 +43,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.PagedModel.PageMetadata;
+import org.springframework.hateoas.mediatype.SimpleObjectProvider;
 import org.springframework.hateoas.RepresentationModel;
 
 public class Jackson2SirenModuleTest {
