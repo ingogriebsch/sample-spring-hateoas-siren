@@ -25,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import java.util.List;
 
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
@@ -42,17 +43,17 @@ public class SirenEntityModelConverter {
         return convert(model, new RelSupplier() {
 
             @Override
-            public List<String> getRels() {
+            public List<LinkRelation> getRels() {
                 return newArrayList();
             }
         });
     }
 
-    public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull List<String> rels) {
+    public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull List<LinkRelation> rels) {
         return convert(model, new RelSupplier() {
 
             @Override
-            public List<String> getRels() {
+            public List<LinkRelation> getRels() {
                 return rels;
             }
         });
@@ -75,6 +76,6 @@ public class SirenEntityModelConverter {
     @FunctionalInterface
     public static interface RelSupplier {
 
-        List<String> getRels();
+        List<LinkRelation> getRels();
     }
 }

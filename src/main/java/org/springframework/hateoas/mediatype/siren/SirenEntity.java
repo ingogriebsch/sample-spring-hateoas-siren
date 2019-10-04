@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.hateoas.LinkRelation;
 
 import lombok.Builder;
 import lombok.Singular;
@@ -48,7 +49,7 @@ public class SirenEntity implements SirenEmbeddable {
     @JsonInclude(NON_EMPTY)
     @JsonProperty("rel")
     @Singular
-    private List<String> rels;
+    private List<LinkRelation> rels;
 
     @JsonInclude(NON_NULL)
     private Object properties;

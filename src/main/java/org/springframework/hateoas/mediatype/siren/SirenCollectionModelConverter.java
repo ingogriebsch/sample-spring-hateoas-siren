@@ -22,6 +22,7 @@ package org.springframework.hateoas.mediatype.siren;
 import static java.util.stream.Collectors.toList;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.springframework.hateoas.IanaLinkRelations.ITEM;
 
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +71,7 @@ public class SirenCollectionModelConverter {
                 EntityModel.class.getName(), embeddable.getClass().getName()));
         }
 
-        return entityConverter.convert((EntityModel<?>) embeddable, newArrayList("item"));
+        return entityConverter.convert((EntityModel<?>) embeddable, newArrayList(ITEM));
     }
 
 }
