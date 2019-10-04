@@ -44,9 +44,14 @@ import lombok.NonNull;
 public class SirenHandlerInstantiator extends HandlerInstantiator {
 
     private final Map<Class<?>, Object> serializers = new HashMap<>();
-    private final AutowireCapableBeanFactory beanFactory = null;
+    private final AutowireCapableBeanFactory beanFactory;
 
     public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, messageResolver, null);
+    }
+
+    public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver,
+        AutowireCapableBeanFactory beanFactory) {
         SirenLinkConverter linkConverter = new SirenLinkConverter(messageResolver);
 
         SirenRepresentationModelConverter representationModelConverter =
@@ -66,6 +71,8 @@ public class SirenHandlerInstantiator extends HandlerInstantiator {
         SirenPagedModelConverter pagedModelConverter =
             new SirenPagedModelConverter(entityModelConverter, linkConverter, messageResolver);
         serializers.put(SirenPagedModelSerializer.class, new SirenPagedModelSerializer(sirenConfiguration, pagedModelConverter));
+
+        this.beanFactory = beanFactory;
     }
 
     @Override
