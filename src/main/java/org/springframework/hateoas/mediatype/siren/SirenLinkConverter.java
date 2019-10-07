@@ -48,7 +48,8 @@ public class SirenLinkConverter {
     }
 
     public SirenLink convert(@NonNull Link link) {
-        return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref()).title(title(link)).build();
+        return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref()).title(title(link))
+            .type(link.getType()).build();
     }
 
     private String title(Link link) {
