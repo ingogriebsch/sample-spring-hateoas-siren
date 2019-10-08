@@ -1,0 +1,12 @@
+{
+  "links" : [ {
+    "rel" : [ "about" ],
+    "href" : "/about"
+  }, {
+    "rel" : [ "help" ],
+    "href" : "/help"
+  }, {
+    "rel" : [ "license" ],
+    "href" : "/license"
+  } ]
+}

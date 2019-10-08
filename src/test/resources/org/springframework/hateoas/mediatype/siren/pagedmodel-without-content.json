@@ -1,0 +1,9 @@
+{
+  "class" : [ "page" ],
+  "properties" : {
+    "size" : 0,
+    "totalElements" : 0,
+    "totalPages" : 0,
+    "number" : 0
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "class" : [ "person" ],
+  "properties" : {
+    "name" : "Peter",
+    "age" : 42
+  },
+  "links" : [ {
+    "rel" : [ "self" ],
+    "href" : "/persons/1"
+  } ]
+}

@@ -1,0 +1,6 @@
+{
+  "links" : [ {
+    "rel" : [ "about" ],
+    "href" : "/about"
+  } ]
+}
