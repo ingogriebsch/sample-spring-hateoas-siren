@@ -21,6 +21,7 @@ package org.springframework.hateoas.mediatype.siren;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.hateoas.mediatype.siren.SirenAction.Field.Type.text;
 import static org.springframework.http.HttpMethod.GET;
 
 import org.junit.jupiter.api.Nested;
@@ -85,7 +86,7 @@ public class SirenActionTest {
                 SirenAction.Field field = SirenAction.Field.builder().name("name").build();
                 assertThat(field.getClasses()).isEmpty();
                 assertThat(field.getTitle()).isNull();
-                assertThat(field.getType()).isNull();
+                assertThat(field.getType()).isEqualTo(text);
                 assertThat(field.getValue()).isNull();
             }
         }

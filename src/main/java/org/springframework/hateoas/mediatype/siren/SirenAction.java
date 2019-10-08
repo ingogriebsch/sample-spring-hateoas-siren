@@ -83,8 +83,9 @@ public class SirenAction {
         @Singular
         private List<String> classes;
 
+        @Default
         @JsonInclude(NON_NULL)
-        private Type type;
+        private Type type = Type.text;
 
         @JsonInclude(NON_NULL)
         private Object value;
@@ -93,8 +94,8 @@ public class SirenAction {
         private String title;
 
         public static enum Type {
-                CHECKBOX, COLOR, DATE, DATETIME, DATETIME_LOCAL, EMAIL, FILE, HIDDEN, MONTH, NUMBER, PASSWORD, RADIO, RANGE,
-                SEARCH, TEL, TEXT, TIME, URL, WEEK
+                checkbox, color, date, datetime, datetime_local, email, file, hidden, month, number, password, radio, range,
+                search, tel, text, time, url, week
         }
 
         @Value(staticConstructor = "of")
