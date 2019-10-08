@@ -19,6 +19,15 @@
  */
 /**
  * Siren-specific extensions, SPIs and Jackson customizations.
+ * <p>
+ * TODOs:
+ * <ul>
+ * <li>Enhance affordance model to provide input (field) parameters?</li>
+ * <li>Introduce ResolvableType 2 SirenAction.Field.Type converter (as bean)</li>
+ * <li>Use LinkRelationProvider there necessary</li>
+ * <li>Rework field creation to own converter</li>
+ * <li>Handle templated links (decide there to put based on configuration)</li>
+ * </ul>
  *
  * @see https://github.com/kevinswiber/siren
  */
