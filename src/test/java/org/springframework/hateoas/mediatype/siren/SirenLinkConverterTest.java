@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
 import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
@@ -64,7 +66,10 @@ public class SirenLinkConverterTest {
             Link source = new Link("/persons/1", SELF);
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).build();
 
-            SirenLink actual = new SirenLinkConverter(DEFAULTS_ONLY).convert(source);
+            List<SirenLink> converted = new SirenLinkConverter(DEFAULTS_ONLY).convert(source);
+            assertThat(converted).hasSize(1);
+
+            SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
@@ -75,7 +80,10 @@ public class SirenLinkConverterTest {
 
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
 
-            SirenLink actual = new SirenLinkConverter(DEFAULTS_ONLY).convert(source);
+            List<SirenLink> converted = new SirenLinkConverter(DEFAULTS_ONLY).convert(source);
+            assertThat(converted).hasSize(1);
+
+            SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
@@ -85,7 +93,10 @@ public class SirenLinkConverterTest {
 
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
 
-            SirenLink actual = new SirenLinkConverter(new StaticMessageResolver("title")).convert(source);
+            List<SirenLink> converted = new SirenLinkConverter(new StaticMessageResolver("title")).convert(source);
+            assertThat(converted).hasSize(1);
+
+            SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
@@ -96,7 +107,10 @@ public class SirenLinkConverterTest {
 
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
 
-            SirenLink actual = new SirenLinkConverter(new StaticMessageResolver("something")).convert(source);
+            List<SirenLink> converted = new SirenLinkConverter(new StaticMessageResolver("something")).convert(source);
+            assertThat(converted).hasSize(1);
+
+            SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
     }

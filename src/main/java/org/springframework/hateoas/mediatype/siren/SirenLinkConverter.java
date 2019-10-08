@@ -39,15 +39,15 @@ public class SirenLinkConverter {
     @NonNull
     private final MessageResolver messageResolver;
 
-    public List<SirenLink> convert(@NonNull Iterable<Link> links) {
-        return stream(links.spliterator(), false).map(l -> convert(l)).collect(toList());
-    }
-
     public List<SirenLink> convert(@NonNull Link... links) {
         return convert(asList(links));
     }
 
-    public SirenLink convert(@NonNull Link link) {
+    public List<SirenLink> convert(@NonNull Iterable<Link> links) {
+        return stream(links.spliterator(), false).map(l -> convert(l)).collect(toList());
+    }
+
+    private SirenLink convert(@NonNull Link link) {
         return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref()).title(title(link))
             .type(link.getType()).build();
     }
