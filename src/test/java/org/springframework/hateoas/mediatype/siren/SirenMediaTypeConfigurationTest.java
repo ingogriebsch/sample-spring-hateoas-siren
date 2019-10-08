@@ -28,6 +28,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.mediatype.SimpleObjectProvider;
+import org.springframework.hateoas.server.LinkRelationProvider;
+import org.springframework.hateoas.server.core.AnnotationLinkRelationProvider;
+import org.springframework.hateoas.server.core.DefaultLinkRelationProvider;
+import org.springframework.hateoas.server.core.DelegatingLinkRelationProvider;
 
 public class SirenMediaTypeConfigurationTest {
 
@@ -35,7 +39,10 @@ public class SirenMediaTypeConfigurationTest {
 
     @BeforeAll
     public static void beforeAll() {
-        configuration = new SirenMediaTypeConfiguration(new SimpleObjectProvider<>(new SirenConfiguration()), DEFAULTS_ONLY);
+        LinkRelationProvider linkRelationProvider =
+            new DelegatingLinkRelationProvider(new AnnotationLinkRelationProvider(), new DefaultLinkRelationProvider());
+        configuration = new SirenMediaTypeConfiguration(new SimpleObjectProvider<>(new SirenConfiguration()),
+            linkRelationProvider, DEFAULTS_ONLY);
     }
 
     @Nested

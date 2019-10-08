@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.hateoas.mediatype.MessageResolver;
+import org.springframework.hateoas.server.LinkRelationProvider;
 import org.springframework.lang.Nullable;
 
 import lombok.NonNull;
@@ -46,11 +47,13 @@ public class SirenHandlerInstantiator extends HandlerInstantiator {
     private final Map<Class<?>, Object> serializers = new HashMap<>();
     private final AutowireCapableBeanFactory beanFactory;
 
-    public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, messageResolver, null);
+    public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull LinkRelationProvider linkRelationProvider, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkRelationProvider, messageResolver, null);
     }
 
-    public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration, @NonNull MessageResolver messageResolver,
+    public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull LinkRelationProvider linkRelationProvider, @NonNull MessageResolver messageResolver,
         AutowireCapableBeanFactory beanFactory) {
         SirenLinkConverter linkConverter = new SirenLinkConverter(messageResolver);
 

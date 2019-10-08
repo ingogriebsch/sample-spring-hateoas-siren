@@ -31,6 +31,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.config.HypermediaMappingInformation;
 import org.springframework.hateoas.mediatype.MessageResolver;
+import org.springframework.hateoas.server.LinkRelationProvider;
 import org.springframework.http.MediaType;
 
 import lombok.NonNull;
@@ -42,6 +43,8 @@ public class SirenMediaTypeConfiguration implements HypermediaMappingInformation
 
     @NonNull
     private final ObjectProvider<SirenConfiguration> sirenConfiguration;
+    @NonNull
+    private final LinkRelationProvider linkRelationProvider;
     @NonNull
     private final MessageResolver messageResolver;
 
@@ -59,11 +62,10 @@ public class SirenMediaTypeConfiguration implements HypermediaMappingInformation
     public ObjectMapper configureObjectMapper(@NonNull ObjectMapper mapper) {
         mapper = HypermediaMappingInformation.super.configureObjectMapper(mapper);
 
-        SirenHandlerInstantiator instantiator =
-            new SirenHandlerInstantiator(sirenConfiguration.getIfAvailable(SirenConfiguration::new), messageResolver);
+        SirenHandlerInstantiator instantiator = new SirenHandlerInstantiator(sirenConfiguration.getIfAvailable(SirenConfiguration::new), linkRelationProvider,
+            messageResolver);
         mapper.setHandlerInstantiator(instantiator);
 
         return mapper;
     }
-
 }
