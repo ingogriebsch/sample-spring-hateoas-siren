@@ -40,7 +40,7 @@ public class SirenEntityModelConverter {
     private final MessageResolver messageResolver;
 
     public SirenEntity convert(@NonNull EntityModel<?> model) {
-        return convert(model, new RelSupplier() {
+        return convert(model, new LinkRelationSupplier() {
 
             @Override
             public List<LinkRelation> getRels() {
@@ -50,7 +50,7 @@ public class SirenEntityModelConverter {
     }
 
     public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull List<LinkRelation> rels) {
-        return convert(model, new RelSupplier() {
+        return convert(model, new LinkRelationSupplier() {
 
             @Override
             public List<LinkRelation> getRels() {
@@ -59,10 +59,14 @@ public class SirenEntityModelConverter {
         });
     }
 
-    public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull RelSupplier relSupplier) {
+    public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull LinkRelationSupplier linkRelationSupplier) {
         return SirenEntity.builder().classes(classes(model)).properties(properties(model))
-            .links(linkConverter.convert(model.getLinks())).rels(relSupplier.getRels())
+            .links(linkConverter.convert(model.getLinks())).rels(rels(model, linkRelationSupplier))
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))).build();
+    }
+
+    private List<LinkRelation> rels(@NonNull EntityModel<?> model, LinkRelationSupplier linkRelationSupplier) {
+        return linkRelationSupplier.getRels();
     }
 
     private static List<String> classes(EntityModel<?> model) {
@@ -74,7 +78,7 @@ public class SirenEntityModelConverter {
     }
 
     @FunctionalInterface
-    public static interface RelSupplier {
+    public static interface LinkRelationSupplier {
 
         List<LinkRelation> getRels();
     }
