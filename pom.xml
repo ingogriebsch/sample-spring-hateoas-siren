@@ -169,6 +169,7 @@
                     <failOnMissingHeader>true</failOnMissingHeader>
                     <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
                     <licenseName>apache_v2</licenseName>
+                    <excludes>**/MappingUtils.java,**/*.json,**/*.zargo,**/*.uml,**/*.umldi,**/*.xmi,**/*.img,**/*.png,**/*.jpg,**/*.jpeg,**/*.gif,**/*.zip,**/*.jar,**/*.war,**/*.ear,**/*.tgz,**/*.gz</excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -192,6 +193,7 @@
                         <directory>src/test/java</directory>
                         <directory>src/test/resources</directory>
                     </directories>
+                    <excludes>**/*.json</excludes>
                 </configuration>
                 <executions>
                     <execution>
