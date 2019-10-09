@@ -32,7 +32,7 @@ public class SirenAffordanceModelConverterTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> new SirenAffordanceModelConverter(null));
+            assertThrows(IllegalArgumentException.class, () -> new SirenAffordanceModelConverter(null, null));
         }
     }
 
@@ -41,7 +41,8 @@ public class SirenAffordanceModelConverterTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> new SirenAffordanceModelConverter(DEFAULTS_ONLY).convert(null));
+            assertThrows(IllegalArgumentException.class,
+                () -> new SirenAffordanceModelConverter(new SirenConfiguration(), DEFAULTS_ONLY).convert(null));
         }
     }
 }

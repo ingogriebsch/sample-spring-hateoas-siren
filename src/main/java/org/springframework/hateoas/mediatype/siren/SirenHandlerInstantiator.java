@@ -56,7 +56,8 @@ public class SirenHandlerInstantiator extends HandlerInstantiator {
         @NonNull LinkRelationProvider linkRelationProvider, @NonNull MessageResolver messageResolver,
         AutowireCapableBeanFactory beanFactory) {
         SirenLinkConverter linkConverter = new SirenLinkConverter(sirenConfiguration, messageResolver);
-        SirenAffordanceModelConverter affordanceModelConverter = new SirenAffordanceModelConverter(messageResolver);
+        SirenAffordanceModelConverter affordanceModelConverter =
+            new SirenAffordanceModelConverter(sirenConfiguration, messageResolver);
 
         SirenRepresentationModelConverter representationModelConverter =
             new SirenRepresentationModelConverter(linkConverter, affordanceModelConverter, messageResolver);

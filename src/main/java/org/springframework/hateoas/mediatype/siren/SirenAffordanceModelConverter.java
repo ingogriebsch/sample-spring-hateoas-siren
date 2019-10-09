@@ -42,6 +42,8 @@ import lombok.RequiredArgsConstructor;
 public class SirenAffordanceModelConverter {
 
     @NonNull
+    private final SirenConfiguration sirenConfiguration;
+    @NonNull
     private final MessageResolver messageResolver;
 
     public List<SirenAction> convert(@NonNull Links links) {
