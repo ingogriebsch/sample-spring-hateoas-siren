@@ -1,0 +1,22 @@
+{
+  "links" : [ {
+    "rel" : [ "self" ],
+    "href" : "/persons/1"
+  } ],
+  "actions" : [ {
+    "name" : "update",
+    "method" : "PUT",
+    "href" : "/persons/1",
+    "fields" : [ {
+      "name" : "age",
+      "type" : "number"
+    }, {
+      "name" : "name",
+      "type" : "text"
+    } ]
+  }, {
+    "name" : "delete",
+    "method" : "DELETE",
+    "href" : "/persons/1"
+  } ]
+}

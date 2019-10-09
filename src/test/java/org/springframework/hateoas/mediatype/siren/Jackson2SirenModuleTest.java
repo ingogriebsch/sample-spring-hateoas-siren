@@ -27,7 +27,10 @@ import static org.springframework.hateoas.IanaLinkRelations.ABOUT;
 import static org.springframework.hateoas.IanaLinkRelations.HELP;
 import static org.springframework.hateoas.IanaLinkRelations.LICENSE;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
+import static org.springframework.hateoas.mediatype.Affordances.of;
 import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.PUT;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -97,6 +100,37 @@ public class Jackson2SirenModuleTest {
                 RepresentationModel<?> source = new RepresentationModel<>(
                     newArrayList(new Link("/about", ABOUT), new Link("/help", HELP), new Link("/license", LICENSE)));
                 String expected = readResource("representationmodel-containing-links.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_link_with_delete_affordance() throws Exception {
+                Link link = of(new Link("/persons/1", SELF)).afford(DELETE).withName("delete").toLink();
+                RepresentationModel<?> source = new RepresentationModel<>(link);
+                String expected = readResource("representationmodel-containing-link-with-delete-affordance.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_link_with_update_affordance() throws Exception {
+                Link link = of(new Link("/persons/1", SELF)).afford(PUT).withInput(Person.class).withName("update").toLink();
+                RepresentationModel<?> source = new RepresentationModel<>(link);
+                String expected = readResource("representationmodel-containing-link-with-update-affordance.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_link_with_update_and_delete_affordances() throws Exception {
+                Link link = of(new Link("/persons/1", SELF)).afford(PUT).withInput(Person.class).withName("update")
+                    .andAfford(DELETE).withName("delete").toLink();
+                RepresentationModel<?> source = new RepresentationModel<>(link);
+                String expected = readResource("representationmodel-containing-link-with-update-and-delete-affordances.json");
 
                 String actual = write(source);
                 assertThat(actual).isEqualTo(expected);
