@@ -37,7 +37,7 @@ public class SirenRepresentationModelConverterTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> new SirenRepresentationModelConverter(null, null));
+            assertThrows(IllegalArgumentException.class, () -> new SirenRepresentationModelConverter(null, null, null));
         }
     }
 
@@ -47,13 +47,14 @@ public class SirenRepresentationModelConverterTest {
         @Test
         public void should_throw_exception_if_input_is_null() {
             assertThrows(IllegalArgumentException.class,
-                () -> new SirenRepresentationModelConverter(new SirenLinkConverter(DEFAULTS_ONLY), DEFAULTS_ONLY).convert(null));
+                () -> new SirenRepresentationModelConverter(new SirenLinkConverter(DEFAULTS_ONLY),
+                    new SirenAffordanceModelConverter(DEFAULTS_ONLY), DEFAULTS_ONLY).convert(null));
         }
 
         @Test
         public void should_return_siren_entity_containing_given_link() {
-            SirenRepresentationModelConverter converter =
-                new SirenRepresentationModelConverter(new SirenLinkConverter(DEFAULTS_ONLY), DEFAULTS_ONLY);
+            SirenRepresentationModelConverter converter = new SirenRepresentationModelConverter(
+                new SirenLinkConverter(DEFAULTS_ONLY), new SirenAffordanceModelConverter(DEFAULTS_ONLY), DEFAULTS_ONLY);
 
             RepresentationModel<?> source = new RepresentationModel<>(new Link("/persons/1", SELF));
             SirenEntity expected =
@@ -66,8 +67,8 @@ public class SirenRepresentationModelConverterTest {
         @Test
         public void should_return_siren_entity_having_matching_title() {
             StaticMessageResolver messageResolver = new StaticMessageResolver("title");
-            SirenRepresentationModelConverter converter =
-                new SirenRepresentationModelConverter(new SirenLinkConverter(DEFAULTS_ONLY), messageResolver);
+            SirenRepresentationModelConverter converter = new SirenRepresentationModelConverter(
+                new SirenLinkConverter(DEFAULTS_ONLY), new SirenAffordanceModelConverter(DEFAULTS_ONLY), messageResolver);
 
             RepresentationModel<?> source = new RepresentationModel<>(new Link("/persons/1", SELF));
             SirenEntity expected = SirenEntity.builder().link(SirenLink.builder().href("/persons/1").rel(SELF.value()).build())

@@ -19,6 +19,8 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import java.util.List;
+
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
@@ -31,11 +33,23 @@ public class SirenRepresentationModelConverter {
     @NonNull
     private final SirenLinkConverter linkConverter;
     @NonNull
+    private final SirenAffordanceModelConverter affordanceModelConverter;
+    @NonNull
     private final MessageResolver messageResolver;
 
     public SirenEntity convert(@NonNull RepresentationModel<?> model) {
-        return SirenEntity.builder().links(linkConverter.convert(model.getLinks()))
-            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getClass()))).build();
+        return SirenEntity.builder().links(links(model)).actions(actions(model)).title(title(model)).build();
     }
 
+    private List<SirenLink> links(RepresentationModel<?> model) {
+        return linkConverter.convert(model.getLinks());
+    }
+
+    private List<SirenAction> actions(RepresentationModel<?> model) {
+        return affordanceModelConverter.convert(model.getLinks());
+    }
+
+    private String title(RepresentationModel<?> model) {
+        return messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getClass()));
+    }
 }
