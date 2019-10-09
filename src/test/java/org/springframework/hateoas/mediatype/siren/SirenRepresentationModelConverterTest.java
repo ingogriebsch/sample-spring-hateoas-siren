@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.MessageResolver;
 import org.springframework.hateoas.mediatype.StaticMessageResolver;
 
 public class SirenRepresentationModelConverterTest {
@@ -46,38 +47,39 @@ public class SirenRepresentationModelConverterTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(IllegalArgumentException.class,
-                () -> new SirenRepresentationModelConverter(new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY),
-                    new SirenAffordanceModelConverter(DEFAULTS_ONLY), DEFAULTS_ONLY).convert(null));
+            assertThrows(IllegalArgumentException.class, () -> defaultConverter().convert(null));
         }
 
         @Test
         public void should_return_siren_entity_containing_given_link() {
-            SirenRepresentationModelConverter converter =
-                new SirenRepresentationModelConverter(new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY),
-                    new SirenAffordanceModelConverter(DEFAULTS_ONLY), DEFAULTS_ONLY);
-
             RepresentationModel<?> source = new RepresentationModel<>(new Link("/persons/1", SELF));
             SirenEntity expected =
                 SirenEntity.builder().link(SirenLink.builder().href("/persons/1").rel(SELF.value()).build()).build();
 
+            SirenRepresentationModelConverter converter = defaultConverter();
             SirenEntity actual = converter.convert(source);
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         public void should_return_siren_entity_having_matching_title() {
-            StaticMessageResolver messageResolver = new StaticMessageResolver("title");
-            SirenRepresentationModelConverter converter =
-                new SirenRepresentationModelConverter(new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY),
-                    new SirenAffordanceModelConverter(DEFAULTS_ONLY), messageResolver);
-
             RepresentationModel<?> source = new RepresentationModel<>(new Link("/persons/1", SELF));
             SirenEntity expected = SirenEntity.builder().link(SirenLink.builder().href("/persons/1").rel(SELF.value()).build())
                 .title("title").build();
 
+            SirenRepresentationModelConverter converter = converter(StaticMessageResolver.of("_entity.default.title", "title"));
             SirenEntity actual = converter.convert(source);
             assertThat(actual).isEqualTo(expected);
         }
+
+    }
+
+    private static SirenRepresentationModelConverter defaultConverter() {
+        return converter(DEFAULTS_ONLY);
+    }
+
+    private static SirenRepresentationModelConverter converter(MessageResolver messageResolver) {
+        return new SirenRepresentationModelConverter(new SirenLinkConverter(new SirenConfiguration(), messageResolver),
+            new SirenAffordanceModelConverter(new SirenConfiguration(), messageResolver), messageResolver);
     }
 }

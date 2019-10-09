@@ -89,7 +89,7 @@ public class SirenLinkConverterTest {
 
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
 
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), new StaticMessageResolver("title"));
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), StaticMessageResolver.of("title"));
             List<SirenLink> converted = converter.convert(newArrayList(source));
             assertThat(converted).hasSize(1);
 
@@ -105,7 +105,7 @@ public class SirenLinkConverterTest {
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
 
             SirenLinkConverter converter =
-                new SirenLinkConverter(new SirenConfiguration(), new StaticMessageResolver("something"));
+                new SirenLinkConverter(new SirenConfiguration(), StaticMessageResolver.of("something"));
             List<SirenLink> converted = converter.convert(newArrayList(source));
             assertThat(converted).hasSize(1);
 

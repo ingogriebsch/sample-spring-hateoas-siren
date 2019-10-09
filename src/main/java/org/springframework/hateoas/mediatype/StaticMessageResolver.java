@@ -19,20 +19,48 @@
  */
 package org.springframework.hateoas.mediatype;
 
+import static java.util.Collections.singletonMap;
+
+import static com.google.common.collect.Maps.newHashMap;
+
+import java.util.Map;
+
 import org.springframework.context.MessageSourceResolvable;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
-@RequiredArgsConstructor
+@Value(staticConstructor = "of")
 public class StaticMessageResolver implements MessageResolver {
 
     @NonNull
-    private final String message;
+    private final Map<String, String> messages;
+    private final String fallback;
+
+    public static StaticMessageResolver of(String fallback) {
+        return new StaticMessageResolver(newHashMap(), fallback);
+    }
+
+    public static StaticMessageResolver of(@NonNull String key, @NonNull String value) {
+        return new StaticMessageResolver(singletonMap(key, value), null);
+    }
+
+    public static StaticMessageResolver of(@NonNull String key, @NonNull String value, String fallback) {
+        return new StaticMessageResolver(singletonMap(key, value), fallback);
+    }
+
+    public static StaticMessageResolver of(@NonNull Map<String, String> messages) {
+        return new StaticMessageResolver(messages, null);
+    }
 
     @Override
     public String resolve(MessageSourceResolvable resolvable) {
-        return message;
+        String[] codes = resolvable.getCodes();
+        for (String code : codes) {
+            if (messages.containsKey(code)) {
+                return messages.get(code);
+            }
+        }
+        return fallback;
     }
-
 }
