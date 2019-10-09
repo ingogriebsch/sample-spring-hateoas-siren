@@ -27,6 +27,8 @@
  * <li>Use LinkRelationProvider there necessary</li>
  * <li>Rework field creation to own converter</li>
  * <li>Handle templated links (decide there to put based on configuration)</li>
+ * <li>Introduce SirenAffordanceModelConverter through Instantiator</li>
+ * <li>Enhance converters to use SirenAffordanceModelConverter</li>
  * </ul>
  *
  * @see https://github.com/kevinswiber/siren
