@@ -19,11 +19,11 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_LINK;
 
 import java.util.List;
 
@@ -37,14 +37,12 @@ import lombok.RequiredArgsConstructor;
 public class SirenLinkConverter {
 
     @NonNull
+    private final SirenConfiguration sirenConfiguration;
+    @NonNull
     private final MessageResolver messageResolver;
 
-    public List<SirenLink> convert(@NonNull Link... links) {
-        return convert(asList(links));
-    }
-
     public List<SirenLink> convert(@NonNull Iterable<Link> links) {
-        return stream(links.spliterator(), false).map(l -> convert(l)).collect(toList());
+        return stream(links.spliterator(), false).filter(l -> shouldConvert(l)).map(l -> convert(l)).collect(toList());
     }
 
     private SirenLink convert(@NonNull Link link) {
@@ -54,5 +52,9 @@ public class SirenLinkConverter {
 
     private String title(Link link) {
         return link.getTitle() != null ? link.getTitle() : messageResolver.resolve(SirenLink.TitleResolvable.of(link.getRel()));
+    }
+
+    private boolean shouldConvert(Link link) {
+        return link.isTemplated() ? sirenConfiguration.shouldRenderTemplatedLinksAs(AS_LINK) : true;
     }
 }

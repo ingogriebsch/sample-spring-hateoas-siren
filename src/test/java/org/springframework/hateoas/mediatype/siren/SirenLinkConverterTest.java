@@ -19,10 +19,14 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
+import static org.springframework.hateoas.UriTemplate.of;
 import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
+import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_ACTION;
+import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_LINK;
 
 import java.util.List;
 
@@ -38,7 +42,7 @@ public class SirenLinkConverterTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(null));
+            assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(null, null));
         }
     }
 
@@ -46,19 +50,9 @@ public class SirenLinkConverterTest {
     class Convert {
 
         @Test
-        public void should_throw_exception_if_link_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(DEFAULTS_ONLY).convert((Link) null));
-        }
-
-        @Test
         public void should_throw_exception_if_iterable_with_links_is_null() {
-            assertThrows(IllegalArgumentException.class,
-                () -> new SirenLinkConverter(DEFAULTS_ONLY).convert((Iterable<Link>) null));
-        }
-
-        @Test
-        public void should_throw_exception_if_variable_parameter_list_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(DEFAULTS_ONLY).convert((Link[]) null));
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
+            assertThrows(IllegalArgumentException.class, () -> converter.convert((Iterable<Link>) null));
         }
 
         @Test
@@ -66,7 +60,8 @@ public class SirenLinkConverterTest {
             Link source = new Link("/persons/1", SELF);
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).build();
 
-            List<SirenLink> converted = new SirenLinkConverter(DEFAULTS_ONLY).convert(source);
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
+            List<SirenLink> converted = converter.convert(newArrayList(source));
             assertThat(converted).hasSize(1);
 
             SirenLink actual = converted.iterator().next();
@@ -80,7 +75,8 @@ public class SirenLinkConverterTest {
 
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
 
-            List<SirenLink> converted = new SirenLinkConverter(DEFAULTS_ONLY).convert(source);
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
+            List<SirenLink> converted = converter.convert(newArrayList(source));
             assertThat(converted).hasSize(1);
 
             SirenLink actual = converted.iterator().next();
@@ -93,7 +89,8 @@ public class SirenLinkConverterTest {
 
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
 
-            List<SirenLink> converted = new SirenLinkConverter(new StaticMessageResolver("title")).convert(source);
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), new StaticMessageResolver("title"));
+            List<SirenLink> converted = converter.convert(newArrayList(source));
             assertThat(converted).hasSize(1);
 
             SirenLink actual = converted.iterator().next();
@@ -107,11 +104,27 @@ public class SirenLinkConverterTest {
 
             SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
 
-            List<SirenLink> converted = new SirenLinkConverter(new StaticMessageResolver("something")).convert(source);
+            SirenLinkConverter converter =
+                new SirenLinkConverter(new SirenConfiguration(), new StaticMessageResolver("something"));
+            List<SirenLink> converted = converter.convert(newArrayList(source));
             assertThat(converted).hasSize(1);
 
             SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void should_not_convert_link_if_templated_and_configuration_exclude() {
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(AS_ACTION), DEFAULTS_ONLY);
+            List<SirenLink> converted = converter.convert(newArrayList(new Link(of("/persons/{id}"), SELF)));
+            assertThat(converted).isEmpty();
+        }
+
+        @Test
+        public void should_convert_link_if_templated_and_configuration_include() {
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(AS_LINK), DEFAULTS_ONLY);
+            List<SirenLink> converted = converter.convert(newArrayList(new Link(of("/persons/{id}"), SELF)));
+            assertThat(converted).hasSize(1);
         }
     }
 }
