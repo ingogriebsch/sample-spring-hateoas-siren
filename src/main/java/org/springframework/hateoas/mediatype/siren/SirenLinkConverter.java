@@ -28,6 +28,7 @@ import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.Ren
 import java.util.List;
 
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
@@ -51,7 +52,16 @@ public class SirenLinkConverter {
     }
 
     private String title(Link link) {
-        return link.getTitle() != null ? link.getTitle() : messageResolver.resolve(SirenLink.TitleResolvable.of(link.getRel()));
+        String title = link.getTitle();
+        if (title != null) {
+            return title;
+        }
+
+        LinkRelation rel = link.getRel();
+        if (rel != null) {
+            return messageResolver.resolve(SirenLink.TitleResolvable.of(link.getRel()));
+        }
+        return null;
     }
 
     private boolean shouldConvert(Link link) {
