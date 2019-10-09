@@ -19,17 +19,21 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static java.util.Arrays.asList;
+
+import static com.google.common.collect.Iterables.getLast;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
 import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
+import static org.springframework.hateoas.mediatype.StaticMessageResolver.of;
+import static org.springframework.hateoas.mediatype.siren.SirenEntity.TitleResolvable.of;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
-import org.springframework.hateoas.mediatype.StaticMessageResolver;
 
 public class SirenRepresentationModelConverterTest {
 
@@ -67,7 +71,7 @@ public class SirenRepresentationModelConverterTest {
             SirenEntity expected = SirenEntity.builder().link(SirenLink.builder().href("/persons/1").rel(SELF.value()).build())
                 .title("title").build();
 
-            SirenRepresentationModelConverter converter = converter(StaticMessageResolver.of("_entity.default.title", "title"));
+            SirenRepresentationModelConverter converter = converter(of(getLast(asList(of(Person.class).getCodes())), "title"));
             SirenEntity actual = converter.convert(source);
             assertThat(actual).isEqualTo(expected);
         }
