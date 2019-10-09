@@ -1,7 +1,9 @@
 # Spring HATEOAS Siren sample
 [![Build Status](https://travis-ci.org/ingogriebsch/sample-spring-hateoas-siren.svg?token=Ut17SCedR6i55pJZj7Qa&branch=master)](https://travis-ci.org/ingogriebsch/sample-spring-hateoas-siren)
 [![Codecov Status](https://codecov.io/gh/ingogriebsch/sample-spring-hateoas-siren/branch/master/graph/badge.svg?token=L4Zb0XKArW)](https://codecov.io/gh/ingogriebsch/sample-spring-hateoas-siren)
+<!--
 [![Codacy Status](https://api.codacy.com/project/badge/Grade/19e9eecec72846cfbff047bed2dff18b)](https://app.codacy.com/app/ingo.griebsch/sample-spring-hateoas-siren?utm_source=github.com&utm_medium=referral&utm_content=ingogriebsch/sample-spring-hateoas-siren&utm_campaign=Badge_Grade_Dashboard)
+-->
 [![DepShield Status](https://depshield.sonatype.org/badges/ingogriebsch/sample-spring-hateoas-siren/depshield.svg)](https://depshield.github.io)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
