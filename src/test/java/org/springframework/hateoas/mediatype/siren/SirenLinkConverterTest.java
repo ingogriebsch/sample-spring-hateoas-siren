@@ -125,6 +125,9 @@ public class SirenLinkConverterTest {
             SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(AS_LINK), DEFAULTS_ONLY);
             List<SirenLink> converted = converter.convert(newArrayList(new Link(of("/persons/{id}"), SELF)));
             assertThat(converted).hasSize(1);
+            SirenLink sirenLink = converted.iterator().next();
+            assertThat(sirenLink.getHref()).isEqualTo("/persons/{id}");
+            assertThat(sirenLink.getRels()).containsExactly(SELF.value());
         }
     }
 }
