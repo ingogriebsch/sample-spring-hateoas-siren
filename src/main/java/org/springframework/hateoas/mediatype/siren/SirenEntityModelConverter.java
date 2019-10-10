@@ -37,6 +37,8 @@ public class SirenEntityModelConverter {
     @NonNull
     private final SirenLinkConverter linkConverter;
     @NonNull
+    private final SirenAffordanceModelConverter affordanceModelConverter;
+    @NonNull
     private final MessageResolver messageResolver;
 
     public SirenEntity convert(@NonNull EntityModel<?> model) {
@@ -60,9 +62,13 @@ public class SirenEntityModelConverter {
     }
 
     public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull LinkRelationSupplier linkRelationSupplier) {
-        return SirenEntity.builder().classes(classes(model)).properties(properties(model))
-            .links(linkConverter.convert(model.getLinks())).rels(rels(model, linkRelationSupplier))
-            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))).build();
+        return SirenEntity.builder().classes(classes(model)) //
+            .rels(rels(model, linkRelationSupplier)) //
+            .properties(properties(model)) //
+            .links(linkConverter.convert(model.getLinks())) //
+            .actions(affordanceModelConverter.convert(model.getLinks())) //
+            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
+            .build();
     }
 
     private List<LinkRelation> rels(@NonNull EntityModel<?> model, LinkRelationSupplier linkRelationSupplier) {
