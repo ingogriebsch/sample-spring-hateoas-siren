@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -110,11 +109,9 @@ public class SirenWebMvcIntegrationTest {
     }
 
     @Test
-    public void foundEmployee() throws Exception {
+    public void searchForEmployee() throws Exception {
         ResultActions result = mockMvc.perform(get("/employees/search").param("name", "Frodo").accept(SIREN_JSON));
         result.andExpect(status().isOk());
-
-        result.andDo(print());
 
         result.andExpect(jsonPath("$.properties.size", is(1))) //
             .andExpect(jsonPath("$.class[0]", is("collection"))) //
