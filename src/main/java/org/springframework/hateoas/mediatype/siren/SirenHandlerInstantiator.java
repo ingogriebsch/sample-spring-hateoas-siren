@@ -70,7 +70,7 @@ public class SirenHandlerInstantiator extends HandlerInstantiator {
             new SirenEntityModelSerializer(sirenConfiguration, entityModelConverter));
 
         SirenCollectionModelConverter collectionModelConverter =
-            new SirenCollectionModelConverter(entityModelConverter, linkConverter, messageResolver);
+            new SirenCollectionModelConverter(entityModelConverter, linkConverter, affordanceModelConverter, messageResolver);
         serializers.put(SirenCollectionModelSerializer.class,
             new SirenCollectionModelSerializer(sirenConfiguration, collectionModelConverter));
 
