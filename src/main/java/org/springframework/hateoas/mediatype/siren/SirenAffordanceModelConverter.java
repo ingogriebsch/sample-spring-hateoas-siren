@@ -19,18 +19,20 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Stream.of;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
+import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_ACTION;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.hateoas.AffordanceModel.InputPayloadMetadata;
 import org.springframework.hateoas.AffordanceModel.PropertyMetadata;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
+import org.springframework.hateoas.TemplateVariable;
 import org.springframework.hateoas.mediatype.MessageResolver;
 import org.springframework.hateoas.mediatype.siren.SirenAction.Field;
 import org.springframework.hateoas.mediatype.siren.SirenAction.Field.Type;
@@ -47,40 +49,71 @@ public class SirenAffordanceModelConverter {
     private final MessageResolver messageResolver;
 
     public List<SirenAction> convert(@NonNull Links links) {
-        return links.stream().flatMap(it -> it.getAffordances().stream()).map(it -> it.getAffordanceModel(SIREN_JSON))
-            .map(SirenAffordanceModel.class::cast).map(m -> convert(m)).collect(toList());
+        List<SirenAction> result = newArrayList();
+        for (Link link : links) {
+            for (SirenAffordanceModel model : affordanceModels(link)) {
+                result.add(convert(model));
+            }
+
+            if (link.isTemplated() ? sirenConfiguration.shouldRenderTemplatedLinksAs(AS_ACTION) : false) {
+                result.add(convert(link));
+            }
+        }
+        return result;
+    }
+
+    private SirenAction convert(Link link) {
+        return SirenAction.builder().name(link.getName()).href(link.getHref()).title(actionTitle(link.getName()))
+            .fields(fields(link.getTemplate().getVariables())).build();
     }
 
     private SirenAction convert(SirenAffordanceModel model) {
         List<Field> fields = fields(model);
 
         return SirenAction.builder().name(model.getName()).method(model.getHttpMethod()).href(model.getLink().getHref())
-            .title(title(model)).type(type(fields, model)).fields(fields).build();
+            .title(actionTitle(model.getName())).type(actionType(fields, model)).fields(fields).build();
     }
 
-    private String type(List<Field> fields, SirenAffordanceModel model) {
-        return null;
+    private List<Field> fields(List<TemplateVariable> variables) {
+        return variables.stream().map(v -> field(v)).collect(toList());
     }
 
     private List<Field> fields(SirenAffordanceModel model) {
-        return of(ofNullable(model.getInput())).filter(Optional::isPresent).map(Optional::get).flatMap(i -> i.stream())
-            .map(pm -> field(pm)).collect(toList());
+        InputPayloadMetadata input = model.getInput();
+        if (input == null) {
+            return newArrayList();
+        }
+        return input.stream().map(pm -> field(pm)).collect(toList());
     }
 
     private Field field(PropertyMetadata propertyMetadata) {
-        return Field.builder().name(propertyMetadata.getName()).type(type(propertyMetadata.getType()))
-            .title(title(propertyMetadata)).build();
+        return Field.builder().name(propertyMetadata.getName()).type(fieldType(propertyMetadata.getType()))
+            .title(fieldTitle(propertyMetadata.getName())).build();
     }
 
-    private Type type(ResolvableType type) {
+    private Field field(TemplateVariable templateVariable) {
+        return Field.builder().name(templateVariable.getName()).title(fieldTitle(templateVariable.getName())).build();
+    }
+
+    private String actionType(List<Field> fields, SirenAffordanceModel model) {
+        return null;
+    }
+
+    private Type fieldType(ResolvableType type) {
         return Number.class.isAssignableFrom(type.getRawClass()) ? Type.number : Type.text;
     }
 
-    private String title(PropertyMetadata propertyMetadata) {
-        return messageResolver.resolve(SirenAction.Field.TitleResolvable.of(propertyMetadata.getName()));
+    private String actionTitle(String name) {
+        return name != null ? messageResolver.resolve(SirenAction.TitleResolvable.of(name)) : null;
     }
 
-    private String title(SirenAffordanceModel model) {
-        return messageResolver.resolve(SirenAction.TitleResolvable.of(model.getName()));
+    private String fieldTitle(String name) {
+        return name != null ? messageResolver.resolve(SirenAction.Field.TitleResolvable.of(name)) : null;
     }
+
+    private static List<SirenAffordanceModel> affordanceModels(Link link) {
+        return link.getAffordances().stream().map(a -> a.getAffordanceModel(SIREN_JSON)).map(SirenAffordanceModel.class::cast)
+            .collect(toList());
+    }
+
 }
