@@ -24,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_ACTION;
+import static org.springframework.http.HttpMethod.GET;
 
 import java.util.List;
 
@@ -52,7 +53,9 @@ public class SirenAffordanceModelConverter {
         List<SirenAction> result = newArrayList();
         for (Link link : links) {
             for (SirenAffordanceModel model : affordanceModels(link)) {
-                result.add(convert(model));
+                if (!GET.equals(model.getHttpMethod())) {
+                    result.add(convert(model));
+                }
             }
 
             if (link.isTemplated() ? sirenConfiguration.shouldRenderTemplatedLinksAs(AS_ACTION) : false) {
