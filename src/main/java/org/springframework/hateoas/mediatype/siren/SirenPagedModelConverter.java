@@ -43,12 +43,19 @@ public class SirenPagedModelConverter {
     @NonNull
     private final SirenLinkConverter linkConverter;
     @NonNull
+    private final SirenAffordanceModelConverter affordanceModelConverter;
+    @NonNull
     private final MessageResolver messageResolver;
 
     public SirenEntity convert(@NonNull PagedModel<?> model) {
-        return SirenEntity.builder().classes(classes(model)).properties(properties(model)).entities(entities(model))
-            .links(linkConverter.convert(model.getLinks()))
-            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))).build();
+        return SirenEntity.builder() //
+            .classes(classes(model)) //
+            .properties(properties(model)) //
+            .entities(entities(model)) //
+            .links(linkConverter.convert(model.getLinks())) //
+            .actions(affordanceModelConverter.convert(model.getLinks())) //
+            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
+            .build();
     }
 
     private List<SirenEmbeddable> entities(CollectionModel<?> model) {
