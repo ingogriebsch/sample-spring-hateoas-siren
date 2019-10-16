@@ -27,6 +27,7 @@ import static org.springframework.hateoas.UriTemplate.of;
 import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
 import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_ACTION;
 import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_LINK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
@@ -47,21 +48,21 @@ public class SirenLinkConverterTest {
     }
 
     @Nested
-    class Convert {
+    class To {
 
         @Test
-        public void should_throw_exception_if_iterable_with_links_is_null() {
+        public void should_throw_exception_if_input_is_null() {
             SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            assertThrows(IllegalArgumentException.class, () -> converter.convert((Iterable<Link>) null));
+            assertThrows(IllegalArgumentException.class, () -> converter.to((Iterable<Link>) null));
         }
 
         @Test
-        public void should_return_siren_link_having_same_href_and_rel() {
+        public void should_return_output_having_same_href_and_rel() {
             Link source = new Link("/persons/1", SELF);
-            SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).build();
+            SirenLink expected = SirenLink.builder().href(source.getHref()).rel(source.getRel().value()).build();
 
             SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            List<SirenLink> converted = converter.convert(newArrayList(source));
+            List<SirenLink> converted = converter.to(newArrayList(source));
             assertThat(converted).hasSize(1);
 
             SirenLink actual = converted.iterator().next();
@@ -69,14 +70,13 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void should_return_siren_link_having_title_from_link() {
-            Link source = new Link("/persons/1", SELF);
-            source = source.withTitle("title");
-
-            SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
+        public void should_return_output_having_title_from_input() {
+            Link source = new Link("/persons/1", SELF).withTitle("title");
+            SirenLink expected =
+                SirenLink.builder().href(source.getHref()).rel(source.getRel().value()).title(source.getTitle()).build();
 
             SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            List<SirenLink> converted = converter.convert(newArrayList(source));
+            List<SirenLink> converted = converter.to(newArrayList(source));
             assertThat(converted).hasSize(1);
 
             SirenLink actual = converted.iterator().next();
@@ -84,13 +84,13 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void should_return_siren_link_having_title_from_message_resolver() {
+        public void should_return_output_having_title_from_message_resolver() {
             Link source = new Link("/persons/1", SELF);
+            SirenLink expected = SirenLink.builder().href(source.getHref()).rel(source.getRel().value()).title("title").build();
 
-            SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
-
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), StaticMessageResolver.of("title"));
-            List<SirenLink> converted = converter.convert(newArrayList(source));
+            SirenLinkConverter converter =
+                new SirenLinkConverter(new SirenConfiguration(), StaticMessageResolver.of(expected.getTitle()));
+            List<SirenLink> converted = converter.to(newArrayList(source));
             assertThat(converted).hasSize(1);
 
             SirenLink actual = converted.iterator().next();
@@ -98,15 +98,15 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void should_return_siren_link_having_title_from_link_even_if_available_through_message_resolver() {
-            Link source = new Link("/persons/1", SELF);
-            source = source.withTitle("title");
+        public void should_return_output_having_title_from_input_even_if_available_through_message_resolver() {
+            Link source = new Link("/persons/1", SELF).withTitle("title");
 
-            SirenLink expected = SirenLink.builder().href("/persons/1").rel(SELF.value()).title("title").build();
+            SirenLink expected =
+                SirenLink.builder().href(source.getHref()).rel(source.getRel().value()).title(source.getTitle()).build();
 
             SirenLinkConverter converter =
                 new SirenLinkConverter(new SirenConfiguration(), StaticMessageResolver.of("something"));
-            List<SirenLink> converted = converter.convert(newArrayList(source));
+            List<SirenLink> converted = converter.to(newArrayList(source));
             assertThat(converted).hasSize(1);
 
             SirenLink actual = converted.iterator().next();
@@ -114,20 +114,74 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void should_not_convert_link_if_templated_and_configuration_exclude() {
+        public void should_return_empty_list_if_input_is_templated_and_configuration_exclude() {
             SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(AS_ACTION), DEFAULTS_ONLY);
-            List<SirenLink> converted = converter.convert(newArrayList(new Link(of("/persons/{id}"), SELF)));
+            List<SirenLink> converted = converter.to(newArrayList(new Link(of("/persons/{id}"), SELF)));
             assertThat(converted).isEmpty();
         }
 
         @Test
-        public void should_convert_link_if_templated_and_configuration_include() {
+        public void should_return_matching_output_if_input_is_templated_and_configuration_include() {
             SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(AS_LINK), DEFAULTS_ONLY);
-            List<SirenLink> converted = converter.convert(newArrayList(new Link(of("/persons/{id}"), SELF)));
+
+            Link source = new Link(of("/persons/{id}"), SELF);
+            List<SirenLink> converted = converter.to(newArrayList(source));
             assertThat(converted).hasSize(1);
-            SirenLink sirenLink = converted.iterator().next();
-            assertThat(sirenLink.getHref()).isEqualTo("/persons/{id}");
-            assertThat(sirenLink.getRels()).containsExactly(SELF.value());
+
+            SirenLink target = converted.iterator().next();
+            assertThat(target.getHref()).isEqualTo(source.getHref());
+            assertThat(target.getRels()).containsExactly(source.getRel().value());
+        }
+    }
+
+    @Nested
+    class From {
+
+        @Test
+        public void should_throw_exception_if_input_is_null() {
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
+            assertThrows(IllegalArgumentException.class, () -> converter.from((Iterable<SirenLink>) null));
+        }
+
+        @Test
+        public void should_return_output_having_same_href_and_rel() {
+            Link expected = new Link("/persons/1", SELF);
+            SirenLink source = SirenLink.builder().href(expected.getHref()).rel(expected.getRel().value()).build();
+
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
+            List<Link> converted = converter.from(newArrayList(source));
+            assertThat(converted).hasSize(1);
+
+            Link actual = converted.iterator().next();
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void should_return_output_having_same_title() {
+            Link expected = new Link("/persons/1", SELF).withTitle("title");
+            SirenLink source =
+                SirenLink.builder().href(expected.getHref()).rel(expected.getRel().value()).title(expected.getTitle()).build();
+
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
+            List<Link> converted = converter.from(newArrayList(source));
+            assertThat(converted).hasSize(1);
+
+            Link actual = converted.iterator().next();
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        public void should_return_output_having_same_type() {
+            Link expected = new Link("/persons/1", SELF).withTitle("title").withType(APPLICATION_JSON_VALUE);
+            SirenLink source = SirenLink.builder().href(expected.getHref()).rel(expected.getRel().value())
+                .title(expected.getTitle()).type(expected.getType()).build();
+
+            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
+            List<Link> converted = converter.from(newArrayList(source));
+            assertThat(converted).hasSize(1);
+
+            Link actual = converted.iterator().next();
+            assertThat(actual).isEqualTo(expected);
         }
     }
 }

@@ -52,7 +52,7 @@ public class SirenPagedModelConverter {
             .classes(classes(model)) //
             .properties(properties(model)) //
             .entities(entities(model)) //
-            .links(linkConverter.convert(model.getLinks())) //
+            .links(linkConverter.to(model.getLinks())) //
             .actions(affordanceModelConverter.convert(model.getLinks())) //
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
             .build();

@@ -42,13 +42,25 @@ public class SirenLinkConverter {
     @NonNull
     private final MessageResolver messageResolver;
 
-    public List<SirenLink> convert(@NonNull Iterable<Link> links) {
+    public List<SirenLink> to(@NonNull Iterable<Link> links) {
         return stream(links.spliterator(), false).filter(l -> shouldConvert(l)).map(l -> convert(l)).collect(toList());
     }
 
+    public List<Link> from(@NonNull Iterable<SirenLink> links) {
+        return stream(links.spliterator(), false).map(l -> convert(l)).collect(toList());
+    }
+
+    private Link convert(SirenLink link) {
+        String rel = link.getRels().stream().findFirst().orElse(null);
+        return new Link(link.getHref(), rel).withTitle(link.getTitle()).withType(link.getType());
+    }
+
     private SirenLink convert(@NonNull Link link) {
-        return SirenLink.builder().rels(newArrayList(link.getRel().value())).href(link.getHref()).title(title(link))
-            .type(link.getType()).build();
+        return SirenLink.builder() //
+            .rels(newArrayList(link.getRel().value())) //
+            .href(link.getHref()).title(title(link)) //
+            .type(link.getType()) //
+            .build();
     }
 
     private String title(Link link) {
