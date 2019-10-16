@@ -19,6 +19,8 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
@@ -35,12 +37,15 @@ public class SirenRepresentationModelConverter {
     @NonNull
     private final MessageResolver messageResolver;
 
-    public SirenEntity convert(@NonNull RepresentationModel<?> model) {
+    public SirenEntity to(@NonNull RepresentationModel<?> model) {
         return SirenEntity.builder() //
-            .links(linkConverter.convert(model.getLinks())) //
+            .links(linkConverter.to(model.getLinks())) //
             .actions(affordanceModelConverter.convert(model.getLinks())) //
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getClass()))) //
             .build();
     }
 
+    public RepresentationModel<?> from(@NonNull SirenEntity entity) {
+        return new RepresentationModel<>(linkConverter.from(entity.getLinks() != null ? entity.getLinks() : newArrayList()));
+    }
 }

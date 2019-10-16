@@ -20,6 +20,7 @@
 package org.springframework.hateoas.mediatype.siren;
 
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -43,6 +44,7 @@ public class Jackson2SirenModule extends SimpleModule {
     }
 
     @JsonSerialize(using = SirenRepresentationModelSerializer.class)
+    @JsonDeserialize(using = SirenRepresentationModelDeserializer.class)
     public abstract class RepresentationModelMixIn extends RepresentationModel<RepresentationModelMixin> {
     }
 

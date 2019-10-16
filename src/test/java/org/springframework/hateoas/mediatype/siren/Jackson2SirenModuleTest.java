@@ -227,7 +227,6 @@ public class Jackson2SirenModuleTest {
     }
 
     @Nested
-    @Disabled
     class Deserialize {
 
         @Nested
@@ -262,6 +261,7 @@ public class Jackson2SirenModuleTest {
             }
         }
 
+        @Disabled
         @Nested
         class Entity {
 
@@ -286,6 +286,7 @@ public class Jackson2SirenModuleTest {
             }
         }
 
+        @Disabled
         @Nested
         class Collection {
 
@@ -305,6 +306,7 @@ public class Jackson2SirenModuleTest {
             }
         }
 
+        @Disabled
         @Nested
         class Paged {
 

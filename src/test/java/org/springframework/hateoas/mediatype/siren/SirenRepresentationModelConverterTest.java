@@ -47,35 +47,58 @@ public class SirenRepresentationModelConverterTest {
     }
 
     @Nested
-    class Convert {
+    class To {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> defaultConverter().convert(null));
+            assertThrows(IllegalArgumentException.class, () -> defaultConverter().to(null));
         }
 
         @Test
-        public void should_return_siren_entity_containing_given_link() {
-            RepresentationModel<?> source = new RepresentationModel<>(new Link("/persons/1", SELF));
-            SirenEntity expected =
-                SirenEntity.builder().link(SirenLink.builder().href("/persons/1").rel(SELF.value()).build()).build();
+        public void should_return_output_containing_given_link() {
+            Link sourceLink = new Link("/persons/1", SELF);
+            RepresentationModel<?> source = new RepresentationModel<>(sourceLink);
+            SirenLink expectedLink = SirenLink.builder().href(sourceLink.getHref()).rel(sourceLink.getRel().value()).build();
+            SirenEntity expected = SirenEntity.builder().link(expectedLink).build();
 
             SirenRepresentationModelConverter converter = defaultConverter();
-            SirenEntity actual = converter.convert(source);
+            SirenEntity actual = converter.to(source);
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        public void should_return_siren_entity_having_matching_title() {
-            RepresentationModel<?> source = new RepresentationModel<>(new Link("/persons/1", SELF));
-            SirenEntity expected = SirenEntity.builder().link(SirenLink.builder().href("/persons/1").rel(SELF.value()).build())
-                .title("title").build();
+        public void should_return_output_having_matching_title() {
+            Link sourceLink = new Link("/persons/1", SELF);
+            RepresentationModel<?> source = new RepresentationModel<>(sourceLink);
+            SirenLink expectedLink = SirenLink.builder().href(sourceLink.getHref()).rel(sourceLink.getRel().value()).build();
+            SirenEntity expected = SirenEntity.builder().link(expectedLink).title("title").build();
 
-            SirenRepresentationModelConverter converter = converter(of(getLast(asList(of(Person.class).getCodes())), "title"));
-            SirenEntity actual = converter.convert(source);
+            SirenRepresentationModelConverter converter =
+                converter(of(getLast(asList(of(Person.class).getCodes())), expected.getTitle()));
+            SirenEntity actual = converter.to(source);
             assertThat(actual).isEqualTo(expected);
         }
+    }
 
+    @Nested
+    class From {
+
+        @Test
+        public void should_throw_exception_if_input_is_null() {
+            assertThrows(IllegalArgumentException.class, () -> defaultConverter().from(null));
+        }
+
+        @Test
+        public void should_return_output_containing_given_link() {
+            Link expectedLink = new Link("/persons/1", SELF);
+            RepresentationModel<?> expected = new RepresentationModel<>(expectedLink);
+            SirenLink sourceLink = SirenLink.builder().href(expectedLink.getHref()).rel(expectedLink.getRel().value()).build();
+            SirenEntity source = SirenEntity.builder().link(sourceLink).build();
+
+            SirenRepresentationModelConverter converter = defaultConverter();
+            RepresentationModel<?> actual = converter.from(source);
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
     private static SirenRepresentationModelConverter defaultConverter() {

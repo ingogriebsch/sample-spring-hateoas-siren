@@ -46,7 +46,7 @@ public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<
 
     @Override
     protected SirenEntity convert(RepresentationModel<?> model, SirenConfiguration sirenConfiguration) {
-        return converter.convert(model);
+        return converter.to(model);
     }
 
     @Override
