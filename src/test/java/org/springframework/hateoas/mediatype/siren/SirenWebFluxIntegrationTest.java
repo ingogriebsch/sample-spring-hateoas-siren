@@ -49,6 +49,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
+@Disabled
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration
