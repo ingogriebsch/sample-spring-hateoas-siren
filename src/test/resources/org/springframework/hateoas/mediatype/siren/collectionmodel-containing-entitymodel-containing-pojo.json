@@ -5,7 +5,6 @@
   },
   "entities" : [ {
     "class" : [ "person" ],
-    "rel" : [ "item" ],
     "properties" : {
       "name" : "Peter",
       "age" : 42

@@ -55,7 +55,7 @@ public class SirenEntity implements SirenEmbeddable {
 
     @JsonInclude(NON_EMPTY)
     @Singular
-    private List<SirenEmbeddable> entities;
+    private List<Object> entities;
 
     @JsonInclude(NON_EMPTY)
     @Singular
