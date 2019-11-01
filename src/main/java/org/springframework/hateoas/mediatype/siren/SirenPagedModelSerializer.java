@@ -19,39 +19,79 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static java.util.stream.Collectors.toList;
+
+import static com.google.common.collect.Lists.newArrayList;
+
+import java.io.IOException;
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
 
 public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedModel<?>> {
 
     private static final long serialVersionUID = 9054285190464802945L;
-    private final SirenPagedModelConverter converter;
 
-    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenPagedModelConverter converter) {
-        this(sirenConfiguration, converter, null);
+    private final SirenConfiguration sirenConfiguration;
+    private final SirenLinkConverter linkConverter;
+    private final SirenAffordanceModelConverter affordanceModelConverter;
+    private final MessageResolver messageResolver;
+
+    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, null);
     }
 
-    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenPagedModelConverter converter,
+    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
         BeanProperty property) {
         super(PagedModel.class, sirenConfiguration, property);
-        this.converter = converter;
+        this.sirenConfiguration = sirenConfiguration;
+        this.linkConverter = linkConverter;
+        this.affordanceModelConverter = affordanceModelConverter;
+        this.messageResolver = messageResolver;
     }
 
     @Override
-    protected SirenEntity convert(PagedModel<?> model, SirenConfiguration sirenConfiguration) {
-        return converter.convert(model);
+    public void serialize(PagedModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        SirenEntity sirenEntity = SirenEntity.builder() //
+            .classes(newArrayList("page")) //
+            .properties(model.getMetadata()) //
+            .entities(entities(model)) //
+            .links(linkConverter.to(model.getLinks())) //
+            .actions(affordanceModelConverter.convert(model.getLinks())) //
+            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
+            .build();
+
+        provider.findValueSerializer(SirenEntity.class, property).serialize(sirenEntity, gen, provider);
     }
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenPagedModelSerializer(sirenConfiguration, converter, property);
+        return new SirenPagedModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
+            property);
     }
 
+    private List<Object> entities(CollectionModel<?> model) {
+        return model.getContent().stream().map(c -> entity(c)).collect(toList());
+    }
+
+    private Object entity(Object embeddable) {
+        // if (!EntityModel.class.equals(embeddable.getClass())) {
+        // throw new IllegalArgumentException(String.format("Sub-entities must be of type '%s' [but is of type '%s']!",
+        // EntityModel.class.getName(), embeddable.getClass().getName()));
+        // }
+
+        return embeddable;
+    }
 }
