@@ -42,11 +42,6 @@ public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedMode
 
     private static final long serialVersionUID = 9054285190464802945L;
 
-    private final SirenConfiguration sirenConfiguration;
-    private final SirenLinkConverter linkConverter;
-    private final SirenAffordanceModelConverter affordanceModelConverter;
-    private final MessageResolver messageResolver;
-
     public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
         @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
         this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, null);
@@ -55,11 +50,7 @@ public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedMode
     public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
         @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
         BeanProperty property) {
-        super(PagedModel.class, sirenConfiguration, property);
-        this.sirenConfiguration = sirenConfiguration;
-        this.linkConverter = linkConverter;
-        this.affordanceModelConverter = affordanceModelConverter;
-        this.messageResolver = messageResolver;
+        super(PagedModel.class, sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, property);
     }
 
     @Override

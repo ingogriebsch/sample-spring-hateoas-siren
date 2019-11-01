@@ -51,8 +51,9 @@ public class SirenRepresentationModelDeserializer extends ContainerDeserializerB
     private final SirenAffordanceModelConverter affordanceModelConverter;
     private final MessageResolver messageResolver;
 
-    public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, SirenLinkConverter linkConverter,
-        SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
+    public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
+        @NonNull MessageResolver messageResolver) {
         this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
             TypeFactory.defaultInstance().constructType(RepresentationModel.class));
     }

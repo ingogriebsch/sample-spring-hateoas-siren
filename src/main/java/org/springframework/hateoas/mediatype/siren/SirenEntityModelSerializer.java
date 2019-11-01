@@ -39,11 +39,6 @@ public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityMo
 
     private static final long serialVersionUID = 2893716845519287714L;
 
-    private final SirenConfiguration sirenConfiguration;
-    private final SirenLinkConverter linkConverter;
-    private final SirenAffordanceModelConverter affordanceModelConverter;
-    private final MessageResolver messageResolver;
-
     public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
         @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
         this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, null);
@@ -52,11 +47,7 @@ public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityMo
     public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
         @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
         BeanProperty property) {
-        super(EntityModel.class, sirenConfiguration, property);
-        this.sirenConfiguration = sirenConfiguration;
-        this.linkConverter = linkConverter;
-        this.affordanceModelConverter = affordanceModelConverter;
-        this.messageResolver = messageResolver;
+        super(EntityModel.class, sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, property);
     }
 
     @Override

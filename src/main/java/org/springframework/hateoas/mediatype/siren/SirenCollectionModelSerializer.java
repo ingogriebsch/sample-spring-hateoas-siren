@@ -43,11 +43,6 @@ public class SirenCollectionModelSerializer extends AbstractSirenSerializer<Coll
 
     private static final long serialVersionUID = 9054285190464802945L;
 
-    private final SirenConfiguration sirenConfiguration;
-    private final SirenLinkConverter linkConverter;
-    private final SirenAffordanceModelConverter affordanceModelConverter;
-    private final MessageResolver messageResolver;
-
     public SirenCollectionModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
         @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
         @NonNull MessageResolver messageResolver) {
@@ -57,11 +52,7 @@ public class SirenCollectionModelSerializer extends AbstractSirenSerializer<Coll
     public SirenCollectionModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
         @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
         @NonNull MessageResolver messageResolver, BeanProperty property) {
-        super(CollectionModel.class, sirenConfiguration, property);
-        this.sirenConfiguration = sirenConfiguration;
-        this.linkConverter = linkConverter;
-        this.affordanceModelConverter = affordanceModelConverter;
-        this.messageResolver = messageResolver;
+        super(CollectionModel.class, sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, property);
     }
 
     @Override

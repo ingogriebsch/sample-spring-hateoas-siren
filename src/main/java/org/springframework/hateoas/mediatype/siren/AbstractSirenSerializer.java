@@ -19,18 +19,15 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContainerSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.MessageResolver;
 
 public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> extends ContainerSerializer<T>
     implements ContextualSerializer {
@@ -38,11 +35,18 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
     private static final long serialVersionUID = -8665900081601124431L;
 
     protected final SirenConfiguration sirenConfiguration;
+    protected final SirenLinkConverter linkConverter;
+    protected final SirenAffordanceModelConverter affordanceModelConverter;
+    protected final MessageResolver messageResolver;
     protected final BeanProperty property;
 
-    protected AbstractSirenSerializer(Class<?> type, SirenConfiguration sirenConfiguration, BeanProperty property) {
+    protected AbstractSirenSerializer(Class<?> type, SirenConfiguration sirenConfiguration, SirenLinkConverter linkConverter,
+        SirenAffordanceModelConverter affordanceModelConverter, MessageResolver messageResolver, BeanProperty property) {
         super(type, false);
         this.sirenConfiguration = sirenConfiguration;
+        this.linkConverter = linkConverter;
+        this.affordanceModelConverter = affordanceModelConverter;
+        this.messageResolver = messageResolver;
         this.property = property;
     }
 
@@ -62,17 +66,7 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
     }
 
     @Override
-    public void serialize(T value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        provider.findValueSerializer(SirenEntity.class, property).serialize(convert(value, sirenConfiguration), gen, provider);
-    }
-
-    @Override
     protected ContainerSerializer<?> _withValueTypeSerializer(TypeSerializer vts) {
-        return null;
-    }
-
-    @Deprecated
-    protected SirenEntity convert(T value, SirenConfiguration sirenConfiguration) {
         return null;
     }
 
