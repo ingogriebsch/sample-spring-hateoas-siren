@@ -38,7 +38,7 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
     private static final long serialVersionUID = -8665900081601124431L;
 
     protected final SirenConfiguration sirenConfiguration;
-    private final BeanProperty property;
+    protected final BeanProperty property;
 
     protected AbstractSirenSerializer(Class<?> type, SirenConfiguration sirenConfiguration, BeanProperty property) {
         super(type, false);
@@ -71,6 +71,9 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
         return null;
     }
 
-    protected abstract SirenEntity convert(T value, SirenConfiguration sirenConfiguration);
+    @Deprecated
+    protected SirenEntity convert(T value, SirenConfiguration sirenConfiguration) {
+        return null;
+    }
 
 }

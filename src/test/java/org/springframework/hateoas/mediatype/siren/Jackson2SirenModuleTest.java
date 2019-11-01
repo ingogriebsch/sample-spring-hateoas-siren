@@ -96,6 +96,16 @@ public class Jackson2SirenModuleTest {
             }
 
             @Test
+            public void containing_link_with_title() throws Exception {
+                Link link = new Link("/about", ABOUT).withTitle("about");
+                RepresentationModel<?> source = new RepresentationModel<>(link);
+                String expected = readResource("representationmodel-containing-link-with-title.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
             public void containing_links() throws Exception {
                 RepresentationModel<?> source = new RepresentationModel<>(
                     newArrayList(new Link("/about", ABOUT), new Link("/help", HELP), new Link("/license", LICENSE)));

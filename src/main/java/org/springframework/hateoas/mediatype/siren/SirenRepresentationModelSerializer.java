@@ -19,38 +19,59 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
 
 public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<RepresentationModel<?>> {
 
     private static final long serialVersionUID = 2893716845519287714L;
-    private final SirenRepresentationModelConverter converter;
+
+    private final SirenConfiguration sirenConfiguration;
+    private final SirenLinkConverter linkConverter;
+    private final SirenAffordanceModelConverter affordanceModelConverter;
+    private final MessageResolver messageResolver;
 
     public SirenRepresentationModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenRepresentationModelConverter converter) {
-        this(sirenConfiguration, converter, null);
+        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
+        @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, null);
     }
 
     public SirenRepresentationModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenRepresentationModelConverter converter, BeanProperty property) {
+        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
+        @NonNull MessageResolver messageResolver, BeanProperty property) {
         super(RepresentationModel.class, sirenConfiguration, property);
-        this.converter = converter;
+        this.sirenConfiguration = sirenConfiguration;
+        this.linkConverter = linkConverter;
+        this.affordanceModelConverter = affordanceModelConverter;
+        this.messageResolver = messageResolver;
     }
 
     @Override
-    protected SirenEntity convert(RepresentationModel<?> model, SirenConfiguration sirenConfiguration) {
-        return converter.to(model);
+    public void serialize(RepresentationModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        SirenEntity sirenEntity = SirenEntity.builder() //
+            .links(linkConverter.to(model.getLinks())) //
+            .actions(affordanceModelConverter.convert(model.getLinks())) //
+            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getClass()))) //
+            .build();
+
+        JsonSerializer<Object> serializer = provider.findValueSerializer(SirenEntity.class, property);
+        serializer.serialize(sirenEntity, gen, provider);
     }
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenRepresentationModelSerializer(sirenConfiguration, converter, property);
+        return new SirenRepresentationModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter,
+            messageResolver, property);
     }
 }
