@@ -32,8 +32,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.primitives.Primitives;
 
@@ -45,15 +43,9 @@ import org.springframework.hateoas.mediatype.PropertyUtils;
 
 import lombok.NonNull;
 
-public class SirenEntityModelDeserializer extends ContainerDeserializerBase<EntityModel<?>> implements ContextualDeserializer {
+public class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel<?>> {
 
     private static final long serialVersionUID = -3683235541542548855L;
-
-    private final SirenConfiguration sirenConfiguration;
-    private final SirenLinkConverter linkConverter;
-    private final SirenAffordanceModelConverter affordanceModelConverter;
-    private final MessageResolver messageResolver;
-    private final JavaType contentType;
 
     public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
         @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
@@ -64,21 +56,7 @@ public class SirenEntityModelDeserializer extends ContainerDeserializerBase<Enti
     public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
         @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
         @NonNull JavaType contentType) {
-        super(contentType);
-        this.sirenConfiguration = sirenConfiguration;
-        this.linkConverter = linkConverter;
-        this.affordanceModelConverter = affordanceModelConverter;
-        this.messageResolver = messageResolver;
-        this.contentType = contentType;
-    }
-
-    @Override
-    public EntityModel<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
-        JavaType targetType = JacksonHelper.findRootType(this.contentType);
-        Object content = content(sirenEntity, targetType.getRawClass());
-        List<Link> links = linkConverter.from(sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList());
-        return new EntityModel<>(content, links);
+        super(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, contentType);
     }
 
     @Override
@@ -89,13 +67,12 @@ public class SirenEntityModelDeserializer extends ContainerDeserializerBase<Enti
     }
 
     @Override
-    public JavaType getContentType() {
-        return contentType;
-    }
-
-    @Override
-    public JsonDeserializer<Object> getContentDeserializer() {
-        return null;
+    public EntityModel<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
+        JavaType targetType = JacksonHelper.findRootType(this.contentType);
+        Object content = content(sirenEntity, targetType.getRawClass());
+        List<Link> links = linkConverter.from(sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList());
+        return new EntityModel<>(content, links);
     }
 
     @SuppressWarnings("unchecked")
