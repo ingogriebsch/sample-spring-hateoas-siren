@@ -19,7 +19,11 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,9 +35,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.primitives.Primitives;
 
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mediatype.JacksonHelper;
+import org.springframework.hateoas.mediatype.MessageResolver;
+import org.springframework.hateoas.mediatype.PropertyUtils;
 
 import lombok.NonNull;
 
@@ -41,29 +49,43 @@ public class SirenEntityModelDeserializer extends ContainerDeserializerBase<Enti
 
     private static final long serialVersionUID = -3683235541542548855L;
 
-    private final SirenEntityModelConverter converter;
+    private final SirenConfiguration sirenConfiguration;
+    private final SirenLinkConverter linkConverter;
+    private final SirenAffordanceModelConverter affordanceModelConverter;
+    private final MessageResolver messageResolver;
     private final JavaType contentType;
 
-    public SirenEntityModelDeserializer(@NonNull SirenEntityModelConverter converter) {
-        this(converter, TypeFactory.defaultInstance().constructType(EntityModel.class));
+    public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
+            TypeFactory.defaultInstance().constructType(EntityModel.class));
     }
 
-    public SirenEntityModelDeserializer(@NonNull SirenEntityModelConverter converter, @NonNull JavaType contentType) {
+    public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
+        @NonNull JavaType contentType) {
         super(contentType);
-        this.converter = converter;
+        this.sirenConfiguration = sirenConfiguration;
+        this.linkConverter = linkConverter;
+        this.affordanceModelConverter = affordanceModelConverter;
+        this.messageResolver = messageResolver;
         this.contentType = contentType;
     }
 
     @Override
     public EntityModel<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
         JavaType targetType = JacksonHelper.findRootType(this.contentType);
-        return converter.from(p.getCodec().readValue(p, SirenEntity.class), targetType.getRawClass());
+        Object content = content(sirenEntity, targetType.getRawClass());
+        List<Link> links = linkConverter.from(sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList());
+        return new EntityModel<>(content, links);
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
         JavaType contentType = property == null ? ctxt.getContextualType() : property.getType().getContentType();
-        return new SirenEntityModelDeserializer(converter, contentType);
+        return new SirenEntityModelDeserializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
+            contentType);
     }
 
     @Override
@@ -76,4 +98,22 @@ public class SirenEntityModelDeserializer extends ContainerDeserializerBase<Enti
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    private <T> T content(SirenEntity entity, Class<T> targetType) {
+        Object properties = entity.getProperties();
+        if (properties == null) {
+            // FIXME
+        }
+
+        Class<? extends Object> propertiesType = properties.getClass();
+        if (String.class.equals(propertiesType) || Primitives.isWrapperType(propertiesType)) {
+            return (T) properties;
+        }
+
+        if (Map.class.isAssignableFrom(propertiesType)) {
+            return PropertyUtils.createObjectFromProperties(targetType, (Map<String, Object>) properties);
+        }
+
+        return (T) properties;
+    }
 }

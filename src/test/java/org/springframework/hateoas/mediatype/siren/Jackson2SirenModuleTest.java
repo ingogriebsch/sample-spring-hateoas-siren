@@ -151,6 +151,24 @@ public class Jackson2SirenModuleTest {
         class Entity {
 
             @Test
+            public void containing_string() throws Exception {
+                EntityModel<String> source = new EntityModel<>("Something");
+                String expected = readResource("entitymodel-containing-string.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_integer() throws Exception {
+                EntityModel<Integer> source = new EntityModel<>(42);
+                String expected = readResource("entitymodel-containing-integer.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
             public void containing_pojo() throws Exception {
                 EntityModel<Person> source = new EntityModel<>(new Person("Peter", 42));
                 String expected = readResource("entitymodel-containing-pojo.json");
@@ -167,6 +185,7 @@ public class Jackson2SirenModuleTest {
                 String actual = write(source);
                 assertThat(actual).isEqualTo(expected);
             }
+
         }
 
         @Nested
@@ -273,6 +292,26 @@ public class Jackson2SirenModuleTest {
 
         @Nested
         class Entity {
+
+            @Test
+            public void containing_string() throws Exception {
+                String source = readResource("entitymodel-containing-string.json");
+                JavaType expectedType = objectMapper.getTypeFactory().constructParametricType(EntityModel.class, String.class);
+                EntityModel<String> expected = new EntityModel<>("Something");
+
+                EntityModel<String> actual = read(source, expectedType);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_integer() throws Exception {
+                String source = readResource("entitymodel-containing-integer.json");
+                JavaType expectedType = objectMapper.getTypeFactory().constructParametricType(EntityModel.class, Integer.class);
+                EntityModel<Integer> expected = new EntityModel<>(42);
+
+                EntityModel<Person> actual = read(source, expectedType);
+                assertThat(actual).isEqualTo(expected);
+            }
 
             @Test
             public void containing_pojo() throws Exception {

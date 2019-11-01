@@ -19,39 +19,64 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.apache.commons.lang3.StringUtils.uncapitalize;
+
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
 
 public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityModel<?>> {
 
     private static final long serialVersionUID = 2893716845519287714L;
-    private final SirenEntityModelConverter converter;
 
-    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenEntityModelConverter converter) {
-        this(sirenConfiguration, converter, null);
+    private final SirenConfiguration sirenConfiguration;
+    private final SirenLinkConverter linkConverter;
+    private final SirenAffordanceModelConverter affordanceModelConverter;
+    private final MessageResolver messageResolver;
+
+    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, null);
     }
 
-    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenEntityModelConverter converter, BeanProperty property) {
+    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
+        BeanProperty property) {
         super(EntityModel.class, sirenConfiguration, property);
-        this.converter = converter;
+        this.sirenConfiguration = sirenConfiguration;
+        this.linkConverter = linkConverter;
+        this.affordanceModelConverter = affordanceModelConverter;
+        this.messageResolver = messageResolver;
     }
 
     @Override
-    protected SirenEntity convert(EntityModel<?> model, SirenConfiguration sirenConfiguration) {
-        return converter.to(model);
+    public void serialize(EntityModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        SirenEntity sirenEntity = SirenEntity.builder() //
+            .classes(newArrayList(uncapitalize(model.getContent().getClass().getSimpleName()))) //
+            .properties(model.getContent()) //
+            .links(linkConverter.to(model.getLinks())) //
+            .actions(affordanceModelConverter.convert(model.getLinks())) //
+            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
+            .build();
+
+        JsonSerializer<Object> serializer = provider.findValueSerializer(SirenEntity.class, property);
+        serializer.serialize(sirenEntity, gen, provider);
     }
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenEntityModelSerializer(sirenConfiguration, converter, property);
+        return new SirenEntityModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
+            property);
     }
 
 }
