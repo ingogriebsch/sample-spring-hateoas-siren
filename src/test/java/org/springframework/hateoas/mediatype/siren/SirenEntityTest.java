@@ -33,7 +33,7 @@ public class SirenEntityTest {
         public void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
             SirenEntity sirenEntity = SirenEntity.builder().build();
             assertThat(sirenEntity.getActions()).isEmpty();
-            assertThat(sirenEntity.getClasses()).isEmpty();
+            assertThat(sirenEntity.getClasses()).isNull();
             assertThat(sirenEntity.getEntities()).isEmpty();
             assertThat(sirenEntity.getLinks()).isEmpty();
             assertThat(sirenEntity.getProperties()).isNull();

@@ -43,7 +43,6 @@ public class SirenEntity implements SirenEmbeddable {
 
     @JsonInclude(NON_EMPTY)
     @JsonProperty("class")
-    @Singular
     private List<String> classes;
 
     @JsonInclude(NON_EMPTY)
