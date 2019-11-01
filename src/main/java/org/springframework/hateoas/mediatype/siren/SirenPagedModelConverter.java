@@ -68,7 +68,7 @@ public class SirenPagedModelConverter {
                 EntityModel.class.getName(), embeddable.getClass().getName()));
         }
 
-        return entityConverter.convert((EntityModel<?>) embeddable, newArrayList(ITEM));
+        return entityConverter.to((EntityModel<?>) embeddable, newArrayList(ITEM));
     }
 
     private static List<String> classes(PagedModel<?> model) {

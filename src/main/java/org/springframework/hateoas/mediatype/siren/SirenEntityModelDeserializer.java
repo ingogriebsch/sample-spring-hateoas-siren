@@ -32,39 +32,38 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.mediatype.JacksonHelper;
 
 import lombok.NonNull;
 
-public class SirenRepresentationModelDeserializer extends ContainerDeserializerBase<RepresentationModel<?>>
-    implements ContextualDeserializer {
+public class SirenEntityModelDeserializer extends ContainerDeserializerBase<EntityModel<?>> implements ContextualDeserializer {
 
     private static final long serialVersionUID = -3683235541542548855L;
 
-    private final SirenRepresentationModelConverter converter;
+    private final SirenEntityModelConverter converter;
     private final JavaType contentType;
 
-    public SirenRepresentationModelDeserializer(@NonNull SirenRepresentationModelConverter converter) {
-        this(converter, TypeFactory.defaultInstance().constructType(RepresentationModel.class));
+    public SirenEntityModelDeserializer(@NonNull SirenEntityModelConverter converter) {
+        this(converter, TypeFactory.defaultInstance().constructType(EntityModel.class));
     }
 
-    public SirenRepresentationModelDeserializer(@NonNull SirenRepresentationModelConverter converter,
-        @NonNull JavaType contentType) {
+    public SirenEntityModelDeserializer(@NonNull SirenEntityModelConverter converter, @NonNull JavaType contentType) {
         super(contentType);
         this.converter = converter;
         this.contentType = contentType;
     }
 
     @Override
-    public RepresentationModel<?> deserialize(JsonParser p, DeserializationContext ctxt)
-        throws IOException, JsonProcessingException {
-        return converter.from(p.getCodec().readValue(p, SirenEntity.class));
+    public EntityModel<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        JavaType targetType = JacksonHelper.findRootType(this.contentType);
+        return converter.from(p.getCodec().readValue(p, SirenEntity.class), targetType.getRawClass());
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
         JavaType contentType = property == null ? ctxt.getContextualType() : property.getType().getContentType();
-        return new SirenRepresentationModelDeserializer(converter, contentType);
+        return new SirenEntityModelDeserializer(converter, contentType);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityMo
 
     @Override
     protected SirenEntity convert(EntityModel<?> model, SirenConfiguration sirenConfiguration) {
-        return converter.convert(model);
+        return converter.to(model);
     }
 
     @Override

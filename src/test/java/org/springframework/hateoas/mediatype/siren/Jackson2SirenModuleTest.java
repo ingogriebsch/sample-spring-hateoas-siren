@@ -261,7 +261,6 @@ public class Jackson2SirenModuleTest {
             }
         }
 
-        @Disabled
         @Nested
         class Entity {
 

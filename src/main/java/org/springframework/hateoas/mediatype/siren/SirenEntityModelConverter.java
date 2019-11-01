@@ -23,10 +23,14 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
 
 import java.util.List;
+import java.util.Map;
+
+import com.google.common.primitives.Primitives;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.mediatype.MessageResolver;
+import org.springframework.hateoas.mediatype.PropertyUtils;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +45,8 @@ public class SirenEntityModelConverter {
     @NonNull
     private final MessageResolver messageResolver;
 
-    public SirenEntity convert(@NonNull EntityModel<?> model) {
-        return convert(model, new LinkRelationSupplier() {
+    public SirenEntity to(@NonNull EntityModel<?> model) {
+        return to(model, new LinkRelationSupplier() {
 
             @Override
             public List<LinkRelation> getRels() {
@@ -51,8 +55,8 @@ public class SirenEntityModelConverter {
         });
     }
 
-    public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull List<LinkRelation> rels) {
-        return convert(model, new LinkRelationSupplier() {
+    public SirenEntity to(@NonNull EntityModel<?> model, @NonNull List<LinkRelation> rels) {
+        return to(model, new LinkRelationSupplier() {
 
             @Override
             public List<LinkRelation> getRels() {
@@ -61,14 +65,38 @@ public class SirenEntityModelConverter {
         });
     }
 
-    public SirenEntity convert(@NonNull EntityModel<?> model, @NonNull LinkRelationSupplier linkRelationSupplier) {
+    public SirenEntity to(@NonNull EntityModel<?> model, @NonNull LinkRelationSupplier linkRelationSupplier) {
         return SirenEntity.builder().classes(classes(model)) //
             .rels(rels(model, linkRelationSupplier)) //
             .properties(properties(model)) //
-            .links(linkConverter.convert(model.getLinks())) //
+            .links(linkConverter.to(model.getLinks())) //
             .actions(affordanceModelConverter.convert(model.getLinks())) //
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
             .build();
+    }
+
+    public <T> EntityModel<T> from(@NonNull SirenEntity entity, @NonNull Class<T> targetType) {
+        return new EntityModel<>(content(entity, targetType),
+            linkConverter.from(entity.getLinks() != null ? entity.getLinks() : newArrayList()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T content(SirenEntity entity, Class<T> targetType) {
+        Object properties = entity.getProperties();
+        if (properties == null) {
+            // FIXME
+        }
+
+        Class<? extends Object> propertiesType = properties.getClass();
+        if (String.class.equals(propertiesType) || Primitives.isWrapperType(propertiesType)) {
+            return (T) properties;
+        }
+
+        if (Map.class.isAssignableFrom(propertiesType)) {
+            return PropertyUtils.createObjectFromProperties(targetType, (Map<String, Object>) properties);
+        }
+
+        return (T) properties;
     }
 
     private List<LinkRelation> rels(@NonNull EntityModel<?> model, LinkRelationSupplier linkRelationSupplier) {
@@ -88,4 +116,5 @@ public class SirenEntityModelConverter {
 
         List<LinkRelation> getRels();
     }
+
 }

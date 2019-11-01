@@ -49,6 +49,7 @@ public class Jackson2SirenModule extends SimpleModule {
     }
 
     @JsonSerialize(using = SirenEntityModelSerializer.class)
+    @JsonDeserialize(using = SirenEntityModelDeserializer.class)
     public abstract class EntityModelMixIn<T> extends EntityModel<T> {
     }
 

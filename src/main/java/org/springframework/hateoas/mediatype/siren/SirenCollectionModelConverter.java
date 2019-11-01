@@ -78,7 +78,7 @@ public class SirenCollectionModelConverter {
                 EntityModel.class.getName(), embeddable.getClass().getName()));
         }
 
-        return entityConverter.convert((EntityModel<?>) embeddable, newArrayList(ITEM));
+        return entityConverter.to((EntityModel<?>) embeddable, newArrayList(ITEM));
     }
 
 }
