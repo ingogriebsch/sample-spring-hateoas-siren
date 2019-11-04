@@ -40,13 +40,13 @@ import lombok.NonNull;
 
 public class SirenRepresentationModelDeserializer extends AbstractSirenDeserializer<RepresentationModel<?>> {
 
+    private static final JavaType TYPE = TypeFactory.defaultInstance().constructType(RepresentationModel.class);
     private static final long serialVersionUID = -3683235541542548855L;
 
     public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
         @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
         @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
-            TypeFactory.defaultInstance().constructType(RepresentationModel.class));
+        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, TYPE);
     }
 
     public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,

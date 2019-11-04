@@ -45,12 +45,12 @@ import lombok.NonNull;
 
 public class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel<?>> {
 
+    private static final JavaType TYPE = TypeFactory.defaultInstance().constructType(EntityModel.class);
     private static final long serialVersionUID = -3683235541542548855L;
 
     public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
         @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
-            TypeFactory.defaultInstance().constructType(EntityModel.class));
+        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, TYPE);
     }
 
     public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
