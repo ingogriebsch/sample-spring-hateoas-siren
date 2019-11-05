@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -201,6 +202,34 @@ public class Jackson2SirenModuleTest {
             }
 
             @Test
+            public void with_self_link() throws Exception {
+                CollectionModel<?> source = new CollectionModel<>(newArrayList(), new Link("/persons", SELF));
+                String expected = readResource("collectionmodel-with-self-link.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_pojo() throws Exception {
+                CollectionModel<Person> source = new CollectionModel<>(newArrayList(new Person("Peter", 42)));
+                String expected = readResource("collectionmodel-containing-pojo.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_pojo_and_self_link() throws Exception {
+                CollectionModel<Person> source =
+                    new CollectionModel<>(newArrayList(new Person("Peter", 42)), new Link("/persons", SELF));
+                String expected = readResource("collectionmodel-containing-pojo-and-self-link.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
             public void containing_entity_model_containing_pojo() throws Exception {
                 CollectionModel<?> source = new CollectionModel<>(newArrayList(new EntityModel<>(new Person("Peter", 42))));
                 String expected = readResource("collectionmodel-containing-entitymodel-containing-pojo.json");
@@ -334,23 +363,74 @@ public class Jackson2SirenModuleTest {
             }
         }
 
-        @Disabled
         @Nested
         class Collection {
 
             @Test
             public void without_content() throws Exception {
-                fail("Implement me... :)");
+                String source = readResource("collectionmodel-without-content.json");
+                CollectionModel<?> expected = new CollectionModel<>(newArrayList());
+
+                CollectionModel<?> actual = read(source, CollectionModel.class);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void with_self_link() throws Exception {
+                String source = readResource("collectionmodel-with-self-link.json");
+                CollectionModel<?> expected = new CollectionModel<>(newArrayList(), new Link("/persons", SELF));
+
+                CollectionModel<?> actual = read(source, CollectionModel.class);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_pojo() throws Exception {
+                String source = readResource("collectionmodel-containing-pojo.json");
+
+                CollectionModel<Person> expected = new CollectionModel<>(newArrayList(new Person("Peter", 42)));
+
+                CollectionModel<Person> actual = read(source, new TypeReference<CollectionModel<Person>>() {
+                });
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_pojo_and_self_link() throws Exception {
+                String source = readResource("collectionmodel-containing-pojo-and-self-link.json");
+
+                CollectionModel<Person> expected =
+                    new CollectionModel<>(newArrayList(new Person("Peter", 42)), new Link("/persons", SELF));
+
+                CollectionModel<Person> actual = read(source, new TypeReference<CollectionModel<Person>>() {
+                });
+                assertThat(actual).isEqualTo(expected);
             }
 
             @Test
             public void containing_entity_model_containing_pojo() throws Exception {
-                fail("Implement me... :)");
+                String source = readResource("collectionmodel-containing-entitymodel-containing-pojo.json");
+
+                EntityModel<Person> entityModel = new EntityModel<>(new Person("Peter", 42));
+                CollectionModel<EntityModel<Person>> expected = new CollectionModel<>(newArrayList(entityModel));
+
+                CollectionModel<EntityModel<Person>> actual =
+                    read(source, new TypeReference<CollectionModel<EntityModel<Person>>>() {
+                    });
+                assertThat(actual).isEqualTo(expected);
             }
 
             @Test
             public void containing_entity_model_containing_pojo_and_self_link() throws Exception {
-                fail("Implement me... :)");
+                String source = readResource("collectionmodel-containing-entitymodel-containing-pojo-and-self-link.json");
+
+                EntityModel<Person> entityModel = new EntityModel<>(new Person("Peter", 42), new Link("/persons/1", SELF));
+                CollectionModel<EntityModel<Person>> expected = new CollectionModel<>(newArrayList(entityModel));
+
+                CollectionModel<EntityModel<Person>> actual =
+                    read(source, new TypeReference<CollectionModel<EntityModel<Person>>>() {
+                    });
+                assertThat(actual).isEqualTo(expected);
             }
         }
 
@@ -379,6 +459,10 @@ public class Jackson2SirenModuleTest {
         Writer writer = new StringWriter();
         objectMapper.writeValue(writer, object);
         return writer.toString();
+    }
+
+    private static <T> T read(String str, TypeReference<T> type) throws Exception {
+        return objectMapper.readValue(str, type);
     }
 
     private static <T> T read(String str, JavaType type) throws Exception {

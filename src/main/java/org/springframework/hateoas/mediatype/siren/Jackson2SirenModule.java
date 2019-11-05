@@ -54,6 +54,7 @@ public class Jackson2SirenModule extends SimpleModule {
     }
 
     @JsonSerialize(using = SirenCollectionModelSerializer.class)
+    @JsonDeserialize(using = SirenCollectionModelDeserializer.class)
     abstract class CollectionModelMixIn<T> extends CollectionModel<T> {
     }
 

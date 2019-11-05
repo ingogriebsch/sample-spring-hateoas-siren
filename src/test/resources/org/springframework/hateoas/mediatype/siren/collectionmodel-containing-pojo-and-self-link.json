@@ -1,0 +1,14 @@
+{
+  "class" : [ "collection" ],
+  "properties" : {
+    "size" : 1
+  },
+  "entities" : [ {
+    "name" : "Peter",
+    "age" : 42
+  } ],
+  "links" : [ {
+    "rel" : [ "self" ],
+    "href" : "/persons"
+  } ]
+}
