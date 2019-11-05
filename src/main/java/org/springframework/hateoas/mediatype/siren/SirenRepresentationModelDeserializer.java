@@ -19,6 +19,7 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static com.fasterxml.jackson.databind.type.TypeFactory.defaultInstance;
 import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
@@ -31,7 +32,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
@@ -40,8 +40,8 @@ import lombok.NonNull;
 
 public class SirenRepresentationModelDeserializer extends AbstractSirenDeserializer<RepresentationModel<?>> {
 
-    private static final JavaType TYPE = TypeFactory.defaultInstance().constructType(RepresentationModel.class);
     private static final long serialVersionUID = -3683235541542548855L;
+    private static final JavaType TYPE = defaultInstance().constructType(RepresentationModel.class);
 
     public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
         @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
