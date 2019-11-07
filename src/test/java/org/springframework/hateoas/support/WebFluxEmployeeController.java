@@ -100,7 +100,7 @@ public class WebFluxEmployeeController {
 							.map(s -> resource.getContent().getName().contains(s)) //
 							.orElse(true);
 
-					boolean roleMatches = name.map(s -> resource.getContent().getRole().contains(s)) //
+					boolean roleMatches = role.map(s -> resource.getContent().getRole().contains(s)) //
 							.orElse(true);
 
 					return nameMatches && roleMatches;

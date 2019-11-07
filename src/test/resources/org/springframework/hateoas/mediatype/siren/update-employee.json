@@ -1,4 +1,7 @@
 {
-  "name" : "Bingo Bolger-Baggins",
-  "role" : "elf friend"
+  "class" : [ "employee" ],
+  "properties" : {
+    "name" : "Bingo Bolger-Baggins",
+    "role" : "elf friend"
+  }
 }

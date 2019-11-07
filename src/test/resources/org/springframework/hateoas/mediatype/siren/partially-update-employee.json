@@ -1,3 +1,6 @@
 {
-  "name" : "Bingo Baggins"
+  "class" : [ "employee" ],
+  "properties" : {
+    "name" : "Bingo Baggins"
+  }
 }
