@@ -5,5 +5,9 @@
     "totalElements" : 0,
     "totalPages" : 0,
     "number" : 0
-  }
+  },
+  "links" : [ {
+    "rel" : [ "self" ],
+    "href" : "/persons?page=0&size=20"
+  } ]
 }

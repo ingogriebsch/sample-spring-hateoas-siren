@@ -7,10 +7,7 @@
     "number" : 0
   },
   "entities" : [ {
-    "class" : [ "person" ],
-    "properties" : {
-      "name" : "Peter",
-      "age" : 42
-    }
+    "name" : "Peter",
+    "age" : 42
   } ]
 }

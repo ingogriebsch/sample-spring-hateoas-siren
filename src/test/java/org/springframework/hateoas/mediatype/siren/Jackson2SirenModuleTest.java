@@ -22,15 +22,16 @@ package org.springframework.hateoas.mediatype.siren;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.hateoas.IanaLinkRelations.ABOUT;
 import static org.springframework.hateoas.IanaLinkRelations.HELP;
 import static org.springframework.hateoas.IanaLinkRelations.LICENSE;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
+import static org.springframework.hateoas.UriTemplate.of;
 import static org.springframework.hateoas.mediatype.Affordances.of;
 import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.web.util.UriComponentsBuilder.fromUri;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -41,10 +42,11 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -57,6 +59,7 @@ import org.springframework.hateoas.server.core.AnnotationLinkRelationProvider;
 import org.springframework.hateoas.server.core.DefaultLinkRelationProvider;
 import org.springframework.hateoas.server.core.DelegatingLinkRelationProvider;
 import org.springframework.hateoas.support.MappingUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class Jackson2SirenModuleTest {
 
@@ -254,7 +257,7 @@ public class Jackson2SirenModuleTest {
 
             @Test
             public void without_content() throws Exception {
-                PagedModel<?> source = new PagedModel<>(newArrayList(), new PageMetadata(0, 0, 0));
+                PagedModel<?> source = new PagedModel<>(newArrayList(), new PageMetadata(20, 0, 0));
                 String expected = readResource("pagedmodel-without-content.json");
 
                 String actual = write(source);
@@ -262,9 +265,28 @@ public class Jackson2SirenModuleTest {
             }
 
             @Test
+            public void with_self_link() throws Exception {
+                PagedModel<?> source = new PagedModel<>(newArrayList(), new PageMetadata(20, 0, 0),
+                    enhance(new Link("/persons", SELF), PageRequest.of(0, 20)));
+                String expected = readResource("pagedmodel-with-self-link.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_pojo() throws Exception {
+                PagedModel<Person> source = new PagedModel<>(newArrayList(new Person("Peter", 42)), new PageMetadata(20, 0, 1));
+                String expected = readResource("pagedmodel-containing-pojo.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
             public void containing_entity_model_containing_pojo() throws Exception {
-                PagedModel<?> source =
-                    new PagedModel<>(newArrayList(new EntityModel<>(new Person("Peter", 42))), new PageMetadata(1, 0, 1));
+                EntityModel<Person> entityModel = new EntityModel<>(new Person("Peter", 42));
+                PagedModel<EntityModel<Person>> source = new PagedModel<>(newArrayList(entityModel), new PageMetadata(20, 0, 1));
                 String expected = readResource("pagedmodel-containing-entitymodel-containing-pojo.json");
 
                 String actual = write(source);
@@ -273,9 +295,8 @@ public class Jackson2SirenModuleTest {
 
             @Test
             public void containing_entity_model_containing_pojo_and_self_link() throws Exception {
-                PagedModel<?> source =
-                    new PagedModel<>(newArrayList(new EntityModel<>(new Person("Peter", 42), new Link("/persons/1", SELF))),
-                        new PageMetadata(1, 0, 1));
+                EntityModel<Person> entityModel = new EntityModel<>(new Person("Peter", 42), new Link("/persons/1", SELF));
+                PagedModel<EntityModel<Person>> source = new PagedModel<>(newArrayList(entityModel), new PageMetadata(20, 0, 1));
                 String expected = readResource("pagedmodel-containing-entitymodel-containing-pojo-and-self-link.json");
 
                 String actual = write(source);
@@ -387,7 +408,6 @@ public class Jackson2SirenModuleTest {
             @Test
             public void containing_pojo() throws Exception {
                 String source = readResource("collectionmodel-containing-pojo.json");
-
                 CollectionModel<Person> expected = new CollectionModel<>(newArrayList(new Person("Peter", 42)));
 
                 CollectionModel<Person> actual = read(source, new TypeReference<CollectionModel<Person>>() {
@@ -398,7 +418,6 @@ public class Jackson2SirenModuleTest {
             @Test
             public void containing_pojo_and_self_link() throws Exception {
                 String source = readResource("collectionmodel-containing-pojo-and-self-link.json");
-
                 CollectionModel<Person> expected =
                     new CollectionModel<>(newArrayList(new Person("Peter", 42)), new Link("/persons", SELF));
 
@@ -410,7 +429,6 @@ public class Jackson2SirenModuleTest {
             @Test
             public void containing_entity_model_containing_pojo() throws Exception {
                 String source = readResource("collectionmodel-containing-entitymodel-containing-pojo.json");
-
                 EntityModel<Person> entityModel = new EntityModel<>(new Person("Peter", 42));
                 CollectionModel<EntityModel<Person>> expected = new CollectionModel<>(newArrayList(entityModel));
 
@@ -423,7 +441,6 @@ public class Jackson2SirenModuleTest {
             @Test
             public void containing_entity_model_containing_pojo_and_self_link() throws Exception {
                 String source = readResource("collectionmodel-containing-entitymodel-containing-pojo-and-self-link.json");
-
                 EntityModel<Person> entityModel = new EntityModel<>(new Person("Peter", 42), new Link("/persons/1", SELF));
                 CollectionModel<EntityModel<Person>> expected = new CollectionModel<>(newArrayList(entityModel));
 
@@ -434,31 +451,66 @@ public class Jackson2SirenModuleTest {
             }
         }
 
-        @Disabled
         @Nested
         class Paged {
 
             @Test
             public void without_content() throws Exception {
-                fail("Implement me... :)");
+                String source = readResource("pagedmodel-without-content.json");
+                PagedModel<?> expected = new PagedModel<>(newArrayList(), new PageMetadata(20, 0, 0));
+
+                PagedModel<?> actual = read(source, PagedModel.class);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void with_self_link() throws Exception {
+                String source = readResource("pagedmodel-with-self-link.json");
+                PagedModel<?> expected = new PagedModel<>(newArrayList(), new PageMetadata(20, 0, 0),
+                    enhance(new Link("/persons", SELF), PageRequest.of(0, 20)));
+
+                PagedModel<?> actual = read(source, PagedModel.class);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            public void containing_pojo() throws Exception {
+                String source = readResource("pagedmodel-containing-pojo.json");
+                PagedModel<Person> expected = new PagedModel<>(newArrayList(new Person("Peter", 42)), new PageMetadata(20, 0, 1));
+
+                PagedModel<Person> actual = read(source, new TypeReference<PagedModel<Person>>() {
+                });
+                assertThat(actual).isEqualTo(expected);
             }
 
             @Test
             public void containing_entity_model_containing_pojo() throws Exception {
-                fail("Implement me... :)");
+                String source = readResource("pagedmodel-containing-entitymodel-containing-pojo.json");
+                EntityModel<Person> entityModel = new EntityModel<>(new Person("Peter", 42));
+                PagedModel<EntityModel<Person>> expected =
+                    new PagedModel<>(newArrayList(entityModel), new PageMetadata(20, 0, 1));
+
+                PagedModel<EntityModel<Person>> actual = read(source, new TypeReference<PagedModel<EntityModel<Person>>>() {
+                });
+                assertThat(actual).isEqualTo(expected);
             }
 
             @Test
             public void containing_entity_model_containing_pojo_and_self_link() throws Exception {
-                fail("Implement me... :)");
+                String source = readResource("pagedmodel-containing-entitymodel-containing-pojo-and-self-link.json");
+                EntityModel<Person> entityModel = new EntityModel<>(new Person("Peter", 42), new Link("/persons/1", SELF));
+                CollectionModel<EntityModel<Person>> expected = new CollectionModel<>(newArrayList(entityModel));
+
+                CollectionModel<EntityModel<Person>> actual =
+                    read(source, new TypeReference<CollectionModel<EntityModel<Person>>>() {
+                    });
+                assertThat(actual).isEqualTo(expected);
             }
         }
     }
 
-    private static String write(Object object) throws Exception {
-        Writer writer = new StringWriter();
-        objectMapper.writeValue(writer, object);
-        return writer.toString();
+    private String readResource(String sourceFilename) throws IOException {
+        return MappingUtils.read(new ClassPathResource(sourceFilename, getClass()));
     }
 
     private static <T> T read(String str, TypeReference<T> type) throws Exception {
@@ -473,7 +525,15 @@ public class Jackson2SirenModuleTest {
         return objectMapper.readValue(str, type);
     }
 
-    private String readResource(String sourceFilename) throws IOException {
-        return MappingUtils.read(new ClassPathResource(sourceFilename, getClass()));
+    private static String write(Object object) throws Exception {
+        Writer writer = new StringWriter();
+        objectMapper.writeValue(writer, object);
+        return writer.toString();
+    }
+
+    private static Link enhance(Link link, PageRequest pageable) {
+        UriComponentsBuilder builder = fromUri(link.getTemplate().expand());
+        new HateoasPageableHandlerMethodArgumentResolver().enhance(builder, null, pageable);
+        return new Link(of(builder.build().toString()), SELF);
     }
 }

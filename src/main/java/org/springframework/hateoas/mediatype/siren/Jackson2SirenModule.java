@@ -59,6 +59,7 @@ public class Jackson2SirenModule extends SimpleModule {
     }
 
     @JsonSerialize(using = SirenPagedModelSerializer.class)
+    @JsonDeserialize(using = SirenPagedModelDeserializer.class)
     public abstract class PagedModelMixIn<T> extends PagedModel<T> {
     }
 
