@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
@@ -44,30 +45,31 @@ public class SirenRepresentationModelDeserializer extends AbstractSirenDeseriali
     private static final JavaType TYPE = defaultInstance().constructType(RepresentationModel.class);
 
     public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
-        @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, TYPE);
+        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, messageResolver, TYPE);
     }
 
     public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
-        @NonNull MessageResolver messageResolver, @NonNull JavaType contentType) {
-        super(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, contentType);
+        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver, @NonNull JavaType contentType) {
+        super(sirenConfiguration, linkConverter, messageResolver, contentType);
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
         JavaType contentType = property == null ? ctxt.getContextualType() : property.getType().getContentType();
-        return new SirenRepresentationModelDeserializer(sirenConfiguration, linkConverter, affordanceModelConverter,
-            messageResolver, contentType);
+        return new SirenRepresentationModelDeserializer(sirenConfiguration, linkConverter, messageResolver, contentType);
     }
 
     @Override
     public RepresentationModel<?> deserialize(JsonParser p, DeserializationContext ctxt)
         throws IOException, JsonProcessingException {
-        SirenEntity entity = p.getCodec().readValue(p, SirenEntity.class);
-        List<SirenLink> links = entity.getLinks();
-        return new RepresentationModel<>(linkConverter.from(links != null ? links : newArrayList()));
+        SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
+
+        List<SirenLink> sirenLinks = sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList();
+        List<SirenAction> sirenActions = sirenEntity.getActions() != null ? sirenEntity.getActions() : newArrayList();
+
+        List<Link> links = linkConverter.from(SirenNavigables.of(sirenLinks, sirenActions));
+        return new RepresentationModel<>(links);
     }
 
 }

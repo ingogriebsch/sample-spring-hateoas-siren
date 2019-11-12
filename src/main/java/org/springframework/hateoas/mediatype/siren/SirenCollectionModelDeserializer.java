@@ -47,20 +47,18 @@ public class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<
     private static final JavaType TYPE = defaultInstance().constructType(CollectionModel.class);
 
     public SirenCollectionModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
-        @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, TYPE);
+        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, messageResolver, TYPE);
     }
 
     public SirenCollectionModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
-        @NonNull MessageResolver messageResolver, JavaType contentType) {
-        super(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, contentType);
+        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver, JavaType contentType) {
+        super(sirenConfiguration, linkConverter, messageResolver, contentType);
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
-        return new SirenCollectionModelDeserializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
+        return new SirenCollectionModelDeserializer(sirenConfiguration, linkConverter, messageResolver,
             property == null ? ctxt.getContextualType() : property.getType().getContentType());
     }
 
@@ -68,7 +66,8 @@ public class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<
     public CollectionModel<?> deserialize(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException {
         List<Object> content = null;
-        List<Link> links = null;
+        List<SirenLink> sirenLinks = newArrayList();
+        List<SirenAction> sirenActions = newArrayList();
 
         while (jp.nextToken() != null) {
             if (JsonToken.FIELD_NAME.equals(jp.currentToken())) {
@@ -77,12 +76,18 @@ public class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<
                 }
 
                 if ("links".equals(jp.getText())) {
-                    links = deserializeLinks(jp, ctxt);
+                    sirenLinks = deserializeLinks(jp, ctxt);
+                }
+
+                if ("actions".equals(jp.getText())) {
+                    sirenActions = deserializeActions(jp, ctxt);
                 }
             }
         }
 
-        return new CollectionModel<>(content != null ? content : newArrayList(), links != null ? links : newArrayList());
+        content = content != null ? content : newArrayList();
+        List<Link> links = linkConverter.from(SirenNavigables.of(sirenLinks, sirenActions));
+        return new CollectionModel<>(content, links);
     }
 
     private List<Object> deserializeContent(JsonParser jp, DeserializationContext ctxt) throws IOException {
@@ -105,7 +110,7 @@ public class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<
         return content;
     }
 
-    private List<Link> deserializeLinks(JsonParser jp, DeserializationContext ctxt) throws IOException {
+    private List<SirenLink> deserializeLinks(JsonParser jp, DeserializationContext ctxt) throws IOException {
         JsonDeserializer<Object> deserializer =
             ctxt.findContextualValueDeserializer(defaultInstance().constructType(SirenLink.class), null);
         if (deserializer == null) {
@@ -118,6 +123,24 @@ public class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<
                 links.add((SirenLink) deserializer.deserialize(jp, ctxt));
             }
         }
-        return linkConverter.from(links);
+
+        return links;
+    }
+
+    private List<SirenAction> deserializeActions(JsonParser jp, DeserializationContext ctxt) throws IOException {
+        JsonDeserializer<Object> deserializer =
+            ctxt.findContextualValueDeserializer(defaultInstance().constructType(SirenAction.class), null);
+        if (deserializer == null) {
+            // FIXME
+        }
+
+        List<SirenAction> actions = newArrayList();
+        if (JsonToken.START_ARRAY.equals(jp.nextToken())) {
+            while (!JsonToken.END_ARRAY.equals(jp.nextToken())) {
+                actions.add((SirenAction) deserializer.deserialize(jp, ctxt));
+            }
+        }
+
+        return actions;
     }
 }

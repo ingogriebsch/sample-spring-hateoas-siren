@@ -48,19 +48,18 @@ public class SirenPagedModelDeserializer extends AbstractSirenDeserializer<Paged
     private static final JavaType TYPE = defaultInstance().constructType(PagedModel.class);
 
     public SirenPagedModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, TYPE);
+        @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, messageResolver, TYPE);
     }
 
     public SirenPagedModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
-        JavaType contentType) {
-        super(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, contentType);
+        @NonNull MessageResolver messageResolver, JavaType contentType) {
+        super(sirenConfiguration, linkConverter, messageResolver, contentType);
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
-        return new SirenPagedModelDeserializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
+        return new SirenPagedModelDeserializer(sirenConfiguration, linkConverter, messageResolver,
             property == null ? ctxt.getContextualType() : property.getType().getContentType());
     }
 
@@ -68,7 +67,8 @@ public class SirenPagedModelDeserializer extends AbstractSirenDeserializer<Paged
     public PagedModel<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         List<Object> content = null;
         PageMetadata pageMetadata = null;
-        List<Link> links = null;
+        List<SirenLink> sirenLinks = newArrayList();
+        List<SirenAction> sirenActions = newArrayList();
 
         while (jp.nextToken() != null) {
             if (JsonToken.FIELD_NAME.equals(jp.currentToken())) {
@@ -81,13 +81,17 @@ public class SirenPagedModelDeserializer extends AbstractSirenDeserializer<Paged
                 }
 
                 if ("links".equals(jp.getText())) {
-                    links = deserializeLinks(jp, ctxt);
+                    sirenLinks = deserializeLinks(jp, ctxt);
+                }
+
+                if ("actions".equals(jp.getText())) {
+                    sirenActions = deserializeActions(jp, ctxt);
                 }
             }
         }
 
         content = content != null ? content : newArrayList();
-        links = links != null ? links : newArrayList();
+        List<Link> links = linkConverter.from(SirenNavigables.of(sirenLinks, sirenActions));
         return new PagedModel<>(content, pageMetadata, links);
     }
 
@@ -126,7 +130,7 @@ public class SirenPagedModelDeserializer extends AbstractSirenDeserializer<Paged
         return (PageMetadata) deserializer.deserialize(jp, ctxt);
     }
 
-    private List<Link> deserializeLinks(JsonParser jp, DeserializationContext ctxt) throws IOException {
+    private List<SirenLink> deserializeLinks(JsonParser jp, DeserializationContext ctxt) throws IOException {
         JsonDeserializer<Object> deserializer =
             ctxt.findContextualValueDeserializer(defaultInstance().constructType(SirenLink.class), null);
         if (deserializer == null) {
@@ -139,6 +143,24 @@ public class SirenPagedModelDeserializer extends AbstractSirenDeserializer<Paged
                 links.add((SirenLink) deserializer.deserialize(jp, ctxt));
             }
         }
-        return linkConverter.from(links);
+
+        return links;
+    }
+
+    private List<SirenAction> deserializeActions(JsonParser jp, DeserializationContext ctxt) throws IOException {
+        JsonDeserializer<Object> deserializer =
+            ctxt.findContextualValueDeserializer(defaultInstance().constructType(SirenAction.class), null);
+        if (deserializer == null) {
+            // FIXME
+        }
+
+        List<SirenAction> actions = newArrayList();
+        if (JsonToken.START_ARRAY.equals(jp.nextToken())) {
+            while (!JsonToken.END_ARRAY.equals(jp.nextToken())) {
+                actions.add((SirenAction) deserializer.deserialize(jp, ctxt));
+            }
+        }
+
+        return actions;
     }
 }

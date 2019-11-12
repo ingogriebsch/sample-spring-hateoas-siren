@@ -36,16 +36,14 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
 
     protected final SirenConfiguration sirenConfiguration;
     protected final SirenLinkConverter linkConverter;
-    protected final SirenAffordanceModelConverter affordanceModelConverter;
     protected final MessageResolver messageResolver;
     protected final BeanProperty property;
 
     protected AbstractSirenSerializer(Class<?> type, SirenConfiguration sirenConfiguration, SirenLinkConverter linkConverter,
-        SirenAffordanceModelConverter affordanceModelConverter, MessageResolver messageResolver, BeanProperty property) {
+        MessageResolver messageResolver, BeanProperty property) {
         super(type, false);
         this.sirenConfiguration = sirenConfiguration;
         this.linkConverter = linkConverter;
-        this.affordanceModelConverter = affordanceModelConverter;
         this.messageResolver = messageResolver;
         this.property = property;
     }

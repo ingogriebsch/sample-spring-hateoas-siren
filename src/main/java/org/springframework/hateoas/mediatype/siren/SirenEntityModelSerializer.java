@@ -40,23 +40,24 @@ public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityMo
     private static final long serialVersionUID = 2893716845519287714L;
 
     public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, null);
+        @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, messageResolver, null);
     }
 
     public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
-        BeanProperty property) {
-        super(EntityModel.class, sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, property);
+        @NonNull MessageResolver messageResolver, BeanProperty property) {
+        super(EntityModel.class, sirenConfiguration, linkConverter, messageResolver, property);
     }
 
     @Override
     public void serialize(EntityModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        SirenNavigables navigables = linkConverter.to(model.getLinks());
+
         SirenEntity sirenEntity = SirenEntity.builder() //
             .classes(newArrayList(uncapitalize(model.getContent().getClass().getSimpleName()))) //
             .properties(model.getContent()) //
-            .links(linkConverter.to(model.getLinks())) //
-            .actions(affordanceModelConverter.convert(model.getLinks())) //
+            .links(navigables.getLinks()) //
+            .actions(navigables.getActions()) //
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
             .build();
 
@@ -66,8 +67,7 @@ public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityMo
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenEntityModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
-            property);
+        return new SirenEntityModelSerializer(sirenConfiguration, linkConverter, messageResolver, property);
     }
 
 }

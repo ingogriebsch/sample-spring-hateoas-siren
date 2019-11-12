@@ -34,16 +34,14 @@ public abstract class AbstractSirenDeserializer<T extends RepresentationModel<?>
 
     protected final SirenConfiguration sirenConfiguration;
     protected final SirenLinkConverter linkConverter;
-    protected final SirenAffordanceModelConverter affordanceModelConverter;
     protected final MessageResolver messageResolver;
     protected final JavaType contentType;
 
     protected AbstractSirenDeserializer(SirenConfiguration sirenConfiguration, SirenLinkConverter linkConverter,
-        SirenAffordanceModelConverter affordanceModelConverter, MessageResolver messageResolver, JavaType contentType) {
+        MessageResolver messageResolver, JavaType contentType) {
         super(contentType);
         this.sirenConfiguration = sirenConfiguration;
         this.linkConverter = linkConverter;
-        this.affordanceModelConverter = affordanceModelConverter;
         this.messageResolver = messageResolver;
         this.contentType = contentType;
     }

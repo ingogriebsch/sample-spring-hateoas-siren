@@ -55,29 +55,27 @@ public class SirenHandlerInstantiator extends HandlerInstantiator {
     public SirenHandlerInstantiator(@NonNull SirenConfiguration sirenConfiguration,
         @NonNull LinkRelationProvider linkRelationProvider, @NonNull MessageResolver messageResolver,
         AutowireCapableBeanFactory beanFactory) {
-        SirenLinkConverter linkConverter = new SirenLinkConverter(sirenConfiguration, messageResolver);
-        SirenAffordanceModelConverter affordanceModelConverter =
-            new SirenAffordanceModelConverter(sirenConfiguration, messageResolver);
+        SirenLinkConverter linkConverter = new SirenLinkConverter(messageResolver);
 
         serializers.put(SirenRepresentationModelSerializer.class,
-            new SirenRepresentationModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver));
-        serializers.put(SirenRepresentationModelDeserializer.class, new SirenRepresentationModelDeserializer(sirenConfiguration,
-            linkConverter, affordanceModelConverter, messageResolver));
+            new SirenRepresentationModelSerializer(sirenConfiguration, linkConverter, messageResolver));
+        serializers.put(SirenRepresentationModelDeserializer.class,
+            new SirenRepresentationModelDeserializer(sirenConfiguration, linkConverter, messageResolver));
 
         serializers.put(SirenEntityModelSerializer.class,
-            new SirenEntityModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver));
+            new SirenEntityModelSerializer(sirenConfiguration, linkConverter, messageResolver));
         serializers.put(SirenEntityModelDeserializer.class,
-            new SirenEntityModelDeserializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver));
+            new SirenEntityModelDeserializer(sirenConfiguration, linkConverter, messageResolver));
 
         serializers.put(SirenCollectionModelSerializer.class,
-            new SirenCollectionModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver));
+            new SirenCollectionModelSerializer(sirenConfiguration, linkConverter, messageResolver));
         serializers.put(SirenCollectionModelDeserializer.class,
-            new SirenCollectionModelDeserializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver));
+            new SirenCollectionModelDeserializer(sirenConfiguration, linkConverter, messageResolver));
 
         serializers.put(SirenPagedModelSerializer.class,
-            new SirenPagedModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver));
+            new SirenPagedModelSerializer(sirenConfiguration, linkConverter, messageResolver));
         serializers.put(SirenPagedModelDeserializer.class,
-            new SirenPagedModelDeserializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver));
+            new SirenPagedModelDeserializer(sirenConfiguration, linkConverter, messageResolver));
 
         this.beanFactory = beanFactory;
     }

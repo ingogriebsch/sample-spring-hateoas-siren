@@ -49,34 +49,38 @@ public class SirenEntityModelDeserializer extends AbstractSirenDeserializer<Enti
     private static final JavaType TYPE = defaultInstance().constructType(EntityModel.class);
 
     public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, TYPE);
+        @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, messageResolver, TYPE);
     }
 
     public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
-        @NonNull JavaType contentType) {
-        super(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, contentType);
+        @NonNull MessageResolver messageResolver, @NonNull JavaType contentType) {
+        super(sirenConfiguration, linkConverter, messageResolver, contentType);
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
         JavaType contentType = property == null ? ctxt.getContextualType() : property.getType().getContentType();
-        return new SirenEntityModelDeserializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
-            contentType);
+        return new SirenEntityModelDeserializer(sirenConfiguration, linkConverter, messageResolver, contentType);
     }
 
     @Override
     public EntityModel<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
         JavaType targetType = JacksonHelper.findRootType(this.contentType);
+
+        SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
         Object content = content(sirenEntity, targetType.getRawClass());
-        List<Link> links = linkConverter.from(sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList());
+
+        List<SirenLink> sirenLinks = sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList();
+        List<SirenAction> sirenActions = sirenEntity.getActions() != null ? sirenEntity.getActions() : newArrayList();
+
+        List<Link> links = linkConverter.from(SirenNavigables.of(sirenLinks, sirenActions));
+
         return new EntityModel<>(content, links);
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T content(SirenEntity entity, Class<T> targetType) {
+    private static <T> T content(SirenEntity entity, Class<T> targetType) {
         Object properties = entity.getProperties();
         if (properties == null) {
             // FIXME

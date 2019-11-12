@@ -43,24 +43,25 @@ public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedMode
     private static final long serialVersionUID = 9054285190464802945L;
 
     public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, null);
+        @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, messageResolver, null);
     }
 
     public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull SirenAffordanceModelConverter affordanceModelConverter, @NonNull MessageResolver messageResolver,
-        BeanProperty property) {
-        super(PagedModel.class, sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, property);
+        @NonNull MessageResolver messageResolver, BeanProperty property) {
+        super(PagedModel.class, sirenConfiguration, linkConverter, messageResolver, property);
     }
 
     @Override
     public void serialize(PagedModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        SirenNavigables navigables = linkConverter.to(model.getLinks());
+
         SirenEntity sirenEntity = SirenEntity.builder() //
             .classes(newArrayList("page")) //
             .properties(model.getMetadata()) //
             .entities(entities(model)) //
-            .links(linkConverter.to(model.getLinks())) //
-            .actions(affordanceModelConverter.convert(model.getLinks())) //
+            .links(navigables.getLinks()) //
+            .actions(navigables.getActions()) //
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
             .build();
 
@@ -69,20 +70,14 @@ public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedMode
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenPagedModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver,
-            property);
+        return new SirenPagedModelSerializer(sirenConfiguration, linkConverter, messageResolver, property);
     }
 
-    private List<Object> entities(CollectionModel<?> model) {
+    private static List<Object> entities(CollectionModel<?> model) {
         return model.getContent().stream().map(c -> entity(c)).collect(toList());
     }
 
-    private Object entity(Object embeddable) {
-        // if (!EntityModel.class.equals(embeddable.getClass())) {
-        // throw new IllegalArgumentException(String.format("Sub-entities must be of type '%s' [but is of type '%s']!",
-        // EntityModel.class.getName(), embeddable.getClass().getName()));
-        // }
-
+    private static Object entity(Object embeddable) {
         return embeddable;
     }
 }

@@ -37,22 +37,22 @@ public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<
     private static final long serialVersionUID = 2893716845519287714L;
 
     public SirenRepresentationModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
-        @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, null);
+        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, linkConverter, messageResolver, null);
     }
 
     public SirenRepresentationModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull SirenAffordanceModelConverter affordanceModelConverter,
-        @NonNull MessageResolver messageResolver, BeanProperty property) {
-        super(RepresentationModel.class, sirenConfiguration, linkConverter, affordanceModelConverter, messageResolver, property);
+        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver, BeanProperty property) {
+        super(RepresentationModel.class, sirenConfiguration, linkConverter, messageResolver, property);
     }
 
     @Override
     public void serialize(RepresentationModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        SirenNavigables navigables = linkConverter.to(model.getLinks());
+
         SirenEntity sirenEntity = SirenEntity.builder() //
-            .links(linkConverter.to(model.getLinks())) //
-            .actions(affordanceModelConverter.convert(model.getLinks())) //
+            .links(navigables.getLinks()) //
+            .actions(navigables.getActions()) //
             .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getClass()))) //
             .build();
 
@@ -62,7 +62,6 @@ public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenRepresentationModelSerializer(sirenConfiguration, linkConverter, affordanceModelConverter,
-            messageResolver, property);
+        return new SirenRepresentationModelSerializer(sirenConfiguration, linkConverter, messageResolver, property);
     }
 }
