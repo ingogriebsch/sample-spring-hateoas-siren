@@ -84,7 +84,7 @@ public class SirenActionTest {
             @Test
             public void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
                 SirenAction.Field field = SirenAction.Field.builder().name("name").build();
-                assertThat(field.getClasses()).isEmpty();
+                assertThat(field.getClasses()).isNull();
                 assertThat(field.getTitle()).isNull();
                 assertThat(field.getType()).isEqualTo(text);
                 assertThat(field.getValue()).isNull();

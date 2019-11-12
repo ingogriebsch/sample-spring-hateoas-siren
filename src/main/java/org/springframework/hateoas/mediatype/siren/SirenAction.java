@@ -79,7 +79,6 @@ public class SirenAction {
 
         @JsonInclude(NON_EMPTY)
         @JsonProperty("class")
-        @Singular
         private List<String> classes;
 
         @Default
