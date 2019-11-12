@@ -5,6 +5,6 @@
   },
   "links" : [ {
     "rel" : [ "self" ],
-    "href" : "/persons"
+    "href" : "/employees"
   } ]
 }

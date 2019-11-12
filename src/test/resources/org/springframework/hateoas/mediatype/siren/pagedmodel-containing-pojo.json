@@ -8,6 +8,6 @@
   },
   "entities" : [ {
     "name" : "Peter",
-    "age" : 42
+    "role" : "Carpenter"
   } ]
 }

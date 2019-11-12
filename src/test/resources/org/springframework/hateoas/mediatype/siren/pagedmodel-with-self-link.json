@@ -8,6 +8,6 @@
   },
   "links" : [ {
     "rel" : [ "self" ],
-    "href" : "/persons?page=0&size=20"
+    "href" : "/employees?page=0&size=20"
   } ]
 }

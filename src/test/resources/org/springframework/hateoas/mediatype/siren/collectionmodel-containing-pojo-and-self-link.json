@@ -5,10 +5,10 @@
   },
   "entities" : [ {
     "name" : "Peter",
-    "age" : 42
+    "role" : "Carpenter"
   } ],
   "links" : [ {
     "rel" : [ "self" ],
-    "href" : "/persons"
+    "href" : "/employees"
   } ]
 }

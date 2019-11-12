@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.hateoas.support.Employee;
 
 public class SirenEntityTest {
 
@@ -47,9 +48,9 @@ public class SirenEntityTest {
 
         @Test
         public void should_return_codes_respecting_given_name() {
-            SirenEntity.TitleResolvable titleResolvable = SirenEntity.TitleResolvable.of(Person.class);
-            assertThat(titleResolvable.getCodes()).containsExactly("_entity." + Person.class.getName() + ".title",
-                "_entity." + Person.class.getSimpleName() + ".title", "_entity.default.title");
+            SirenEntity.TitleResolvable titleResolvable = SirenEntity.TitleResolvable.of(Employee.class);
+            assertThat(titleResolvable.getCodes()).containsExactly("_entity." + Employee.class.getName() + ".title",
+                "_entity." + Employee.class.getSimpleName() + ".title", "_entity.default.title");
         }
     }
 
