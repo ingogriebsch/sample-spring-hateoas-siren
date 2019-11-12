@@ -52,7 +52,7 @@ public class SirenActionTest {
         @Test
         public void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
             SirenAction action = SirenAction.builder().name("name").href("/api").build();
-            assertThat(action.getClasses()).isEmpty();
+            assertThat(action.getClasses()).isNull();
             assertThat(action.getFields()).isEmpty();
             assertThat(action.getHref()).isNotNull();
             assertThat(action.getTitle()).isNull();
