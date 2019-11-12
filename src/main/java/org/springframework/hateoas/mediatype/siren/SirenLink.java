@@ -48,7 +48,6 @@ public class SirenLink implements SirenEmbeddable {
 
     @JsonInclude(NON_EMPTY)
     @JsonProperty("class")
-    @Singular
     private List<String> classes;
 
     @NonNull
