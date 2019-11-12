@@ -19,25 +19,5 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
-@AllArgsConstructor
-@Data
-@NoArgsConstructor
 public class SirenConfiguration {
-
-    @NonNull
-    private RenderTemplatedLinks renderTemplatedLinks = RenderTemplatedLinks.AS_ACTION;
-
-    public boolean shouldRenderTemplatedLinksAs(@NonNull RenderTemplatedLinks renderTemplatedLinks) {
-        return this.renderTemplatedLinks.equals(renderTemplatedLinks);
-    }
-
-    public static enum RenderTemplatedLinks {
-            AS_LINK, AS_ACTION
-    }
-
 }
