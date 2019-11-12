@@ -66,8 +66,12 @@ public class SirenAffordanceModelConverter {
     }
 
     private SirenAction convert(Link link) {
-        return SirenAction.builder().name(link.getName()).href(link.getHref()).title(actionTitle(link.getName()))
-            .fields(fields(link.getTemplate().getVariables())).build();
+        return SirenAction.builder() //
+            .name(link.getName()) //
+            .href(link.getHref()) //
+            .title(actionTitle(link.getName())) //
+            .fields(fields(link.getTemplate().getVariables())) //
+            .build();
     }
 
     private SirenAction convert(SirenAffordanceModel model) {
