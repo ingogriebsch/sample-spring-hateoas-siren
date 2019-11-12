@@ -19,31 +19,47 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.hateoas.IanaLinkRelations.SELF;
-import static org.springframework.hateoas.UriTemplate.of;
 import static org.springframework.hateoas.mediatype.MessageResolver.DEFAULTS_ONLY;
-import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_ACTION;
-import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_LINK;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mediatype.StaticMessageResolver;
+import org.springframework.hateoas.support.MappingUtils;
+import org.springframework.hateoas.support.WebMvcEmployeeController;
 
 public class SirenLinkConverterTest {
+
+    private static ObjectMapper objectMapper;
+
+    @BeforeAll
+    public static void beforeAll() {
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(INDENT_OUTPUT, true);
+    }
 
     @Nested
     class Ctor {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(null, null));
+            assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(null));
         }
     }
 
@@ -52,86 +68,65 @@ public class SirenLinkConverterTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            assertThrows(IllegalArgumentException.class, () -> converter.to((Iterable<Link>) null));
+            assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(DEFAULTS_ONLY).to(null));
         }
 
         @Test
-        public void should_return_output_having_same_href_and_rel() {
-            Link source = new Link("/persons/1", SELF);
-            SirenLink expected = SirenLink.builder().href(source.getHref()).rel(source.getRel().value()).build();
+        public void containing_link_with_href_and_rel() throws IOException {
+            Link source = new Link("/employees/1", SELF);
+            SirenNavigables expected = read("navigables-containing-link-with-href-and-rel.json");
 
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            List<SirenLink> converted = converter.to(newArrayList(source));
-            assertThat(converted).hasSize(1);
+            SirenLinkConverter converter = new SirenLinkConverter(DEFAULTS_ONLY);
+            SirenNavigables actual = converter.to(newArrayList(source));
 
-            SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        public void should_return_output_having_title_from_input() {
-            Link source = new Link("/persons/1", SELF).withTitle("title");
-            SirenLink expected =
-                SirenLink.builder().href(source.getHref()).rel(source.getRel().value()).title(source.getTitle()).build();
+        public void containing_link_with_title_from_input() throws IOException {
+            Link source = new Link("/employees/1", SELF).withTitle("title");
+            SirenNavigables expected = read("navigables-containing-link-with-title.json");
 
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            List<SirenLink> converted = converter.to(newArrayList(source));
-            assertThat(converted).hasSize(1);
+            SirenLinkConverter converter = new SirenLinkConverter(DEFAULTS_ONLY);
+            SirenNavigables actual = converter.to(newArrayList(source));
 
-            SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        public void should_return_output_having_title_from_message_resolver() {
-            Link source = new Link("/persons/1", SELF);
-            SirenLink expected = SirenLink.builder().href(source.getHref()).rel(source.getRel().value()).title("title").build();
+        public void containing_link_with_title_from_message_resolver() throws IOException {
+            Link source = new Link("/employees/1", SELF);
+            SirenNavigables expected = read("navigables-containing-link-with-title.json");
 
-            SirenLinkConverter converter =
-                new SirenLinkConverter(new SirenConfiguration(), StaticMessageResolver.of(expected.getTitle()));
-            List<SirenLink> converted = converter.to(newArrayList(source));
-            assertThat(converted).hasSize(1);
+            SirenLinkConverter converter = new SirenLinkConverter(StaticMessageResolver.of("title"));
+            SirenNavigables actual = converter.to(newArrayList(source));
 
-            SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        public void should_return_output_having_title_from_input_even_if_available_through_message_resolver() {
-            Link source = new Link("/persons/1", SELF).withTitle("title");
+        public void containing_link_with_title_from_input_even_if_available_through_message_resolver() throws IOException {
+            Link source = new Link("/employees/1", SELF).withTitle("title");
+            SirenNavigables expected = read("navigables-containing-link-with-title.json");
 
-            SirenLink expected =
-                SirenLink.builder().href(source.getHref()).rel(source.getRel().value()).title(source.getTitle()).build();
+            SirenLinkConverter converter = new SirenLinkConverter(StaticMessageResolver.of("something"));
+            SirenNavigables actual = converter.to(newArrayList(source));
 
-            SirenLinkConverter converter =
-                new SirenLinkConverter(new SirenConfiguration(), StaticMessageResolver.of("something"));
-            List<SirenLink> converted = converter.to(newArrayList(source));
-            assertThat(converted).hasSize(1);
-
-            SirenLink actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        public void should_return_empty_list_if_input_is_templated_and_configuration_exclude() {
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(AS_ACTION), DEFAULTS_ONLY);
-            List<SirenLink> converted = converter.to(newArrayList(new Link(of("/persons/{id}"), SELF)));
-            assertThat(converted).isEmpty();
+        public void containing_link_and_action_representing_link_and_affordance() throws IOException {
+            WebMvcEmployeeController controller = methodOn(WebMvcEmployeeController.class);
+            Link source = linkTo(controller.findOne(1)).withSelfRel().andAffordance(afford(controller.updateEmployee(null, 1)));
+            SirenNavigables expected = read("navigables-containing-link-and-action-representing-link-with-affordance.json");
+
+            SirenLinkConverter converter = new SirenLinkConverter(DEFAULTS_ONLY);
+            SirenNavigables actual = converter.to(newArrayList(source));
+
+            assertThat(actual).isEqualTo(expected);
         }
 
-        @Test
-        public void should_return_matching_output_if_input_is_templated_and_configuration_include() {
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(AS_LINK), DEFAULTS_ONLY);
-
-            Link source = new Link(of("/persons/{id}"), SELF);
-            List<SirenLink> converted = converter.to(newArrayList(source));
-            assertThat(converted).hasSize(1);
-
-            SirenLink target = converted.iterator().next();
-            assertThat(target.getHref()).isEqualTo(source.getHref());
-            assertThat(target.getRels()).containsExactly(source.getRel().value());
-        }
     }
 
     @Nested
@@ -139,49 +134,52 @@ public class SirenLinkConverterTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            assertThrows(IllegalArgumentException.class, () -> converter.from((Iterable<SirenLink>) null));
+            assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(DEFAULTS_ONLY).from(null));
         }
 
         @Test
-        public void should_return_output_having_same_href_and_rel() {
-            Link expected = new Link("/persons/1", SELF);
-            SirenLink source = SirenLink.builder().href(expected.getHref()).rel(expected.getRel().value()).build();
+        public void containing_link_with_href_and_rel() throws IOException {
+            SirenNavigables source = read("navigables-containing-link-with-href-and-rel.json");
+            List<Link> expected = newArrayList(new Link("/employees/1", SELF));
 
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            List<Link> converted = converter.from(newArrayList(source));
-            assertThat(converted).hasSize(1);
+            SirenLinkConverter converter = new SirenLinkConverter(DEFAULTS_ONLY);
+            List<Link> actual = converter.from(source);
 
-            Link actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        public void should_return_output_having_same_title() {
-            Link expected = new Link("/persons/1", SELF).withTitle("title");
-            SirenLink source =
-                SirenLink.builder().href(expected.getHref()).rel(expected.getRel().value()).title(expected.getTitle()).build();
+        public void containing_link_with_title() throws IOException {
+            SirenNavigables source = read("navigables-containing-link-with-title.json");
+            List<Link> expected = newArrayList(new Link("/employees/1", SELF).withTitle("title"));
 
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            List<Link> converted = converter.from(newArrayList(source));
-            assertThat(converted).hasSize(1);
+            SirenLinkConverter converter = new SirenLinkConverter(DEFAULTS_ONLY);
+            List<Link> actual = converter.from(source);
 
-            Link actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
 
         @Test
-        public void should_return_output_having_same_type() {
-            Link expected = new Link("/persons/1", SELF).withTitle("title").withType(APPLICATION_JSON_VALUE);
-            SirenLink source = SirenLink.builder().href(expected.getHref()).rel(expected.getRel().value())
-                .title(expected.getTitle()).type(expected.getType()).build();
+        public void containing_link_with_type() throws IOException {
+            SirenNavigables source = read("navigables-containing-link-with-type.json");
+            List<Link> expected = newArrayList(new Link("/employees/1", SELF).withType(APPLICATION_JSON_VALUE));
 
-            SirenLinkConverter converter = new SirenLinkConverter(new SirenConfiguration(), DEFAULTS_ONLY);
-            List<Link> converted = converter.from(newArrayList(source));
-            assertThat(converted).hasSize(1);
+            SirenLinkConverter converter = new SirenLinkConverter(DEFAULTS_ONLY);
+            List<Link> actual = converter.from(source);
 
-            Link actual = converted.iterator().next();
             assertThat(actual).isEqualTo(expected);
         }
+    }
+
+    private SirenNavigables read(String sourceFilename) throws IOException {
+        return read(sourceFilename, SirenNavigables.class);
+    }
+
+    private <T> T read(String sourceFilename, Class<T> type) throws IOException {
+        return objectMapper.readValue(readResource(sourceFilename), type);
+    }
+
+    private String readResource(String sourceFilename) throws IOException {
+        return MappingUtils.read(new ClassPathResource(sourceFilename, getClass()));
     }
 }

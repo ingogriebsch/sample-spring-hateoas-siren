@@ -23,13 +23,20 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.springframework.hateoas.mediatype.siren.SirenConfiguration.RenderTemplatedLinks.AS_LINK;
+import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
+import static org.springframework.http.HttpMethod.GET;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.core.ResolvableType;
+import org.springframework.hateoas.AffordanceModel.InputPayloadMetadata;
+import org.springframework.hateoas.AffordanceModel.PropertyMetadata;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.mediatype.MessageResolver;
+import org.springframework.hateoas.mediatype.siren.SirenAction.Field;
+import org.springframework.hateoas.mediatype.siren.SirenAction.Field.Type;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -38,28 +45,74 @@ import lombok.RequiredArgsConstructor;
 public class SirenLinkConverter {
 
     @NonNull
-    private final SirenConfiguration sirenConfiguration;
-    @NonNull
     private final MessageResolver messageResolver;
 
-    public List<SirenLink> to(@NonNull Iterable<Link> links) {
-        return stream(links.spliterator(), false).filter(l -> shouldConvert(l)).map(l -> convert(l)).collect(toList());
+    public SirenNavigables to(@NonNull Iterable<Link> links) {
+        return SirenNavigables.merge(stream(links.spliterator(), false).map(l -> convert(l)).collect(toList()));
     }
 
-    public List<Link> from(@NonNull Iterable<SirenLink> links) {
-        return stream(links.spliterator(), false).map(l -> convert(l)).collect(toList());
+    public List<Link> from(@NonNull SirenNavigables navigables) {
+        return slice(navigables).stream().map(n -> convert(n)).collect(toList());
     }
 
-    private Link convert(SirenLink link) {
+    private SirenNavigables convert(Link link) {
+        return SirenNavigables.of(links(link), actions(link));
+    }
+
+    private Link convert(SirenNavigables navigables) {
+        SirenLink link = navigables.getLinks().iterator().next();
         String rel = link.getRels().stream().findFirst().orElse(null);
-        return new Link(link.getHref(), rel).withTitle(link.getTitle()).withType(link.getType());
+
+        return new Link(link.getHref(), rel) //
+            .withTitle(link.getTitle()) //
+            .withType(link.getType());
     }
 
-    private SirenLink convert(@NonNull Link link) {
-        return SirenLink.builder() //
-            .rels(newArrayList(link.getRel().value())) //
+    private List<SirenLink> links(Link link) {
+        SirenLink sirenLink = SirenLink.builder() //
+            .rel(link.getRel().value()) //
             .href(link.getHref()).title(title(link)) //
             .type(link.getType()) //
+            .build();
+
+        return newArrayList(sirenLink);
+    }
+
+    private List<SirenAction> actions(Link link) {
+        List<SirenAction> result = newArrayList();
+        for (SirenAffordanceModel model : affordanceModels(link)) {
+            if (!GET.equals(model.getHttpMethod())) {
+                result.add(convert(model));
+            }
+        }
+        return result;
+    }
+
+    private SirenAction convert(SirenAffordanceModel model) {
+        List<Field> fields = fields(model);
+
+        return SirenAction.builder() //
+            .name(model.getName()) //
+            .method(model.getHttpMethod()) //
+            .href(model.getLink().getHref()) //
+            .title(actionTitle(model.getName())) //
+            .fields(fields) //
+            .build();
+    }
+
+    private List<Field> fields(SirenAffordanceModel model) {
+        InputPayloadMetadata input = model.getInput();
+        if (input == null) {
+            return newArrayList();
+        }
+        return input.stream().map(pm -> field(pm)).collect(toList());
+    }
+
+    private Field field(PropertyMetadata propertyMetadata) {
+        return Field.builder() //
+            .name(propertyMetadata.getName()) //
+            .type(fieldType(propertyMetadata.getType()))//
+            .title(fieldTitle(propertyMetadata.getName())) //
             .build();
     }
 
@@ -76,7 +129,28 @@ public class SirenLinkConverter {
         return null;
     }
 
-    private boolean shouldConvert(Link link) {
-        return link.isTemplated() ? sirenConfiguration.shouldRenderTemplatedLinksAs(AS_LINK) : true;
+    private String actionTitle(String name) {
+        return name != null ? messageResolver.resolve(SirenAction.TitleResolvable.of(name)) : null;
+    }
+
+    private String fieldTitle(String name) {
+        return name != null ? messageResolver.resolve(SirenAction.Field.TitleResolvable.of(name)) : null;
+    }
+
+    private static Type fieldType(ResolvableType type) {
+        return Number.class.isAssignableFrom(type.getRawClass()) ? Type.number : Type.text;
+    }
+
+    private static List<SirenNavigables> slice(SirenNavigables navigables) {
+        return navigables.getLinks().stream().map(l -> slice(l, navigables.getActions())).collect(Collectors.toList());
+    }
+
+    private static SirenNavigables slice(SirenLink link, List<SirenAction> actions) {
+        return SirenNavigables.of(newArrayList(link), actions);
+    }
+
+    private static List<SirenAffordanceModel> affordanceModels(Link link) {
+        return link.getAffordances().stream().map(a -> a.getAffordanceModel(SIREN_JSON)).map(SirenAffordanceModel.class::cast)
+            .collect(toList());
     }
 }
