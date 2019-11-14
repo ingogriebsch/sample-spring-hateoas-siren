@@ -112,8 +112,8 @@ public class Jackson2SirenModuleTest {
 
             @Test
             public void containing_links() throws Exception {
-                RepresentationModel<?> source = new RepresentationModel<>(
-                    newArrayList(new Link("/about", ABOUT), new Link("/help", HELP), new Link("/license", LICENSE)));
+                RepresentationModel<?> source = new RepresentationModel<>(newArrayList(new Link("/employees", SELF),
+                    new Link("/about", ABOUT), new Link("/help", HELP), new Link("/license", LICENSE)));
                 String expected = readResource("representationmodel-containing-links.json");
 
                 String actual = write(source);
@@ -339,8 +339,8 @@ public class Jackson2SirenModuleTest {
             @Test
             public void containing_links() throws Exception {
                 String source = readResource("representationmodel-containing-links.json");
-                RepresentationModel<?> expected = new RepresentationModel<>(
-                    newArrayList(new Link("/about", ABOUT), new Link("/help", HELP), new Link("/license", LICENSE)));
+                RepresentationModel<?> expected = new RepresentationModel<>(newArrayList(new Link("/employees", SELF),
+                    new Link("/about", ABOUT), new Link("/help", HELP), new Link("/license", LICENSE)));
 
                 RepresentationModel<?> actual = read(source, RepresentationModel.class);
                 assertThat(actual).isEqualTo(expected);

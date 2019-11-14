@@ -1,5 +1,8 @@
 {
   "links" : [ {
+    "rel" : [ "self" ],
+    "href" : "/employees"
+  }, {
     "rel" : [ "about" ],
     "href" : "/about"
   }, {
