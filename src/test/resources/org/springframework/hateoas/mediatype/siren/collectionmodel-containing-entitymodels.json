@@ -4,7 +4,7 @@
     "size" : 1
   },
   "entities" : [ {
-    "class" : [ "employee" ],
+    "class" : [ "entity" ],
     "properties" : {
       "id" : 1,
       "name" : "Peter",
@@ -15,7 +15,7 @@
       "href" : "/employees/1"
     } ]
   }, {
-    "class" : [ "employee" ],
+    "class" : [ "entity" ],
     "properties" : {
       "id" : 2,
       "name" : "Paul",
@@ -26,7 +26,7 @@
       "href" : "/employees/2"
     } ]
   }, {
-    "class" : [ "employee" ],
+    "class" : [ "entity" ],
     "properties" : {
       "id" : 3,
       "name" : "Sarah",
@@ -37,7 +37,7 @@
       "href" : "/employees/3"
     } ]
   }, {
-    "class" : [ "employee" ],
+    "class" : [ "entity" ],
     "properties" : {
       "id" : 4,
       "name" : "Stephanie",

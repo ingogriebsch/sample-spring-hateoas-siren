@@ -1,4 +1,5 @@
 {
+  "class" : [ "representation" ],
   "links" : [ {
     "rel" : [ "self" ],
     "href" : "/employees/1"

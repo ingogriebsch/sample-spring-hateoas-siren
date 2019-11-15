@@ -1,4 +1,4 @@
 {
-  "class" : [ "integer" ],
+  "class" : [ "entity" ],
   "properties" : 42
 }

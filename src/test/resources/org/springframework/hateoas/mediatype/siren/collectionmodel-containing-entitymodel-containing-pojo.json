@@ -4,7 +4,7 @@
     "size" : 1
   },
   "entities" : [ {
-    "class" : [ "employee" ],
+    "class" : [ "entity" ],
     "properties" : {
       "name" : "Peter",
       "role" : "Carpenter"

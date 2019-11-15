@@ -19,9 +19,6 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.apache.commons.lang3.StringUtils.uncapitalize;
-
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -39,35 +36,42 @@ public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityMo
 
     private static final long serialVersionUID = 2893716845519287714L;
 
-    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull SirenLinkConverter sirenLinkConverter, @NonNull SirenEntityClassProvider sirenEntityClassProvider,
         @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, messageResolver, null);
+        this(sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider, messageResolver, null);
     }
 
-    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+    public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull SirenLinkConverter sirenLinkConverter, @NonNull SirenEntityClassProvider sirenEntityClassProvider,
         @NonNull MessageResolver messageResolver, BeanProperty property) {
-        super(EntityModel.class, sirenConfiguration, linkConverter, messageResolver, property);
+        super(EntityModel.class, sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider, messageResolver, property);
+    }
+
+    @Override
+    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
+        return new SirenEntityModelSerializer(sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider, messageResolver,
+            property);
     }
 
     @Override
     public void serialize(EntityModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        SirenNavigables navigables = linkConverter.to(model.getLinks());
+        SirenNavigables navigables = sirenLinkConverter.to(model.getLinks());
 
         SirenEntity sirenEntity = SirenEntity.builder() //
-            .classes(newArrayList(uncapitalize(model.getContent().getClass().getSimpleName()))) //
-            .properties(model.getContent()) //
-            .links(navigables.getLinks()) //
             .actions(navigables.getActions()) //
-            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
+            .classes(classes(model)) //
+            .links(navigables.getLinks()) //
+            .properties(model.getContent()) //
+            .title(title(model)) //
             .build();
 
         JsonSerializer<Object> serializer = provider.findValueSerializer(SirenEntity.class, property);
         serializer.serialize(sirenEntity, gen, provider);
     }
 
-    @Override
-    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenEntityModelSerializer(sirenConfiguration, linkConverter, messageResolver, property);
+    private String title(EntityModel<?> model) {
+        return messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()));
     }
 
 }

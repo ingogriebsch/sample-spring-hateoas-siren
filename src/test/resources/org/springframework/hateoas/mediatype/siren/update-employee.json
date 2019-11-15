@@ -1,5 +1,5 @@
 {
-  "class" : [ "employee" ],
+  "class" : [ "entity" ],
   "properties" : {
     "name" : "Bingo Bolger-Baggins",
     "role" : "elf friend"

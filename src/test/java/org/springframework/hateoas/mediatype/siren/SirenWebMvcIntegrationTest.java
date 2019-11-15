@@ -20,6 +20,8 @@
 package org.springframework.hateoas.mediatype.siren;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.empty;
 import static org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType.HAL;
 import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 import static org.springframework.http.HttpHeaders.LOCATION;
@@ -42,7 +44,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.mediatype.MessageResolver;
-import org.springframework.hateoas.server.LinkRelationProvider;
 import org.springframework.hateoas.support.MappingUtils;
 import org.springframework.hateoas.support.WebMvcEmployeeController;
 import org.springframework.test.context.ContextConfiguration;
@@ -75,8 +76,8 @@ public class SirenWebMvcIntegrationTest {
         result.andExpect(status().isOk());
 
         result.andExpect(jsonPath("$.properties.size", is(2))) //
-            .andExpect(jsonPath("$.class[0]", is("collection"))) //
-            .andExpect(jsonPath("$.entities[0].class[0]", is("employee"))) //
+            .andExpect(jsonPath("$.class[0]", is(not(empty())))) //
+            .andExpect(jsonPath("$.entities[0].class[0]", is(not(empty())))) //
             .andExpect(jsonPath("$.entities[0].properties.name", is("Frodo Baggins"))) //
             .andExpect(jsonPath("$.entities[0].properties.role", is("ring bearer"))) //
             .andExpect(jsonPath("$.entities[0].links[0].rel[0]", is("self"))) //
@@ -99,8 +100,8 @@ public class SirenWebMvcIntegrationTest {
         result.andExpect(status().isOk());
 
         result.andExpect(jsonPath("$.properties.size", is(1))) //
-            .andExpect(jsonPath("$.class[0]", is("collection"))) //
-            .andExpect(jsonPath("$.entities[0].class[0]", is("employee"))) //
+            .andExpect(jsonPath("$.class[0]", is(not(empty())))) //
+            .andExpect(jsonPath("$.entities[0].class[0]", is(not(empty())))) //
             .andExpect(jsonPath("$.entities[0].properties.name", is("Frodo Baggins"))) //
             .andExpect(jsonPath("$.entities[0].properties.role", is("ring bearer"))) //
             .andExpect(jsonPath("$.entities[0].links[0].rel[0]", is("self"))) //
@@ -118,7 +119,7 @@ public class SirenWebMvcIntegrationTest {
 
         result.andExpect(jsonPath("$.properties.name", is("Frodo Baggins"))) //
             .andExpect(jsonPath("$.properties.role", is("ring bearer"))) //
-            .andExpect(jsonPath("$.class[0]", is("employee"))) //
+            .andExpect(jsonPath("$.class[0]", is(not(empty())))) //
             .andExpect(jsonPath("$.links[0].rel[0]", is("self"))) //
             .andExpect(jsonPath("$.links[0].href", is("http://localhost/employees/0"))) //
             .andExpect(jsonPath("$.links[1].rel[0]", is("employees"))) //
@@ -161,8 +162,8 @@ public class SirenWebMvcIntegrationTest {
 
         @Bean
         SirenMediaTypeConfiguration sirenMediaTypeConfiguration(ObjectProvider<SirenConfiguration> sirenConfiguration,
-            LinkRelationProvider linkRelationProvider, MessageResolver messageResolver) {
-            return new SirenMediaTypeConfiguration(sirenConfiguration, linkRelationProvider, messageResolver);
+            ObjectProvider<SirenEntityClassProvider> sirenEntityClassProvider, MessageResolver messageResolver) {
+            return new SirenMediaTypeConfiguration(sirenConfiguration, sirenEntityClassProvider, messageResolver);
         }
     }
 

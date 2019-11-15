@@ -1,5 +1,5 @@
 {
-  "class" : [ "page" ],
+  "class" : [ "paged" ],
   "properties" : {
     "size" : 20,
     "totalElements" : 1,

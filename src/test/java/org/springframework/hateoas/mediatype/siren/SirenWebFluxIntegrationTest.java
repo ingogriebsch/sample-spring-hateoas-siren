@@ -20,6 +20,8 @@
 package org.springframework.hateoas.mediatype.siren;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.empty;
 import static org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType.HAL;
 import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 import static org.springframework.hateoas.support.JsonPathUtils.jsonPath;
@@ -39,7 +41,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.WebClientConfigurer;
 import org.springframework.hateoas.mediatype.MessageResolver;
-import org.springframework.hateoas.server.LinkRelationProvider;
 import org.springframework.hateoas.support.WebFluxEmployeeController;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -95,8 +96,8 @@ public class SirenWebFluxIntegrationTest {
 
         response.expectBody(String.class) //
             .value(jsonPath("$.properties.size", is(1))) //
-            .value(jsonPath("$.class[0]", is("collection"))) //
-            .value(jsonPath("$.entities[0].class[0]", is("employee"))) //
+            .value(jsonPath("$.class[0]", is(not(empty())))) //
+            .value(jsonPath("$.entities[0].class[0]", is(not(empty())))) //
             .value(jsonPath("$.entities[0].properties.name", is("Frodo Baggins"))) //
             .value(jsonPath("$.entities[0].properties.role", is("ring bearer"))) //
             .value(jsonPath("$.entities[0].links[0].rel[0]", is("self"))) //
@@ -115,7 +116,7 @@ public class SirenWebFluxIntegrationTest {
         response.expectBody(String.class) //
             .value(jsonPath("$.properties.name", is("Frodo Baggins"))) //
             .value(jsonPath("$.properties.role", is("ring bearer"))) //
-            .value(jsonPath("$.class[0]", is("employee"))) //
+            .value(jsonPath("$.class[0]", is(not(empty())))) //
             .value(jsonPath("$.links[0].rel[0]", is("self"))) //
             .value(jsonPath("$.links[0].href", is("http://localhost/employees/0"))) //
             .value(jsonPath("$.links[1].rel[0]", is("employees"))) //
@@ -161,8 +162,8 @@ public class SirenWebFluxIntegrationTest {
 
         @Bean
         SirenMediaTypeConfiguration sirenMediaTypeConfiguration(ObjectProvider<SirenConfiguration> sirenConfiguration,
-            LinkRelationProvider linkRelationProvider, MessageResolver messageResolver) {
-            return new SirenMediaTypeConfiguration(sirenConfiguration, linkRelationProvider, messageResolver);
+            ObjectProvider<SirenEntityClassProvider> sirenEntityClassProvider, MessageResolver messageResolver) {
+            return new SirenMediaTypeConfiguration(sirenConfiguration, sirenEntityClassProvider, messageResolver);
         }
 
         @Bean

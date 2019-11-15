@@ -28,21 +28,19 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.mediatype.SimpleObjectProvider;
-import org.springframework.hateoas.server.LinkRelationProvider;
-import org.springframework.hateoas.server.core.AnnotationLinkRelationProvider;
-import org.springframework.hateoas.server.core.DefaultLinkRelationProvider;
-import org.springframework.hateoas.server.core.DelegatingLinkRelationProvider;
 
 public class SirenMediaTypeConfigurationTest {
 
-    private static SirenMediaTypeConfiguration configuration;
+    private static SirenMediaTypeConfiguration sirenMediaTypeConfiguration;
 
     @BeforeAll
     public static void beforeAll() {
-        LinkRelationProvider linkRelationProvider =
-            new DelegatingLinkRelationProvider(new AnnotationLinkRelationProvider(), new DefaultLinkRelationProvider());
-        configuration = new SirenMediaTypeConfiguration(new SimpleObjectProvider<>(new SirenConfiguration()),
-            linkRelationProvider, DEFAULTS_ONLY);
+        SimpleObjectProvider<SirenConfiguration> sirenConfiguration = new SimpleObjectProvider<>(new SirenConfiguration());
+        SimpleObjectProvider<SirenEntityClassProvider> sirenEntityClassProvider =
+            new SimpleObjectProvider<>(new SimpleSirenEntityClassProvider());
+
+        sirenMediaTypeConfiguration =
+            new SirenMediaTypeConfiguration(sirenConfiguration, sirenEntityClassProvider, DEFAULTS_ONLY);
     }
 
     @Nested
@@ -50,7 +48,7 @@ public class SirenMediaTypeConfigurationTest {
 
         @Test
         public void should_return_matching_media_type() {
-            assertThat(configuration.getMediaTypes()).containsExactly(SIREN_JSON);
+            assertThat(sirenMediaTypeConfiguration.getMediaTypes()).containsExactly(SIREN_JSON);
         }
     }
 
@@ -59,7 +57,7 @@ public class SirenMediaTypeConfigurationTest {
 
         @Test
         public void should_return_matching_jackson_module() {
-            assertThat(configuration.getJacksonModule()).isNotNull().isInstanceOf(Jackson2SirenModule.class);
+            assertThat(sirenMediaTypeConfiguration.getJacksonModule()).isNotNull().isInstanceOf(Jackson2SirenModule.class);
         }
     }
 
@@ -68,7 +66,7 @@ public class SirenMediaTypeConfigurationTest {
 
         @Test
         public void should_throw_exception_if_input_is_null() {
-            assertThrows(IllegalArgumentException.class, () -> configuration.configureObjectMapper(null));
+            assertThrows(IllegalArgumentException.class, () -> sirenMediaTypeConfiguration.configureObjectMapper(null));
         }
     }
 

@@ -1,4 +1,4 @@
 {
-  "class" : [ "string" ],
+  "class" : [ "entity" ],
   "properties" : "Something"
 }

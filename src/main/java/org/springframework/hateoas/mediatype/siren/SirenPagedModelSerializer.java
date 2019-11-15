@@ -21,8 +21,6 @@ package org.springframework.hateoas.mediatype.siren;
 
 import static java.util.stream.Collectors.toList;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -42,35 +40,42 @@ public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedMode
 
     private static final long serialVersionUID = 9054285190464802945L;
 
-    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull SirenLinkConverter sirenLinkConverter, @NonNull SirenEntityClassProvider sirenEntityClassProvider,
         @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, messageResolver, null);
+        this(sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider, messageResolver, null);
     }
 
-    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
+    public SirenPagedModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull SirenLinkConverter sirenLinkConverter, @NonNull SirenEntityClassProvider sirenEntityClassProvider,
         @NonNull MessageResolver messageResolver, BeanProperty property) {
-        super(PagedModel.class, sirenConfiguration, linkConverter, messageResolver, property);
+        super(PagedModel.class, sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider, messageResolver, property);
+    }
+
+    @Override
+    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
+        return new SirenPagedModelSerializer(sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider, messageResolver,
+            property);
     }
 
     @Override
     public void serialize(PagedModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        SirenNavigables navigables = linkConverter.to(model.getLinks());
+        SirenNavigables navigables = sirenLinkConverter.to(model.getLinks());
 
         SirenEntity sirenEntity = SirenEntity.builder() //
-            .classes(newArrayList("page")) //
-            .properties(model.getMetadata()) //
+            .actions(navigables.getActions()) //
+            .classes(classes(model)) //
             .entities(entities(model)) //
             .links(navigables.getLinks()) //
-            .actions(navigables.getActions()) //
-            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
+            .properties(model.getMetadata()) //
+            .title(title(model)) //
             .build();
 
         provider.findValueSerializer(SirenEntity.class, property).serialize(sirenEntity, gen, provider);
     }
 
-    @Override
-    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenPagedModelSerializer(sirenConfiguration, linkConverter, messageResolver, property);
+    private String title(PagedModel<?> model) {
+        return messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()));
     }
 
     private static List<Object> entities(CollectionModel<?> model) {

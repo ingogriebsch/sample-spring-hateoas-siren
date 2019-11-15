@@ -1,5 +1,5 @@
 {
-  "class" : [ "page" ],
+  "class" : [ "paged" ],
   "properties" : {
     "size" : 20,
     "totalElements" : 1,
@@ -7,7 +7,7 @@
     "number" : 0
   },
   "entities" : [ {
-    "class" : [ "employee" ],
+    "class" : [ "entity" ],
     "properties" : {
       "name" : "Peter",
       "role" : "Carpenter"

@@ -1,5 +1,5 @@
 {
-  "class" : [ "employee" ],
+  "class" : [ "entity" ],
   "properties" : {
     "name" : "Samwise Gamgee",
     "role" : "gardener"

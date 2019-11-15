@@ -21,8 +21,6 @@ package org.springframework.hateoas.mediatype.siren;
 
 import static java.util.stream.Collectors.toList;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -44,34 +42,41 @@ public class SirenCollectionModelSerializer extends AbstractSirenSerializer<Coll
     private static final long serialVersionUID = 9054285190464802945L;
 
     public SirenCollectionModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, messageResolver, null);
+        @NonNull SirenLinkConverter sirenLinkConverter, @NonNull SirenEntityClassProvider sirenEntityClassProvider,
+        @NonNull MessageResolver messageResolver) {
+        this(sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider, messageResolver, null);
     }
 
     public SirenCollectionModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver, BeanProperty property) {
-        super(CollectionModel.class, sirenConfiguration, linkConverter, messageResolver, property);
+        @NonNull SirenLinkConverter sirenLinkConverter, @NonNull SirenEntityClassProvider sirenEntityClassProvider,
+        @NonNull MessageResolver messageResolver, BeanProperty property) {
+        super(CollectionModel.class, sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider, messageResolver, property);
+    }
+
+    @Override
+    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
+        return new SirenCollectionModelSerializer(sirenConfiguration, sirenLinkConverter, sirenEntityClassProvider,
+            messageResolver, property);
     }
 
     @Override
     public void serialize(CollectionModel<?> model, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        SirenNavigables navigables = linkConverter.to(model.getLinks());
+        SirenNavigables navigables = sirenLinkConverter.to(model.getLinks());
 
         SirenEntity sirenEntity = SirenEntity.builder() //
-            .classes(newArrayList("collection")) //
-            .properties(properties(model)) //
+            .actions(navigables.getActions()) //
+            .classes(classes(model)) //
             .entities(entities(model)) //
             .links(navigables.getLinks()) //
-            .actions(navigables.getActions()) //
-            .title(messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()))) //
+            .properties(properties(model)) //
+            .title(title(model)) //
             .build();
 
         provider.findValueSerializer(SirenEntity.class, property).serialize(sirenEntity, gen, provider);
     }
 
-    @Override
-    public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        return new SirenCollectionModelSerializer(sirenConfiguration, linkConverter, messageResolver, property);
+    private String title(CollectionModel<?> model) {
+        return messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()));
     }
 
     private static Map<String, Object> properties(CollectionModel<?> model) {
@@ -81,7 +86,7 @@ public class SirenCollectionModelSerializer extends AbstractSirenSerializer<Coll
     }
 
     private static List<Object> entities(CollectionModel<?> model) {
-        return model.getContent().stream().map(c -> entity(c)).collect(toList());
+        return model.getContent().stream().map(e -> entity(e)).collect(toList());
     }
 
     private static Object entity(Object embeddable) {
