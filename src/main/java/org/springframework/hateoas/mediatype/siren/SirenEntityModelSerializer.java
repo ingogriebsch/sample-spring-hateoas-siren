@@ -63,15 +63,11 @@ public class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityMo
             .classes(classes(model)) //
             .links(navigables.getLinks()) //
             .properties(model.getContent()) //
-            .title(title(model)) //
+            .title(title(model.getContent().getClass())) //
             .build();
 
         JsonSerializer<Object> serializer = provider.findValueSerializer(SirenEntity.class, property);
         serializer.serialize(sirenEntity, gen, provider);
-    }
-
-    private String title(EntityModel<?> model) {
-        return messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()));
     }
 
 }

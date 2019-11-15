@@ -76,4 +76,8 @@ public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> 
         return sirenEntityClassProvider.get(model);
     }
 
+    protected String title(Class<?> type) {
+        return messageResolver.resolve(SirenEntity.TitleResolvable.of(type));
+    }
+
 }

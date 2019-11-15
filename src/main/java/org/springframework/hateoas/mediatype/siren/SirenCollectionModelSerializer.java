@@ -69,14 +69,10 @@ public class SirenCollectionModelSerializer extends AbstractSirenSerializer<Coll
             .entities(entities(model)) //
             .links(navigables.getLinks()) //
             .properties(properties(model)) //
-            .title(title(model)) //
+            .title(title(model.getContent().getClass())) //
             .build();
 
         provider.findValueSerializer(SirenEntity.class, property).serialize(sirenEntity, gen, provider);
-    }
-
-    private String title(CollectionModel<?> model) {
-        return messageResolver.resolve(SirenEntity.TitleResolvable.of(model.getContent().getClass()));
     }
 
     private static Map<String, Object> properties(CollectionModel<?> model) {
