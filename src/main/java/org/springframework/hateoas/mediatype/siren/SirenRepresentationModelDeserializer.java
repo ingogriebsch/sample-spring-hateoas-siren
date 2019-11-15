@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
 
@@ -45,19 +44,19 @@ public class SirenRepresentationModelDeserializer extends AbstractSirenDeseriali
     private static final JavaType TYPE = defaultInstance().constructType(RepresentationModel.class);
 
     public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, messageResolver, TYPE);
+        @NonNull SirenLinkConverter linkConverter) {
+        this(sirenConfiguration, linkConverter, TYPE);
     }
 
     public SirenRepresentationModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
-        @NonNull SirenLinkConverter linkConverter, @NonNull MessageResolver messageResolver, @NonNull JavaType contentType) {
-        super(sirenConfiguration, linkConverter, messageResolver, contentType);
+        @NonNull SirenLinkConverter linkConverter, @NonNull JavaType contentType) {
+        super(sirenConfiguration, linkConverter, contentType);
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
         JavaType contentType = property == null ? ctxt.getContextualType() : property.getType().getContentType();
-        return new SirenRepresentationModelDeserializer(sirenConfiguration, linkConverter, messageResolver, contentType);
+        return new SirenRepresentationModelDeserializer(sirenConfiguration, linkConverter, contentType);
     }
 
     @Override

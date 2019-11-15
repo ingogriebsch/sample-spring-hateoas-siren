@@ -60,22 +60,20 @@ public class SirenHandlerInstantiator extends HandlerInstantiator {
         serializers.put(SirenRepresentationModelSerializer.class,
             new SirenRepresentationModelSerializer(sirenConfiguration, linkConverter, messageResolver));
         serializers.put(SirenRepresentationModelDeserializer.class,
-            new SirenRepresentationModelDeserializer(sirenConfiguration, linkConverter, messageResolver));
+            new SirenRepresentationModelDeserializer(sirenConfiguration, linkConverter));
 
         serializers.put(SirenEntityModelSerializer.class,
             new SirenEntityModelSerializer(sirenConfiguration, linkConverter, messageResolver));
-        serializers.put(SirenEntityModelDeserializer.class,
-            new SirenEntityModelDeserializer(sirenConfiguration, linkConverter, messageResolver));
+        serializers.put(SirenEntityModelDeserializer.class, new SirenEntityModelDeserializer(sirenConfiguration, linkConverter));
 
         serializers.put(SirenCollectionModelSerializer.class,
             new SirenCollectionModelSerializer(sirenConfiguration, linkConverter, messageResolver));
         serializers.put(SirenCollectionModelDeserializer.class,
-            new SirenCollectionModelDeserializer(sirenConfiguration, linkConverter, messageResolver));
+            new SirenCollectionModelDeserializer(sirenConfiguration, linkConverter));
 
         serializers.put(SirenPagedModelSerializer.class,
             new SirenPagedModelSerializer(sirenConfiguration, linkConverter, messageResolver));
-        serializers.put(SirenPagedModelDeserializer.class,
-            new SirenPagedModelDeserializer(sirenConfiguration, linkConverter, messageResolver));
+        serializers.put(SirenPagedModelDeserializer.class, new SirenPagedModelDeserializer(sirenConfiguration, linkConverter));
 
         this.beanFactory = beanFactory;
     }

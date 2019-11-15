@@ -37,7 +37,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.PagedModel.PageMetadata;
-import org.springframework.hateoas.mediatype.MessageResolver;
 import org.springframework.util.CollectionUtils;
 
 import lombok.NonNull;
@@ -47,19 +46,19 @@ public class SirenPagedModelDeserializer extends AbstractSirenDeserializer<Paged
     private static final long serialVersionUID = 4364222303241126575L;
     private static final JavaType TYPE = defaultInstance().constructType(PagedModel.class);
 
-    public SirenPagedModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, messageResolver, TYPE);
+    public SirenPagedModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull SirenLinkConverter linkConverter) {
+        this(sirenConfiguration, linkConverter, TYPE);
     }
 
     public SirenPagedModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull MessageResolver messageResolver, JavaType contentType) {
-        super(sirenConfiguration, linkConverter, messageResolver, contentType);
+        JavaType contentType) {
+        super(sirenConfiguration, linkConverter, contentType);
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
-        return new SirenPagedModelDeserializer(sirenConfiguration, linkConverter, messageResolver,
+        return new SirenPagedModelDeserializer(sirenConfiguration, linkConverter,
             property == null ? ctxt.getContextualType() : property.getType().getContentType());
     }
 

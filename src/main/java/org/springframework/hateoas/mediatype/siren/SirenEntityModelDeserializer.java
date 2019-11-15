@@ -38,7 +38,6 @@ import com.google.common.primitives.Primitives;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mediatype.JacksonHelper;
-import org.springframework.hateoas.mediatype.MessageResolver;
 import org.springframework.hateoas.mediatype.PropertyUtils;
 
 import lombok.NonNull;
@@ -48,20 +47,20 @@ public class SirenEntityModelDeserializer extends AbstractSirenDeserializer<Enti
     private static final long serialVersionUID = -3683235541542548855L;
     private static final JavaType TYPE = defaultInstance().constructType(EntityModel.class);
 
-    public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull MessageResolver messageResolver) {
-        this(sirenConfiguration, linkConverter, messageResolver, TYPE);
+    public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration,
+        @NonNull SirenLinkConverter linkConverter) {
+        this(sirenConfiguration, linkConverter, TYPE);
     }
 
     public SirenEntityModelDeserializer(@NonNull SirenConfiguration sirenConfiguration, @NonNull SirenLinkConverter linkConverter,
-        @NonNull MessageResolver messageResolver, @NonNull JavaType contentType) {
-        super(sirenConfiguration, linkConverter, messageResolver, contentType);
+        @NonNull JavaType contentType) {
+        super(sirenConfiguration, linkConverter, contentType);
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
         JavaType contentType = property == null ? ctxt.getContextualType() : property.getType().getContentType();
-        return new SirenEntityModelDeserializer(sirenConfiguration, linkConverter, messageResolver, contentType);
+        return new SirenEntityModelDeserializer(sirenConfiguration, linkConverter, contentType);
     }
 
     @Override

@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
 
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.MessageResolver;
 
 public abstract class AbstractSirenDeserializer<T extends RepresentationModel<?>> extends ContainerDeserializerBase<T>
     implements ContextualDeserializer {
@@ -34,15 +33,13 @@ public abstract class AbstractSirenDeserializer<T extends RepresentationModel<?>
 
     protected final SirenConfiguration sirenConfiguration;
     protected final SirenLinkConverter linkConverter;
-    protected final MessageResolver messageResolver;
     protected final JavaType contentType;
 
     protected AbstractSirenDeserializer(SirenConfiguration sirenConfiguration, SirenLinkConverter linkConverter,
-        MessageResolver messageResolver, JavaType contentType) {
+        JavaType contentType) {
         super(contentType);
         this.sirenConfiguration = sirenConfiguration;
         this.linkConverter = linkConverter;
-        this.messageResolver = messageResolver;
         this.contentType = contentType;
     }
 
