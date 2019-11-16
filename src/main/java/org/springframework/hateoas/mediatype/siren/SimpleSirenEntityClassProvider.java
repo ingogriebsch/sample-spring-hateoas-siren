@@ -19,6 +19,8 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static java.lang.String.format;
+
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
@@ -34,20 +36,22 @@ import lombok.NonNull;
 
 public class SimpleSirenEntityClassProvider implements SirenEntityClassProvider {
 
+    private static final List<Class<?>> RESOURCE_TYPES =
+        newArrayList(PagedModel.class, CollectionModel.class, EntityModel.class, RepresentationModel.class);
+
     @Override
     public List<String> get(@NonNull RepresentationModel<?> model) {
-        Class<?> modelClass = model.getClass();
-        if (PagedModel.class.isAssignableFrom(modelClass)) {
-            modelClass = PagedModel.class;
-        } else if (CollectionModel.class.isAssignableFrom(modelClass)) {
-            modelClass = CollectionModel.class;
-        } else if (EntityModel.class.isAssignableFrom(modelClass)) {
-            modelClass = EntityModel.class;
-        } else {
-            modelClass = RepresentationModel.class;
-        }
+        return newArrayList(uncapitalize(substringBeforeLast(modelClass(model.getClass()).getSimpleName(), "Model")));
+    }
 
-        return newArrayList(uncapitalize(substringBeforeLast(modelClass.getSimpleName(), "Model")));
+    private static Class<?> modelClass(Class<?> modelType) {
+        for (Class<?> type : RESOURCE_TYPES) {
+            if (type.isAssignableFrom(modelType)) {
+                return type;
+            }
+        }
+        throw new IllegalStateException(format("Weird things happen! Type of model is not of type '%s' [but of type '%s']!",
+            RepresentationModel.class.getName(), modelType.getName()));
     }
 
 }
