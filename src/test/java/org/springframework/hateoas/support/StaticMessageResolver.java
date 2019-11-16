@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package org.springframework.hateoas.mediatype;
+package org.springframework.hateoas.support;
 
 import static java.util.Collections.singletonMap;
 
@@ -26,6 +26,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import java.util.Map;
 
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
 import lombok.Value;

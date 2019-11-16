@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package org.springframework.hateoas.mediatype;
+package org.springframework.hateoas.support;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;

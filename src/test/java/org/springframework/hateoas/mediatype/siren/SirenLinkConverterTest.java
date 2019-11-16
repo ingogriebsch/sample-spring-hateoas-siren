@@ -40,8 +40,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mediatype.StaticMessageResolver;
 import org.springframework.hateoas.support.MappingUtils;
+import org.springframework.hateoas.support.StaticMessageResolver;
 import org.springframework.hateoas.support.WebMvcEmployeeController;
 
 public class SirenLinkConverterTest {
