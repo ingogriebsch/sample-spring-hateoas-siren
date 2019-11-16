@@ -31,6 +31,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
+// TODO Find a better name for this class
 @AllArgsConstructor(access = PRIVATE)
 @EqualsAndHashCode
 @Getter
