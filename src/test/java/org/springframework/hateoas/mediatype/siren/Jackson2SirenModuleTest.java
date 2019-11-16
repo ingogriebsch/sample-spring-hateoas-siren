@@ -193,6 +193,16 @@ class Jackson2SirenModuleTest {
             }
 
             @Test
+            void containing_entitymodel_containing_pojo() throws Exception {
+                EntityModel<EntityModel<Employee>> source =
+                    new EntityModel<>(new EntityModel<>(new Employee("Peter", "Carpenter")));
+                String expected = readResource("entitymodel-containing-entitymodel-containing-pojo.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
             void containing_pojo_and_self_link() throws Exception {
                 EntityModel<Employee> source =
                     new EntityModel<>(new Employee("Peter", "Carpenter"), new Link("/employees/1", SELF));

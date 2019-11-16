@@ -19,7 +19,12 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static java.util.Optional.ofNullable;
+
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.io.IOException;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
@@ -27,7 +32,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
@@ -35,6 +43,8 @@ import lombok.NonNull;
 class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityModel<?>> {
 
     private static final long serialVersionUID = 2893716845519287714L;
+    private static final Set<Class<?>> RESOURCE_TYPES =
+        newHashSet(RepresentationModel.class, EntityModel.class, CollectionModel.class, PagedModel.class);
 
     public SirenEntityModelSerializer(@NonNull SirenConfiguration sirenConfiguration,
         @NonNull SirenLinkConverter sirenLinkConverter, @NonNull SirenEntityClassProvider sirenEntityClassProvider,
@@ -62,7 +72,7 @@ class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityModel<?>>
             .actions(navigables.getActions()) //
             .classes(classes(model)) //
             .links(navigables.getLinks()) //
-            .properties(model.getContent()) //
+            .properties(properties(model)) //
             .title(title(model.getContent().getClass())) //
             .build();
 
@@ -70,4 +80,16 @@ class SirenEntityModelSerializer extends AbstractSirenSerializer<EntityModel<?>>
         serializer.serialize(sirenEntity, gen, provider);
     }
 
+    private Object properties(EntityModel<?> model) {
+        return ofNullable(model.getContent()).filter(c -> !isOfResourceType(c.getClass())).orElse(null);
+    }
+
+    private static boolean isOfResourceType(Class<?> type) {
+        for (Class<?> resourceType : RESOURCE_TYPES) {
+            if (resourceType.isAssignableFrom(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

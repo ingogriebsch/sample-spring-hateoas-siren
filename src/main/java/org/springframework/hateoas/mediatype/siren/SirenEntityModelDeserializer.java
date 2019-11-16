@@ -65,21 +65,17 @@ class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel
 
     @Override
     public EntityModel<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        JavaType targetType = JacksonHelper.findRootType(this.contentType);
-
         SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
-        Object content = content(sirenEntity, targetType.getRawClass());
 
-        List<SirenLink> sirenLinks = sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList();
-        List<SirenAction> sirenActions = sirenEntity.getActions() != null ? sirenEntity.getActions() : newArrayList();
-
-        List<Link> links = linkConverter.from(SirenNavigables.of(sirenLinks, sirenActions));
+        Object content = content(sirenEntity);
+        List<Link> links = links(sirenEntity);
 
         return new EntityModel<>(content, links);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T content(SirenEntity entity, Class<T> targetType) {
+    private Object content(SirenEntity entity) {
+        JavaType targetType = JacksonHelper.findRootType(this.contentType);
         Object properties = entity.getProperties();
         if (properties == null) {
             // FIXME how to act?
@@ -87,13 +83,21 @@ class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel
 
         Class<? extends Object> propertiesType = properties.getClass();
         if (String.class.equals(propertiesType) || Primitives.isWrapperType(propertiesType)) {
-            return (T) properties;
+            return properties;
         }
 
         if (Map.class.isAssignableFrom(propertiesType)) {
-            return PropertyUtils.createObjectFromProperties(targetType, (Map<String, Object>) properties);
+            return PropertyUtils.createObjectFromProperties(targetType.getRawClass(), (Map<String, Object>) properties);
         }
 
-        return (T) properties;
+        return properties;
     }
+
+    private List<Link> links(SirenEntity sirenEntity) {
+        List<SirenLink> sirenLinks = sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList();
+        List<SirenAction> sirenActions = sirenEntity.getActions() != null ? sirenEntity.getActions() : newArrayList();
+        List<Link> links = linkConverter.from(SirenNavigables.of(sirenLinks, sirenActions));
+        return links;
+    }
+
 }
