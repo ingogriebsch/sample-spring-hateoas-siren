@@ -21,9 +21,11 @@ package org.springframework.hateoas.mediatype.siren;
 
 import static com.fasterxml.jackson.databind.type.TypeFactory.defaultInstance;
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.PropertyUtils;
 
 import lombok.NonNull;
 
@@ -64,11 +67,32 @@ class SirenRepresentationModelDeserializer extends AbstractSirenDeserializer<Rep
         throws IOException, JsonProcessingException {
         SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
 
+        Map<String, Object> properties = properties(sirenEntity);
+        List<Link> links = links(sirenEntity);
+
+        Class<?> targetType = this.getContentType().getRawClass();
+        RepresentationModel<?> resourceSupport =
+            (RepresentationModel<?>) PropertyUtils.createObjectFromProperties(targetType, properties);
+        return resourceSupport.add(links);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> properties(SirenEntity sirenEntity) {
+        Object properties = sirenEntity.getProperties();
+        if (properties == null) {
+            return newHashMap();
+        }
+
+        if (Map.class.isAssignableFrom(properties.getClass())) {
+            return (Map<String, Object>) properties;
+        }
+        return PropertyUtils.extractPropertyValues(properties);
+    }
+
+    private List<Link> links(SirenEntity sirenEntity) {
         List<SirenLink> sirenLinks = sirenEntity.getLinks() != null ? sirenEntity.getLinks() : newArrayList();
         List<SirenAction> sirenActions = sirenEntity.getActions() != null ? sirenEntity.getActions() : newArrayList();
-
-        List<Link> links = linkConverter.from(SirenNavigables.of(sirenLinks, sirenActions));
-        return new RepresentationModel<>(links);
+        return linkConverter.from(SirenNavigables.of(sirenLinks, sirenActions));
     }
 
 }

@@ -54,6 +54,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.PagedModel.PageMetadata;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.support.Employee;
+import org.springframework.hateoas.support.EmployeeResource;
 import org.springframework.hateoas.support.MappingUtils;
 import org.springframework.hateoas.support.SimpleObjectProvider;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -94,6 +95,16 @@ class Jackson2SirenModuleTest {
             void containing_link() throws Exception {
                 RepresentationModel<?> source = new RepresentationModel<>(new Link("/about", ABOUT));
                 String expected = readResource("representationmodel-containing-link.json");
+
+                String actual = write(source);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            void having_properties_containing_link() throws Exception {
+                RepresentationModel<?> source = new EmployeeResource("Peter");
+                source.add(new Link("/employee", SELF));
+                String expected = readResource("representationmodel-having-properties-containing-link.json");
 
                 String actual = write(source);
                 assertThat(actual).isEqualTo(expected);
@@ -332,6 +343,16 @@ class Jackson2SirenModuleTest {
                 RepresentationModel<?> expected = new RepresentationModel<>(new Link("/about", ABOUT));
 
                 RepresentationModel<?> actual = read(source, RepresentationModel.class);
+                assertThat(actual).isEqualTo(expected);
+            }
+
+            @Test
+            void having_properties_containing_link() throws Exception {
+                String source = readResource("representationmodel-having-properties-containing-link.json");
+                RepresentationModel<?> expected = new EmployeeResource("Peter");
+                expected.add(new Link("/employee", SELF));
+
+                RepresentationModel<?> actual = read(source, EmployeeResource.class);
                 assertThat(actual).isEqualTo(expected);
             }
 

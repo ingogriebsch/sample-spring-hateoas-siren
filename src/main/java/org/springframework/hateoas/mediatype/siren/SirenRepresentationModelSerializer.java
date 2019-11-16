@@ -19,7 +19,10 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static org.springframework.hateoas.mediatype.PropertyUtils.extractPropertyValues;
+
 import java.io.IOException;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
@@ -63,11 +66,18 @@ public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<
             .actions(navigables.getActions()) //
             .classes(classes(model)) //
             .links(navigables.getLinks()) //
+            .properties(properties(model)) //
             .title(title(model.getClass())) //
             .build();
 
         JsonSerializer<Object> serializer = provider.findValueSerializer(SirenEntity.class, property);
         serializer.serialize(sirenEntity, gen, provider);
+    }
+
+    private static Map<String, Object> properties(RepresentationModel<?> model) {
+        Map<String, Object> properties = extractPropertyValues(model);
+        properties.remove("links");
+        return properties.isEmpty() ? null : properties;
     }
 
 }
