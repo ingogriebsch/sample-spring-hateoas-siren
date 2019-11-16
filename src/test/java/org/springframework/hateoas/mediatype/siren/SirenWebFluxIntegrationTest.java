@@ -101,11 +101,14 @@ class SirenWebFluxIntegrationTest {
             .value(jsonPath("$.entities[0].properties.name", is("Frodo Baggins"))) //
             .value(jsonPath("$.entities[0].properties.role", is("ring bearer"))) //
             .value(jsonPath("$.entities[0].links[0].rel[0]", is("self"))) //
-            .value(jsonPath("$.entities[0].links[0].href", is("http://localhost/employees/0?name=" + name))) // FIXME
+            // FIXME href looks strange
+            .value(jsonPath("$.entities[0].links[0].href", is("http://localhost/employees/0?name=" + name)))
             .value(jsonPath("$.entities[0].links[1].rel[0]", is("employees"))) //
-            .value(jsonPath("$.entities[0].links[1].href", is("http://localhost/employees?name=" + name))) // FIXME
+            // FIXME href looks strange
+            .value(jsonPath("$.entities[0].links[1].href", is("http://localhost/employees?name=" + name))) //
             .value(jsonPath("$.links[0].rel[0]", is("self"))) //
-            .value(jsonPath("$.links[0].href", is("http://localhost/employees?name=" + name))); // FIXME
+            // FIXME href looks strange
+            .value(jsonPath("$.links[0].href", is("http://localhost/employees?name=" + name))); //
     }
 
     @Test

@@ -82,7 +82,7 @@ class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel
     private static <T> T content(SirenEntity entity, Class<T> targetType) {
         Object properties = entity.getProperties();
         if (properties == null) {
-            // FIXME
+            // FIXME how to act?
         }
 
         Class<? extends Object> propertiesType = properties.getClass();

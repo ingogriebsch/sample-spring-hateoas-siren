@@ -92,12 +92,12 @@ class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<Collect
     private List<Object> deserializeContent(JsonParser jp, DeserializationContext ctxt) throws IOException {
         List<JavaType> bindings = contentType.getBindings().getTypeParameters();
         if (CollectionUtils.isEmpty(bindings)) {
-            // FIXME
+            // FIXME how to act?
         }
 
         JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(bindings.iterator().next());
         if (deserializer == null) {
-            // FIXME
+            // FIXME how to act?
         }
 
         List<Object> content = newArrayList();
@@ -113,7 +113,7 @@ class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<Collect
         JsonDeserializer<Object> deserializer =
             ctxt.findContextualValueDeserializer(defaultInstance().constructType(SirenLink.class), null);
         if (deserializer == null) {
-            // FIXME
+            // FIXME how to act?
         }
 
         List<SirenLink> links = newArrayList();
@@ -130,7 +130,7 @@ class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<Collect
         JsonDeserializer<Object> deserializer =
             ctxt.findContextualValueDeserializer(defaultInstance().constructType(SirenAction.class), null);
         if (deserializer == null) {
-            // FIXME
+            // FIXME how to act?
         }
 
         List<SirenAction> actions = newArrayList();
