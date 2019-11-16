@@ -19,9 +19,12 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.springframework.hateoas.IanaLinkRelations.ITEM;
 import static org.springframework.hateoas.mediatype.PropertyUtils.extractPropertyValues;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -30,6 +33,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
@@ -67,11 +71,16 @@ public class SirenRepresentationModelSerializer extends AbstractSirenSerializer<
             .classes(classes(model)) //
             .links(navigables.getLinks()) //
             .properties(properties(model)) //
+            .rels(rels(model, gen)) //
             .title(title(model.getClass())) //
             .build();
 
         JsonSerializer<Object> serializer = provider.findValueSerializer(SirenEntity.class, property);
         serializer.serialize(sirenEntity, gen, provider);
+    }
+
+    private List<LinkRelation> rels(RepresentationModel<?> model, JsonGenerator gen) {
+        return !gen.getOutputContext().inRoot() ? newArrayList(ITEM) : newArrayList();
     }
 
     private static Map<String, Object> properties(RepresentationModel<?> model) {
