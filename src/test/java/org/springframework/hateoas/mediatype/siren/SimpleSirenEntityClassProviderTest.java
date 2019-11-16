@@ -29,6 +29,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.PagedModel.PageMetadata;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.support.EmployeeResource;
 
 class SimpleSirenEntityClassProviderTest {
 
@@ -42,6 +43,11 @@ class SimpleSirenEntityClassProviderTest {
     @Test
     void get_should_return_single_class_on_representation_model() {
         assertThat(sirenEntityClassProvider.get(new RepresentationModel<>())).containsExactly("representation");
+    }
+
+    @Test
+    void get_should_return_single_class_on_object_extending_representation_model() {
+        assertThat(sirenEntityClassProvider.get(new EmployeeResource("Peter"))).containsExactly("representation");
     }
 
     @Test

@@ -25,6 +25,9 @@ import static org.apache.commons.lang3.StringUtils.uncapitalize;
 
 import java.util.List;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 
 import lombok.NonNull;
@@ -33,7 +36,18 @@ public class SimpleSirenEntityClassProvider implements SirenEntityClassProvider 
 
     @Override
     public List<String> get(@NonNull RepresentationModel<?> model) {
-        return newArrayList(uncapitalize(substringBeforeLast(model.getClass().getSimpleName(), "Model")));
+        Class<?> modelClass = model.getClass();
+        if (PagedModel.class.isAssignableFrom(modelClass)) {
+            modelClass = PagedModel.class;
+        } else if (CollectionModel.class.isAssignableFrom(modelClass)) {
+            modelClass = CollectionModel.class;
+        } else if (EntityModel.class.isAssignableFrom(modelClass)) {
+            modelClass = EntityModel.class;
+        } else {
+            modelClass = RepresentationModel.class;
+        }
+
+        return newArrayList(uncapitalize(substringBeforeLast(modelClass.getSimpleName(), "Model")));
     }
 
 }
