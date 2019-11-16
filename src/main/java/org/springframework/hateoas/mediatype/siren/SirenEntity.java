@@ -39,7 +39,7 @@ import lombok.Value;
 @Builder
 @JsonPropertyOrder({ "class", "rel", "properties", "entities", "links", "actions", "title" })
 @Value
-class SirenEntity implements SirenEmbeddable {
+class SirenEntity {
 
     @JsonInclude(NON_EMPTY)
     @JsonProperty("class")
