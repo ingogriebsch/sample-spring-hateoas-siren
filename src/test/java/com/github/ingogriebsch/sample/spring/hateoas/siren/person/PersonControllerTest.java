@@ -28,19 +28,21 @@ import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonC
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_INSERT;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -85,9 +87,15 @@ public class PersonControllerTest {
                 newArrayList(new Person(1L, "Ingo", 44), new Person(2L, "Edina", 21), new Person(3L, "Marcus", 37));
             given(personService.findAll()).willReturn(persons);
 
-            ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).accept(HAL_JSON));
+            ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).accept(SIREN_JSON));
             actions.andExpect(status().isOk());
-            actions.andExpect(content().contentType(HAL_JSON));
+            actions.andExpect(content().contentType(SIREN_JSON));
+
+            actions.andExpect(jsonPath("$.class", is(not(empty())))) //
+                .andExpect(jsonPath("$.properties", is(not(empty())))) //
+                .andExpect(jsonPath("$.entities", is(not(empty())))) //
+                .andExpect(jsonPath("$.links", is(not(empty())))) //
+                .andExpect(jsonPath("$.actions", is(not(empty()))));
 
             verify(personService, times(1)).findAll();
             verifyNoMoreInteractions(personService);
@@ -97,9 +105,14 @@ public class PersonControllerTest {
         public void should_return_ok_without_resources_if_none_available() throws Exception {
             given(personService.findAll()).willReturn(newArrayList());
 
-            ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).accept(HAL_JSON));
+            ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).accept(SIREN_JSON));
             actions.andExpect(status().isOk());
-            actions.andExpect(content().contentType(HAL_JSON));
+            actions.andExpect(content().contentType(SIREN_JSON));
+
+            actions.andExpect(jsonPath("$.class", is(not(empty())))) //
+                .andExpect(jsonPath("$.properties", is(not(empty())))) //
+                .andExpect(jsonPath("$.links", is(not(empty())))) //
+                .andExpect(jsonPath("$.actions", is(not(empty()))));
 
             verify(personService, times(1)).findAll();
             verifyNoMoreInteractions(personService);
@@ -123,6 +136,11 @@ public class PersonControllerTest {
             actions.andExpect(status().isOk());
             actions.andExpect(content().contentType(SIREN_JSON));
 
+            actions.andExpect(jsonPath("$.class", is(not(empty())))) //
+                .andExpect(jsonPath("$.properties", is(not(empty())))) //
+                .andExpect(jsonPath("$.links", is(not(empty())))) //
+                .andExpect(jsonPath("$.actions", is(not(empty()))));
+
             verify(personService, times(1)).findOne(person.getId());
             verifyNoMoreInteractions(personService);
         }
@@ -132,7 +150,7 @@ public class PersonControllerTest {
             Long id = nextLong();
             given(personService.findOne(id)).willReturn(empty());
 
-            ResultActions actions = mockMvc.perform(get(PATH_FIND_ONE, id).accept(HAL_JSON));
+            ResultActions actions = mockMvc.perform(get(PATH_FIND_ONE, id).accept(SIREN_JSON));
             actions.andExpect(status().isNotFound());
 
             verify(personService, times(1)).findOne(id);
@@ -153,11 +171,16 @@ public class PersonControllerTest {
             PersonInput personInput = new PersonInput("Kamil", 32);
             given(personService.insert(personInput)).willReturn(new Person(1L, personInput.getName(), personInput.getAge()));
 
-            ResultActions actions = mockMvc.perform(post(PATH_INSERT).accept(HAL_JSON).contentType(APPLICATION_JSON)
+            ResultActions actions = mockMvc.perform(post(PATH_INSERT).accept(SIREN_JSON).contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(personInput)));
 
             actions.andExpect(status().isCreated());
-            actions.andExpect(content().contentType(HAL_JSON));
+            actions.andExpect(content().contentType(SIREN_JSON));
+
+            actions.andExpect(jsonPath("$.class", is(not(empty())))) //
+                .andExpect(jsonPath("$.properties", is(not(empty())))) //
+                .andExpect(jsonPath("$.links", is(not(empty())))) //
+                .andExpect(jsonPath("$.actions", is(not(empty()))));
 
             verify(personService, times(1)).insert(personInput);
             verifyNoMoreInteractions(personService);
