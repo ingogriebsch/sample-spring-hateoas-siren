@@ -19,8 +19,6 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
-
 import java.util.Collection;
 
 import org.springframework.hateoas.config.HypermediaMappingInformation;
@@ -38,7 +36,8 @@ public class SirenMediaTypeConfigurationProvider implements MediaTypeConfigurati
 
     @Override
     public boolean supportsAny(@NonNull Collection<MediaType> mediaTypes) {
-        return mediaTypes.contains(SIREN_JSON);
+        // FIXME Need to clarify how to configure this custom media type to be active!
+        return true; // mediaTypes.contains(MediaTypes.SIREN_JSON);
     }
 
 }
