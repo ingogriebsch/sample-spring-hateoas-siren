@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-public class PersonInput {
+class PersonInput {
 
     @NotNull
     @NotBlank

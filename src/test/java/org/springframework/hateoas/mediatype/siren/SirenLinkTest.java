@@ -27,18 +27,18 @@ import static org.springframework.hateoas.IanaLinkRelations.ABOUT;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-public class SirenLinkTest {
+class SirenLinkTest {
 
     @Nested
     class Builder {
 
         @Test
-        public void should_throw_exception_if_href_is_not_given() {
+        void should_throw_exception_if_href_is_not_given() {
             assertThrows(IllegalArgumentException.class, () -> SirenLink.builder().rels(newArrayList()).build());
         }
 
         @Test
-        public void should_return_link_containing_empty_rels_if_not_explicitely_defined() {
+        void should_return_link_containing_empty_rels_if_not_explicitely_defined() {
             SirenLink link = SirenLink.builder().href("/api").build();
             assertThat(link.getRels()).isNotNull().isEmpty();
         }
@@ -48,7 +48,7 @@ public class SirenLinkTest {
     class TitleResolvable {
 
         @Test
-        public void should_return_codes_respecting_given_name() {
+        void should_return_codes_respecting_given_name() {
             SirenLink.TitleResolvable titleResolvable = SirenLink.TitleResolvable.of(ABOUT);
             assertThat(titleResolvable.getCodes()).containsExactly("_link.about.title", "_link.default.title");
         }

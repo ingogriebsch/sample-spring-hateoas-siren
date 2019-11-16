@@ -30,7 +30,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.hal.RepresentationModelMixin;
 
-public class Jackson2SirenModule extends SimpleModule {
+class Jackson2SirenModule extends SimpleModule {
 
     private static final long serialVersionUID = 7377778164657569053L;
 

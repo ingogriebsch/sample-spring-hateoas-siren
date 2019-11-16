@@ -42,7 +42,7 @@ import lombok.Value;
 @Builder
 @JsonPropertyOrder({ "name", "class", "method", "href", "title", "type", "fields" })
 @Value
-public class SirenAction {
+class SirenAction {
 
     @NonNull
     private String name;

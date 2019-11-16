@@ -36,7 +36,7 @@ import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
 
-public class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedModel<?>> {
+class SirenPagedModelSerializer extends AbstractSirenSerializer<PagedModel<?>> {
 
     private static final long serialVersionUID = 9054285190464802945L;
 

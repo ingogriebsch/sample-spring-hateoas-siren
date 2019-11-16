@@ -19,6 +19,6 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
-public interface SirenEmbeddable {
+interface SirenEmbeddable {
 
 }

@@ -29,12 +29,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.support.SimpleObjectProvider;
 
-public class SirenMediaTypeConfigurationTest {
+class SirenMediaTypeConfigurationTest {
 
     private static SirenMediaTypeConfiguration sirenMediaTypeConfiguration;
 
     @BeforeAll
-    public static void beforeAll() {
+    static void beforeAll() {
         SimpleObjectProvider<SirenConfiguration> sirenConfiguration = new SimpleObjectProvider<>(new SirenConfiguration());
         SimpleObjectProvider<SirenEntityClassProvider> sirenEntityClassProvider =
             new SimpleObjectProvider<>(new SimpleSirenEntityClassProvider());
@@ -47,7 +47,7 @@ public class SirenMediaTypeConfigurationTest {
     class GetMediaTypes {
 
         @Test
-        public void should_return_matching_media_type() {
+        void should_return_matching_media_type() {
             assertThat(sirenMediaTypeConfiguration.getMediaTypes()).containsExactly(SIREN_JSON);
         }
     }
@@ -56,7 +56,7 @@ public class SirenMediaTypeConfigurationTest {
     class GetJacksonModule {
 
         @Test
-        public void should_return_matching_jackson_module() {
+        void should_return_matching_jackson_module() {
             assertThat(sirenMediaTypeConfiguration.getJacksonModule()).isNotNull().isInstanceOf(Jackson2SirenModule.class);
         }
     }
@@ -65,7 +65,7 @@ public class SirenMediaTypeConfigurationTest {
     class ConfigureObjectMapper {
 
         @Test
-        public void should_throw_exception_if_input_is_null() {
+        void should_throw_exception_if_input_is_null() {
             assertThrows(IllegalArgumentException.class, () -> sirenMediaTypeConfiguration.configureObjectMapper(null));
         }
     }

@@ -37,7 +37,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.support.MappingUtils;
 
-public class SirenLinkDiscovererTest {
+class SirenLinkDiscovererTest {
 
     private static final SirenLinkDiscoverer discoverer = new SirenLinkDiscoverer();
 
@@ -48,13 +48,13 @@ public class SirenLinkDiscovererTest {
         class FromString {
 
             @Test
-            public void should_return_empty_optional_if_not_available() throws IOException {
+            void should_return_empty_optional_if_not_available() throws IOException {
                 String source = MappingUtils.read(resource("representationmodel-containing-links.json"));
                 assertThat(discoverer.findLinkWithRel(APPENDIX, source)).isEmpty();
             }
 
             @Test
-            public void should_return_self_link() throws IOException {
+            void should_return_self_link() throws IOException {
                 String source = MappingUtils.read(resource("representationmodel-containing-links.json"));
 
                 Optional<Link> link = discoverer.findLinkWithRel(SELF, source);
@@ -63,7 +63,7 @@ public class SirenLinkDiscovererTest {
 
             @ParameterizedTest
             @CsvSource(value = { "self,/employees", "about,/about", "help,/help", "license,/license" })
-            public void should_return_matching_link(LinkRelation rel, String href) throws IOException {
+            void should_return_matching_link(LinkRelation rel, String href) throws IOException {
                 String source = MappingUtils.read(resource("representationmodel-containing-links.json"));
                 Optional<Link> link = discoverer.findLinkWithRel(rel, source);
                 assertThat(link).map(Link::getHref).hasValue(href);
@@ -74,14 +74,14 @@ public class SirenLinkDiscovererTest {
         class FromInputStream {
 
             @Test
-            public void should_return_empty_optional_if_not_available() throws IOException {
+            void should_return_empty_optional_if_not_available() throws IOException {
                 try (InputStream source = source("representationmodel-containing-links.json")) {
                     assertThat(discoverer.findLinkWithRel(APPENDIX, source)).isEmpty();
                 }
             }
 
             @Test
-            public void should_return_self_link() throws IOException {
+            void should_return_self_link() throws IOException {
                 try (InputStream source = source("representationmodel-containing-links.json")) {
                     Optional<Link> link = discoverer.findLinkWithRel(SELF, source);
                     assertThat(link).map(Link::getHref).hasValue("/employees");
@@ -90,7 +90,7 @@ public class SirenLinkDiscovererTest {
 
             @ParameterizedTest
             @CsvSource(value = { "self,/employees", "about,/about", "help,/help", "license,/license" })
-            public void should_return_matching_link(LinkRelation rel, String href) throws IOException {
+            void should_return_matching_link(LinkRelation rel, String href) throws IOException {
                 try (InputStream source = source("representationmodel-containing-links.json")) {
                     Optional<Link> link = discoverer.findLinkWithRel(rel, source);
                     assertThat(link).map(Link::getHref).hasValue(href);
@@ -107,13 +107,13 @@ public class SirenLinkDiscovererTest {
         class FromString {
 
             @Test
-            public void should_return_empty_optional_if_not_available() throws IOException {
+            void should_return_empty_optional_if_not_available() throws IOException {
                 String source = MappingUtils.read(resource("collectionmodel-containing-entitymodels.json"));
                 assertThat(discoverer.findLinksWithRel(APPENDIX, source)).isEmpty();
             }
 
             @Test
-            public void should_return_self_link() throws IOException {
+            void should_return_self_link() throws IOException {
                 String source = MappingUtils.read(resource("collectionmodel-containing-entitymodels.json"));
                 assertThat(discoverer.findLinksWithRel(SELF, source)) //
                     .extracting("href") //
@@ -121,7 +121,7 @@ public class SirenLinkDiscovererTest {
             }
 
             @Test
-            public void should_return_employee_links() throws IOException {
+            void should_return_employee_links() throws IOException {
                 String source = MappingUtils.read(resource("collectionmodel-containing-entitymodels.json"));
                 assertThat(discoverer.findLinksWithRel("employee", source)) //
                     .extracting("href") //
@@ -133,14 +133,14 @@ public class SirenLinkDiscovererTest {
         class FromInputStream {
 
             @Test
-            public void should_return_empty_optional_if_not_available() throws IOException {
+            void should_return_empty_optional_if_not_available() throws IOException {
                 try (InputStream source = source("collectionmodel-containing-entitymodels.json")) {
                     assertThat(discoverer.findLinkWithRel(APPENDIX, source)).isEmpty();
                 }
             }
 
             @Test
-            public void should_return_self_link() throws IOException {
+            void should_return_self_link() throws IOException {
                 try (InputStream source = source("collectionmodel-containing-entitymodels.json")) {
                     assertThat(discoverer.findLinksWithRel(SELF, source)) //
                         .extracting("href") //
@@ -149,7 +149,7 @@ public class SirenLinkDiscovererTest {
             }
 
             @Test
-            public void should_return_employee_links() throws IOException {
+            void should_return_employee_links() throws IOException {
                 try (InputStream source = source("collectionmodel-containing-entitymodels.json")) {
                     assertThat(discoverer.findLinksWithRel("employee", source)) //
                         .extracting("href") //

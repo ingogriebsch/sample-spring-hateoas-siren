@@ -27,7 +27,7 @@ import org.springframework.http.MediaType;
 
 import lombok.NonNull;
 
-public class SirenMediaTypeConfigurationProvider implements MediaTypeConfigurationProvider {
+class SirenMediaTypeConfigurationProvider implements MediaTypeConfigurationProvider {
 
     @Override
     public Class<? extends HypermediaMappingInformation> getConfiguration() {

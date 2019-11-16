@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-public class SirenMediaTypeConfiguration implements HypermediaMappingInformation {
+class SirenMediaTypeConfiguration implements HypermediaMappingInformation {
 
     @NonNull
     private final ObjectProvider<SirenConfiguration> sirenConfiguration;

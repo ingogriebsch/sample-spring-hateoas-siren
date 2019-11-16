@@ -31,25 +31,25 @@ import org.springframework.stereotype.Service;
 import lombok.NonNull;
 
 @Service
-public class PersonService {
+class PersonService {
 
     private final List<Person> persons = newArrayList();
 
-    public Collection<Person> findAll() {
+    Collection<Person> findAll() {
         return newArrayList(persons);
     }
 
-    public Optional<Person> findOne(@NonNull Long id) {
+    Optional<Person> findOne(@NonNull Long id) {
         return persons.stream().filter(p -> p.getId().equals(id)).limit(1).findAny();
     }
 
-    public Person insert(@NonNull PersonInput personInput) {
+    Person insert(@NonNull PersonInput personInput) {
         Person person = new Person(nextId(persons), personInput.getName(), personInput.getAge());
         persons.add(person);
         return person;
     }
 
-    public Optional<Person> update(@NonNull Long id, @NonNull PersonInput personInput) {
+    Optional<Person> update(@NonNull Long id, @NonNull PersonInput personInput) {
         Optional<Person> person = persons.stream().filter(p -> id.equals(p.getId())).collect(toOptional());
         person.ifPresent(p -> {
             p.setName(personInput.getName());
@@ -58,7 +58,7 @@ public class PersonService {
         return person;
     }
 
-    public boolean delete(@NonNull Long id) {
+    boolean delete(@NonNull Long id) {
         return persons.removeIf(p -> p.getId().equals(id));
     }
 

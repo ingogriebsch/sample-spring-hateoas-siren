@@ -42,7 +42,7 @@ import org.springframework.hateoas.mediatype.PropertyUtils;
 
 import lombok.NonNull;
 
-public class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel<?>> {
+class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel<?>> {
 
     private static final long serialVersionUID = -3683235541542548855L;
     private static final JavaType TYPE = defaultInstance().constructType(EntityModel.class);

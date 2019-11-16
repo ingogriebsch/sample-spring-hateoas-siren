@@ -37,7 +37,7 @@ import org.springframework.hateoas.mediatype.MessageResolver;
 
 import lombok.NonNull;
 
-public class SirenCollectionModelSerializer extends AbstractSirenSerializer<CollectionModel<?>> {
+class SirenCollectionModelSerializer extends AbstractSirenSerializer<CollectionModel<?>> {
 
     private static final long serialVersionUID = 9054285190464802945L;
 

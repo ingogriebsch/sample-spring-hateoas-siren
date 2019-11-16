@@ -29,7 +29,7 @@ import org.springframework.http.HttpMethod;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-public class SirenAffordanceModel extends AffordanceModel {
+class SirenAffordanceModel extends AffordanceModel {
 
     public SirenAffordanceModel(String name, Link link, HttpMethod httpMethod, InputPayloadMetadata inputType,
         List<QueryParameter> queryMethodParameters, PayloadMetadata outputType) {

@@ -41,7 +41,7 @@ import org.springframework.lang.Nullable;
 
 import lombok.NonNull;
 
-public class SirenHandlerInstantiator extends HandlerInstantiator {
+class SirenHandlerInstantiator extends HandlerInstantiator {
 
     private final Map<Class<?>, Object> serializers = new HashMap<>();
     private final AutowireCapableBeanFactory beanFactory;

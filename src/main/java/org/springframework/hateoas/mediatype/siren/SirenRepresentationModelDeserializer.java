@@ -38,7 +38,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import lombok.NonNull;
 
-public class SirenRepresentationModelDeserializer extends AbstractSirenDeserializer<RepresentationModel<?>> {
+class SirenRepresentationModelDeserializer extends AbstractSirenDeserializer<RepresentationModel<?>> {
 
     private static final long serialVersionUID = -3683235541542548855L;
     private static final JavaType TYPE = defaultInstance().constructType(RepresentationModel.class);

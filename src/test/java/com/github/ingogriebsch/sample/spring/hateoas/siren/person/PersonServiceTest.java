@@ -36,13 +36,13 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-public class PersonServiceTest {
+class PersonServiceTest {
 
     @Nested
     class FindAll {
 
         @Test
-        public void should_return_available_persons() throws Exception {
+        void should_return_available_persons() throws Exception {
             PersonService personService = new PersonService();
             List<PersonInput> personInputs =
                 newArrayList(personInput(), personInput(), personInput(), personInput(), personInput());
@@ -60,12 +60,12 @@ public class PersonServiceTest {
     class FindOne {
 
         @Test
-        public void should_throw_exception_if_called_with_null() throws Exception {
+        void should_throw_exception_if_called_with_null() throws Exception {
             assertThrows(IllegalArgumentException.class, () -> new PersonService().findOne(null));
         }
 
         @Test
-        public void should_return_matching_person_if_available() throws Exception {
+        void should_return_matching_person_if_available() throws Exception {
             PersonService personService = new PersonService();
             List<PersonInput> personInputs = newArrayList(personInput(), personInput(), personInput());
             List<Person> persons = personInputs.stream().map(p -> personService.insert(p)).collect(toList());
@@ -79,7 +79,7 @@ public class PersonServiceTest {
         }
 
         @Test
-        public void should_return_empty_optional_if_not_available() throws Exception {
+        void should_return_empty_optional_if_not_available() throws Exception {
             PersonService personService = new PersonService();
             Optional<Person> optional = personService.findOne(nextLong());
             assertThat(optional).isNotNull();
@@ -92,12 +92,12 @@ public class PersonServiceTest {
     class Insert {
 
         @Test
-        public void should_throw_exception_if_called_with_null() throws Exception {
+        void should_throw_exception_if_called_with_null() throws Exception {
             assertThrows(IllegalArgumentException.class, () -> new PersonService().insert(null));
         }
 
         @Test
-        public void should_return_person_instance_if_input_is_legal() throws Exception {
+        void should_return_person_instance_if_input_is_legal() throws Exception {
             PersonService personService = new PersonService();
             PersonInput personInput = personInput();
 
@@ -111,17 +111,17 @@ public class PersonServiceTest {
     class Update {
 
         @Test
-        public void should_throw_exception_if_called_with_null_id() throws Exception {
+        void should_throw_exception_if_called_with_null_id() throws Exception {
             assertThrows(IllegalArgumentException.class, () -> new PersonService().update(null, new PersonInput("name", 23)));
         }
 
         @Test
-        public void should_throw_exception_if_called_with_null_input() throws Exception {
+        void should_throw_exception_if_called_with_null_input() throws Exception {
             assertThrows(IllegalArgumentException.class, () -> new PersonService().update(1L, null));
         }
 
         @Test
-        public void should_return_optional_containing_updated_person_instance_if_person_is_known() throws Exception {
+        void should_return_optional_containing_updated_person_instance_if_person_is_known() throws Exception {
             PersonService personService = new PersonService();
             PersonInput personInput = personInput();
             Person person = personService.insert(personInput);
@@ -135,7 +135,7 @@ public class PersonServiceTest {
         }
 
         @Test
-        public void should_return_empty_optional_if_person_is_not_known() throws Exception {
+        void should_return_empty_optional_if_person_is_not_known() throws Exception {
             PersonService personService = new PersonService();
             PersonInput personInput = personInput();
 
@@ -150,18 +150,18 @@ public class PersonServiceTest {
     class Delete {
 
         @Test
-        public void should_throw_exception_if_called_with_null() throws Exception {
+        void should_throw_exception_if_called_with_null() throws Exception {
             assertThrows(IllegalArgumentException.class, () -> new PersonService().delete(null));
         }
 
         @Test
-        public void should_return_false_if_person_is_not_known() throws Exception {
+        void should_return_false_if_person_is_not_known() throws Exception {
             PersonService personService = new PersonService();
             assertThat(personService.delete(nextLong())).isFalse();
         }
 
         @Test
-        public void should_return_true_if_person_is_known() throws Exception {
+        void should_return_true_if_person_is_known() throws Exception {
             PersonService personService = new PersonService();
             List<PersonInput> personInputs = newArrayList(personInput(), personInput(), personInput());
             List<Person> persons = personInputs.stream().map(p -> personService.insert(p)).collect(toList());

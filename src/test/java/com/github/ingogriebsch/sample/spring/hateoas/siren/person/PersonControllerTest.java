@@ -62,7 +62,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(PersonController.class)
-public class PersonControllerTest {
+class PersonControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -77,12 +77,12 @@ public class PersonControllerTest {
     class FindAll {
 
         @AfterEach
-        public void afterEach() {
+        void afterEach() {
             reset(personService);
         }
 
         @Test
-        public void should_return_ok_including_resources_if_some_available() throws Exception {
+        void should_return_ok_including_resources_if_some_available() throws Exception {
             List<Person> persons =
                 newArrayList(new Person(1L, "Ingo", 44), new Person(2L, "Edina", 21), new Person(3L, "Marcus", 37));
             given(personService.findAll()).willReturn(persons);
@@ -102,7 +102,7 @@ public class PersonControllerTest {
         }
 
         @Test
-        public void should_return_ok_without_resources_if_none_available() throws Exception {
+        void should_return_ok_without_resources_if_none_available() throws Exception {
             given(personService.findAll()).willReturn(newArrayList());
 
             ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).accept(SIREN_JSON));
@@ -123,12 +123,12 @@ public class PersonControllerTest {
     class FindOne {
 
         @AfterEach
-        public void afterEach() {
+        void afterEach() {
             reset(personService);
         }
 
         @Test
-        public void shoud_return_ok_and_person_resource_if_available() throws Exception {
+        void shoud_return_ok_and_person_resource_if_available() throws Exception {
             Person person = new Person(1L, "Kamil", 32);
             given(personService.findOne(person.getId())).willReturn(of(person));
 
@@ -146,7 +146,7 @@ public class PersonControllerTest {
         }
 
         @Test
-        public void should_return_not_found_if_not_available() throws Exception {
+        void should_return_not_found_if_not_available() throws Exception {
             Long id = nextLong();
             given(personService.findOne(id)).willReturn(empty());
 
@@ -162,12 +162,12 @@ public class PersonControllerTest {
     class Insert {
 
         @AfterEach
-        public void afterEach() {
+        void afterEach() {
             reset(personService);
         }
 
         @Test
-        public void should_return_created_if_input_is_legal() throws Exception {
+        void should_return_created_if_input_is_legal() throws Exception {
             PersonInput personInput = new PersonInput("Kamil", 32);
             given(personService.insert(personInput)).willReturn(new Person(1L, personInput.getName(), personInput.getAge()));
 
@@ -187,7 +187,7 @@ public class PersonControllerTest {
         }
 
         @Test
-        public void should_return_bad_request_if_input_is_not_legal() throws Exception {
+        void should_return_bad_request_if_input_is_not_legal() throws Exception {
             ResultActions actions = mockMvc.perform(
                 post(PATH_INSERT).contentType(APPLICATION_JSON).content(objectMapper.writeValueAsString(new PersonInput())));
 
@@ -201,7 +201,7 @@ public class PersonControllerTest {
     class Update {
 
         @AfterEach
-        public void afterEach() {
+        void afterEach() {
             reset(personService);
         }
 
@@ -212,12 +212,12 @@ public class PersonControllerTest {
     class Delete {
 
         @AfterEach
-        public void afterEach() {
+        void afterEach() {
             reset(personService);
         }
 
         @Test
-        public void should_return_ok_if_known() throws Exception {
+        void should_return_ok_if_known() throws Exception {
             Long id = nextLong();
             given(personService.delete(id)).willReturn(true);
 
@@ -229,7 +229,7 @@ public class PersonControllerTest {
         }
 
         @Test
-        public void should_return_not_found_if_not_known() throws Exception {
+        void should_return_not_found_if_not_known() throws Exception {
             Long id = nextLong();
             given(personService.delete(id)).willReturn(false);
 

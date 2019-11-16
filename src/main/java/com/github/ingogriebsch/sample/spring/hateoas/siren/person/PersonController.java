@@ -50,7 +50,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-public class PersonController {
+class PersonController {
 
     static final String PATH_FIND_ALL = "/persons";
     static final String PATH_FIND_ONE = "/persons/{id}";
@@ -63,27 +63,27 @@ public class PersonController {
     private final PersonService personService;
 
     @GetMapping(path = PATH_FIND_ALL)
-    public ResponseEntity<CollectionModel<EntityModel<Person>>> findAll() {
+    ResponseEntity<CollectionModel<EntityModel<Person>>> findAll() {
         return ok(collectionModel(personService.findAll()));
     }
 
     @GetMapping(path = PATH_FIND_ONE)
-    public ResponseEntity<EntityModel<Person>> findOne(@PathVariable Long id) {
+    ResponseEntity<EntityModel<Person>> findOne(@PathVariable Long id) {
         return personService.findOne(id).map(p -> ok(entityModel(p))).orElse(notFound().build());
     }
 
     @PostMapping(path = PATH_INSERT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<Person>> insert(@RequestBody @Valid PersonInput personInput) {
+    ResponseEntity<EntityModel<Person>> insert(@RequestBody @Valid PersonInput personInput) {
         return status(CREATED).body(entityModel(personService.insert(personInput)));
     }
 
     @PutMapping(path = PATH_UPDATE, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<Person>> update(@PathVariable Long id, @RequestBody @Valid PersonInput personInput) {
+    ResponseEntity<EntityModel<Person>> update(@PathVariable Long id, @RequestBody @Valid PersonInput personInput) {
         return personService.update(id, personInput).map(p -> ok(entityModel(p))).orElse(notFound().build());
     }
 
     @DeleteMapping(path = PATH_DELETE)
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    ResponseEntity<Void> delete(@PathVariable Long id) {
         return personService.delete(id) ? ok().build() : notFound().build();
     }
 

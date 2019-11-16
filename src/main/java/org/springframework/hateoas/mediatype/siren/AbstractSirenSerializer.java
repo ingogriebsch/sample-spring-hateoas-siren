@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.MessageResolver;
 
-public abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> extends ContainerSerializer<T>
+abstract class AbstractSirenSerializer<T extends RepresentationModel<?>> extends ContainerSerializer<T>
     implements ContextualSerializer {
 
     private static final long serialVersionUID = -8665900081601124431L;

@@ -57,7 +57,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ContextConfiguration
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class SirenWebMvcIntegrationTest {
+class SirenWebMvcIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;
@@ -71,7 +71,7 @@ public class SirenWebMvcIntegrationTest {
     }
 
     @Test
-    public void all() throws Exception {
+    void all() throws Exception {
         ResultActions result = mockMvc.perform(get("/employees").accept(SIREN_JSON));
         result.andExpect(status().isOk());
 
@@ -95,7 +95,7 @@ public class SirenWebMvcIntegrationTest {
     }
 
     @Test
-    public void search() throws Exception {
+    void search() throws Exception {
         ResultActions result = mockMvc.perform(get("/employees/search").param("name", "Frodo").accept(SIREN_JSON));
         result.andExpect(status().isOk());
 
@@ -127,7 +127,7 @@ public class SirenWebMvcIntegrationTest {
     }
 
     @Test
-    public void newEmployee() throws Exception {
+    void newEmployee() throws Exception {
         String specBasedJson = MappingUtils.read(new ClassPathResource("new-employee.json", getClass()));
 
         ResultActions result = mockMvc.perform(post("/employees").content(specBasedJson).contentType(SIREN_JSON));
@@ -135,7 +135,7 @@ public class SirenWebMvcIntegrationTest {
     }
 
     @Test
-    public void updateEmployee() throws Exception {
+    void updateEmployee() throws Exception {
         String specBasedJson = MappingUtils.read(new ClassPathResource("update-employee.json", getClass()));
 
         ResultActions result = mockMvc.perform(put("/employees/0").content(specBasedJson).contentType(SIREN_JSON));
@@ -143,7 +143,7 @@ public class SirenWebMvcIntegrationTest {
     }
 
     @Test
-    public void partiallyUpdateEmployee() throws Exception {
+    void partiallyUpdateEmployee() throws Exception {
         String specBasedJson = MappingUtils.read(new ClassPathResource("partially-update-employee.json", getClass()));
 
         ResultActions result = mockMvc.perform(patch("/employees/0").content(specBasedJson).contentType(SIREN_JSON));

@@ -41,7 +41,7 @@ import org.springframework.util.CollectionUtils;
 
 import lombok.NonNull;
 
-public class SirenPagedModelDeserializer extends AbstractSirenDeserializer<PagedModel<?>> {
+class SirenPagedModelDeserializer extends AbstractSirenDeserializer<PagedModel<?>> {
 
     private static final long serialVersionUID = 4364222303241126575L;
     private static final JavaType TYPE = defaultInstance().constructType(PagedModel.class);

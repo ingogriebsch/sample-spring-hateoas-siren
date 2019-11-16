@@ -52,7 +52,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 @ContextConfiguration
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-public class SirenWebFluxIntegrationTest {
+class SirenWebFluxIntegrationTest {
 
     @Autowired
     private WebTestClient testClient;
@@ -63,7 +63,7 @@ public class SirenWebFluxIntegrationTest {
     }
 
     @Test
-    public void all() throws Exception {
+    void all() throws Exception {
         ResponseSpec response = testClient.get().uri("http://localhost/employees").accept(SIREN_JSON).exchange();
         response.expectStatus().isOk().expectHeader().contentType(SIREN_JSON);
 
@@ -87,7 +87,7 @@ public class SirenWebFluxIntegrationTest {
     }
 
     @Test
-    public void search() throws Exception {
+    void search() throws Exception {
         String name = "Frodo";
         ResponseSpec response = testClient.get().uri(b -> {
             return b.scheme("http").host("localhost").path("/employees/search").queryParam("name", name).build();
@@ -109,7 +109,7 @@ public class SirenWebFluxIntegrationTest {
     }
 
     @Test
-    public void findOne() throws Exception {
+    void findOne() throws Exception {
         ResponseSpec response = testClient.get().uri("http://localhost/employees/0").accept(SIREN_JSON).exchange();
         response.expectStatus().isOk().expectHeader().contentType(SIREN_JSON);
 
@@ -124,7 +124,7 @@ public class SirenWebFluxIntegrationTest {
     }
 
     @Test
-    public void newEmployee() throws Exception {
+    void newEmployee() throws Exception {
         ResponseSpec response = testClient.post().uri("http://localhost/employees").contentType(SIREN_JSON)
             .bodyValue(read(new ClassPathResource("new-employee.json", getClass()))).exchange();
 
@@ -133,7 +133,7 @@ public class SirenWebFluxIntegrationTest {
     }
 
     @Test
-    public void updateEmployee() throws Exception {
+    void updateEmployee() throws Exception {
         ResponseSpec response = testClient.put().uri("http://localhost/employees/0").contentType(SIREN_JSON)
             .bodyValue(read(new ClassPathResource("update-employee.json", getClass()))).exchange();
 
@@ -142,7 +142,7 @@ public class SirenWebFluxIntegrationTest {
     }
 
     @Test
-    public void partiallyUpdateEmployee() throws Exception {
+    void partiallyUpdateEmployee() throws Exception {
         ResponseSpec response = testClient.patch().uri("http://localhost/employees/0").contentType(SIREN_JSON)
             .bodyValue(read(new ClassPathResource("update-employee.json", getClass()))).exchange();
 

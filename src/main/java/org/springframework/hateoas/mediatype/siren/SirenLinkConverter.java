@@ -42,7 +42,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class SirenLinkConverter {
+class SirenLinkConverter {
 
     @NonNull
     private final MessageResolver messageResolver;

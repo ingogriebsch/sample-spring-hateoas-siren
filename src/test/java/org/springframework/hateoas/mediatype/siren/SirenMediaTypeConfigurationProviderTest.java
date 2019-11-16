@@ -29,13 +29,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-public class SirenMediaTypeConfigurationProviderTest {
+class SirenMediaTypeConfigurationProviderTest {
 
     @Nested
     class GetConfiguration {
 
         @Test
-        public void should_return_matching_configuration_class() {
+        void should_return_matching_configuration_class() {
             assertThat(new SirenMediaTypeConfigurationProvider().getConfiguration()).isEqualTo(SirenMediaTypeConfiguration.class);
         }
     }
@@ -44,20 +44,20 @@ public class SirenMediaTypeConfigurationProviderTest {
     class SupportsAny {
 
         @Test
-        public void should_throw_exception_if_input_is_null() {
+        void should_throw_exception_if_input_is_null() {
             Assertions.assertThrows(IllegalArgumentException.class,
                 () -> new SirenMediaTypeConfigurationProvider().supportsAny(null));
         }
 
         @Test
-        public void should_return_true_if_supported_media_type_is_contained() {
+        void should_return_true_if_supported_media_type_is_contained() {
             assertThat(new SirenMediaTypeConfigurationProvider().supportsAny(newArrayList(SIREN_JSON))).isTrue();
         }
 
         // FIXME Check the corresponding provider method!
         @Disabled
         @Test
-        public void should_return_false_if_supported_media_type_is_not_contained() {
+        void should_return_false_if_supported_media_type_is_not_contained() {
             assertThat(new SirenMediaTypeConfigurationProvider().supportsAny(newArrayList(HAL_FORMS_JSON))).isFalse();
         }
     }

@@ -17,13 +17,9 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren;
+package com.github.ingogriebsch.sample.spring.hateoas.siren.person;
 
 import static com.google.common.collect.Lists.newArrayList;
-
-import com.github.ingogriebsch.sample.spring.hateoas.siren.person.Person;
-import com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonInput;
-import com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonService;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -35,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class Startup implements CommandLineRunner {
+class Startup implements CommandLineRunner {
 
     @NonNull
     private final PersonService personService;

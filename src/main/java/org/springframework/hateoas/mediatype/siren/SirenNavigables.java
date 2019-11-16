@@ -35,7 +35,7 @@ import lombok.NonNull;
 @AllArgsConstructor(access = PRIVATE)
 @EqualsAndHashCode
 @Getter
-public class SirenNavigables {
+class SirenNavigables {
 
     private final List<SirenLink> links;
     private final List<SirenAction> actions;

@@ -40,7 +40,7 @@ import org.springframework.util.CollectionUtils;
 
 import lombok.NonNull;
 
-public class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<CollectionModel<?>> {
+class SirenCollectionModelDeserializer extends AbstractSirenDeserializer<CollectionModel<?>> {
 
     private static final long serialVersionUID = 4364222303241126575L;
     private static final JavaType TYPE = defaultInstance().constructType(CollectionModel.class);

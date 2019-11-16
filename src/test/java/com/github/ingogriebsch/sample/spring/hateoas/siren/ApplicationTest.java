@@ -26,10 +26,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class ApplicationTest {
+class ApplicationTest {
 
     @Test
-    public void main_should_load_context() {
+    void main_should_load_context() {
         main(new String[] { "--server.port=0" });
     }
 

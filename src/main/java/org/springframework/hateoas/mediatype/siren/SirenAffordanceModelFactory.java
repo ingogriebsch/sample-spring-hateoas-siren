@@ -32,7 +32,7 @@ import org.springframework.hateoas.mediatype.AffordanceModelFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
-public class SirenAffordanceModelFactory implements AffordanceModelFactory {
+class SirenAffordanceModelFactory implements AffordanceModelFactory {
 
     @Override
     public MediaType getMediaType() {

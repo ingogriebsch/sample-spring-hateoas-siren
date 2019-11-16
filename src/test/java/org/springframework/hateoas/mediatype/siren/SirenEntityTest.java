@@ -25,13 +25,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.support.Employee;
 
-public class SirenEntityTest {
+class SirenEntityTest {
 
     @Nested
     class Builder {
 
         @Test
-        public void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
+        void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
             SirenEntity sirenEntity = SirenEntity.builder().build();
             assertThat(sirenEntity.getActions()).isEmpty();
             assertThat(sirenEntity.getClasses()).isNull();
@@ -47,7 +47,7 @@ public class SirenEntityTest {
     class TitleResolvable {
 
         @Test
-        public void should_return_codes_respecting_given_name() {
+        void should_return_codes_respecting_given_name() {
             SirenEntity.TitleResolvable titleResolvable = SirenEntity.TitleResolvable.of(Employee.class);
             assertThat(titleResolvable.getCodes()).containsExactly("_entity." + Employee.class.getName() + ".title",
                 "_entity." + Employee.class.getSimpleName() + ".title", "_entity.default.title");

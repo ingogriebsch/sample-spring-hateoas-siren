@@ -27,30 +27,30 @@ import static org.springframework.http.HttpMethod.GET;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-public class SirenActionTest {
+class SirenActionTest {
 
     @Nested
     class Builder {
 
         @Test
-        public void should_throw_exception_if_href_is_not_given() {
+        void should_throw_exception_if_href_is_not_given() {
             assertThrows(IllegalArgumentException.class, () -> SirenAction.builder().name("name").build());
         }
 
         @Test
-        public void should_throw_exception_if_name_is_not_given() {
+        void should_throw_exception_if_name_is_not_given() {
             assertThrows(IllegalArgumentException.class, () -> SirenAction.builder().href("/api").build());
         }
 
         @Test
-        public void should_have_http_method_even_if_not_defined_explicitely() {
+        void should_have_http_method_even_if_not_defined_explicitely() {
             SirenAction action = SirenAction.builder().name("name").href("/api").build();
             assertThat(action).isNotNull();
             assertThat(action.getMethod()).isEqualTo(GET);
         }
 
         @Test
-        public void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
+        void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
             SirenAction action = SirenAction.builder().name("name").href("/api").build();
             assertThat(action.getClasses()).isNull();
             assertThat(action.getFields()).isEmpty();
@@ -64,7 +64,7 @@ public class SirenActionTest {
     class TitleResolvable {
 
         @Test
-        public void should_return_codes_respecting_given_name() {
+        void should_return_codes_respecting_given_name() {
             SirenAction.TitleResolvable titleResolvable = SirenAction.TitleResolvable.of("name");
             assertThat(titleResolvable.getCodes()).containsExactly("_action.name.title", "_action.default.title");
         }
@@ -77,12 +77,12 @@ public class SirenActionTest {
         class Builder {
 
             @Test
-            public void should_throw_exception_if_name_is_not_given() {
+            void should_throw_exception_if_name_is_not_given() {
                 assertThrows(IllegalArgumentException.class, () -> SirenAction.Field.builder().build());
             }
 
             @Test
-            public void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
+            void should_return_instance_having_null_or_empty_or_default_references_if_not_defined_explicitely() {
                 SirenAction.Field field = SirenAction.Field.builder().name("name").build();
                 assertThat(field.getClasses()).isNull();
                 assertThat(field.getTitle()).isNull();
@@ -95,7 +95,7 @@ public class SirenActionTest {
         class TitleResolvable {
 
             @Test
-            public void should_return_codes_respecting_given_name() {
+            void should_return_codes_respecting_given_name() {
                 SirenAction.Field.TitleResolvable titleResolvable = SirenAction.Field.TitleResolvable.of("name");
                 assertThat(titleResolvable.getCodes()).containsExactly("_field.name.title", "_field.default.title");
             }

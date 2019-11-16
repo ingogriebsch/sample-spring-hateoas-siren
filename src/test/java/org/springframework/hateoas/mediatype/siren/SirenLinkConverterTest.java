@@ -44,12 +44,12 @@ import org.springframework.hateoas.support.MappingUtils;
 import org.springframework.hateoas.support.StaticMessageResolver;
 import org.springframework.hateoas.support.WebMvcEmployeeController;
 
-public class SirenLinkConverterTest {
+class SirenLinkConverterTest {
 
     private static ObjectMapper objectMapper;
 
     @BeforeAll
-    public static void beforeAll() {
+    static void beforeAll() {
         objectMapper = new ObjectMapper();
         objectMapper.configure(INDENT_OUTPUT, true);
     }
@@ -58,7 +58,7 @@ public class SirenLinkConverterTest {
     class Ctor {
 
         @Test
-        public void should_throw_exception_if_input_is_null() {
+        void should_throw_exception_if_input_is_null() {
             assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(null));
         }
     }
@@ -67,12 +67,12 @@ public class SirenLinkConverterTest {
     class To {
 
         @Test
-        public void should_throw_exception_if_input_is_null() {
+        void should_throw_exception_if_input_is_null() {
             assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(DEFAULTS_ONLY).to(null));
         }
 
         @Test
-        public void containing_link_with_href_and_rel() throws IOException {
+        void containing_link_with_href_and_rel() throws IOException {
             Link source = new Link("/employees/1", SELF);
             SirenNavigables expected = read("navigables-containing-link-with-href-and-rel.json");
 
@@ -83,7 +83,7 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void containing_link_with_title_from_input() throws IOException {
+        void containing_link_with_title_from_input() throws IOException {
             Link source = new Link("/employees/1", SELF).withTitle("title");
             SirenNavigables expected = read("navigables-containing-link-with-title.json");
 
@@ -94,7 +94,7 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void containing_link_with_title_from_message_resolver() throws IOException {
+        void containing_link_with_title_from_message_resolver() throws IOException {
             Link source = new Link("/employees/1", SELF);
             SirenNavigables expected = read("navigables-containing-link-with-title.json");
 
@@ -105,7 +105,7 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void containing_link_with_title_from_input_even_if_available_through_message_resolver() throws IOException {
+        void containing_link_with_title_from_input_even_if_available_through_message_resolver() throws IOException {
             Link source = new Link("/employees/1", SELF).withTitle("title");
             SirenNavigables expected = read("navigables-containing-link-with-title.json");
 
@@ -116,7 +116,7 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void containing_link_and_action_representing_link_and_affordance() throws IOException {
+        void containing_link_and_action_representing_link_and_affordance() throws IOException {
             WebMvcEmployeeController controller = methodOn(WebMvcEmployeeController.class);
             Link source = linkTo(controller.findOne(1)).withSelfRel().andAffordance(afford(controller.updateEmployee(null, 1)));
             SirenNavigables expected = read("navigables-containing-link-and-action-representing-link-with-affordance.json");
@@ -133,12 +133,12 @@ public class SirenLinkConverterTest {
     class From {
 
         @Test
-        public void should_throw_exception_if_input_is_null() {
+        void should_throw_exception_if_input_is_null() {
             assertThrows(IllegalArgumentException.class, () -> new SirenLinkConverter(DEFAULTS_ONLY).from(null));
         }
 
         @Test
-        public void containing_link_with_href_and_rel() throws IOException {
+        void containing_link_with_href_and_rel() throws IOException {
             SirenNavigables source = read("navigables-containing-link-with-href-and-rel.json");
             List<Link> expected = newArrayList(new Link("/employees/1", SELF));
 
@@ -149,7 +149,7 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void containing_link_with_title() throws IOException {
+        void containing_link_with_title() throws IOException {
             SirenNavigables source = read("navigables-containing-link-with-title.json");
             List<Link> expected = newArrayList(new Link("/employees/1", SELF).withTitle("title"));
 
@@ -160,7 +160,7 @@ public class SirenLinkConverterTest {
         }
 
         @Test
-        public void containing_link_with_type() throws IOException {
+        void containing_link_with_type() throws IOException {
             SirenNavigables source = read("navigables-containing-link-with-type.json");
             List<Link> expected = newArrayList(new Link("/employees/1", SELF).withType(APPLICATION_JSON_VALUE));
 

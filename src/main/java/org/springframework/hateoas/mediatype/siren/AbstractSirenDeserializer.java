@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
 
 import org.springframework.hateoas.RepresentationModel;
 
-public abstract class AbstractSirenDeserializer<T extends RepresentationModel<?>> extends ContainerDeserializerBase<T>
+abstract class AbstractSirenDeserializer<T extends RepresentationModel<?>> extends ContainerDeserializerBase<T>
     implements ContextualDeserializer {
 
     private static final long serialVersionUID = 3796755247545654672L;
