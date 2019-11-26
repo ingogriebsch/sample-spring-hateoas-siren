@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-class Startup implements CommandLineRunner {
+class PersonInitializer implements CommandLineRunner {
 
     @NonNull
     private final PersonService personService;

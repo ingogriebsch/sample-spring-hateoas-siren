@@ -19,23 +19,17 @@
  */
 package com.github.ingogriebsch.sample.spring.hateoas.siren.person;
 
-import static java.util.stream.Collectors.toList;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
 
-import java.util.Collection;
-
 import javax.validation.Valid;
 
-import org.springframework.hateoas.CollectionModel;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,54 +50,35 @@ class PersonController {
     static final String PATH_FIND_ONE = "/persons/{id}";
     static final String PATH_INSERT = PATH_FIND_ALL;
     static final String PATH_UPDATE = PATH_FIND_ONE;
-    static final String PATH_PATCH = PATH_FIND_ONE;
     static final String PATH_DELETE = PATH_FIND_ONE;
 
     @NonNull
     private final PersonService personService;
+    @NonNull
+    private final PersonModelAssembler personModelAssembler;
 
     @GetMapping(path = PATH_FIND_ALL)
-    ResponseEntity<CollectionModel<EntityModel<Person>>> findAll() {
-        return ok(collectionModel(personService.findAll()));
+    ResponseEntity<PagedModel<EntityModel<Person>>> findAll(Pageable pageable) {
+        return ok(personModelAssembler.toPagedModel(personService.findAll(pageable)));
     }
 
     @GetMapping(path = PATH_FIND_ONE)
     ResponseEntity<EntityModel<Person>> findOne(@PathVariable Long id) {
-        return personService.findOne(id).map(p -> ok(entityModel(p))).orElse(notFound().build());
+        return personService.findOne(id).map(p -> ok(personModelAssembler.toModel(p))).orElse(notFound().build());
     }
 
     @PostMapping(path = PATH_INSERT, consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<EntityModel<Person>> insert(@RequestBody @Valid PersonInput personInput) {
-        return status(CREATED).body(entityModel(personService.insert(personInput)));
+        return status(CREATED).body(personModelAssembler.toModel(personService.insert(personInput)));
     }
 
     @PutMapping(path = PATH_UPDATE, consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<EntityModel<Person>> update(@PathVariable Long id, @RequestBody @Valid PersonInput personInput) {
-        return personService.update(id, personInput).map(p -> ok(entityModel(p))).orElse(notFound().build());
+        return personService.update(id, personInput).map(p -> ok(personModelAssembler.toModel(p))).orElse(notFound().build());
     }
 
     @DeleteMapping(path = PATH_DELETE)
     ResponseEntity<Void> delete(@PathVariable Long id) {
         return personService.delete(id) ? ok().build() : notFound().build();
     }
-
-    private static CollectionModel<EntityModel<Person>> collectionModel(Collection<Person> persons) {
-        CollectionModel<EntityModel<Person>> collectionModel = new CollectionModel<>(entityModels(persons));
-        collectionModel.add(linkTo(methodOn(PersonController.class).findAll()).withSelfRel()
-            .andAffordance(afford(methodOn(PersonController.class).insert(null))));
-        return collectionModel;
-    }
-
-    private static Collection<EntityModel<Person>> entityModels(Collection<Person> persons) {
-        return persons.stream().map(p -> entityModel(p)).collect(toList());
-    }
-
-    private static EntityModel<Person> entityModel(Person person) {
-        EntityModel<Person> entityModel = new EntityModel<>(person);
-        entityModel.add(linkTo(methodOn(PersonController.class).findOne(person.getId())).withSelfRel()
-            .andAffordance(afford(methodOn(PersonController.class).update(person.getId(), null)))
-            .andAffordance(afford(methodOn(PersonController.class).delete(person.getId()))));
-        return entityModel;
-    }
-
 }

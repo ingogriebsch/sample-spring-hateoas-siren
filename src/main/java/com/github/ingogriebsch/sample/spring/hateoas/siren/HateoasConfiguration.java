@@ -1,6 +1,6 @@
 /*-
- * #%L
  * Spring HATEOAS Siren sample
+ * #%L
  * %%
  * Copyright (C) 2018 - 2019 Ingo Griebsch
  * %%
@@ -19,15 +19,12 @@
  */
 package com.github.ingogriebsch.sample.spring.hateoas.siren;
 
-import static org.springframework.boot.SpringApplication.run;
+import static org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType.HAL;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 
-@SpringBootApplication
-public class Application {
-
-    public static void main(String[] args) {
-        run(Application.class, args);
-    }
-
+@Configuration
+@EnableHypermediaSupport(type = HAL)
+public class HateoasConfiguration {
 }

@@ -26,6 +26,7 @@ import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonC
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_FIND_ALL;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_FIND_ONE;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_INSERT;
+import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonService.toPage;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.hamcrest.CoreMatchers.is;
@@ -48,6 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.ingogriebsch.sample.spring.hateoas.siren.HateoasConfiguration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -56,11 +58,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 @ExtendWith(SpringExtension.class)
+@Import(value = { HateoasConfiguration.class, PersonHateoasConfiguration.class })
 @WebMvcTest(PersonController.class)
 class PersonControllerTest {
 
@@ -83,11 +91,12 @@ class PersonControllerTest {
 
         @Test
         void should_return_ok_including_resources_if_some_available() throws Exception {
+            Pageable pageable = PageRequest.of(0, 10);
             List<Person> persons =
                 newArrayList(new Person(1L, "Ingo", 44), new Person(2L, "Edina", 21), new Person(3L, "Marcus", 37));
-            given(personService.findAll()).willReturn(persons);
+            given(personService.findAll(pageable)).willReturn(toPage(persons, pageable));
 
-            ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).accept(SIREN_JSON));
+            ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).params(pageableParams(pageable)).accept(SIREN_JSON));
             actions.andExpect(status().isOk());
             actions.andExpect(content().contentType(SIREN_JSON));
 
@@ -97,15 +106,16 @@ class PersonControllerTest {
                 .andExpect(jsonPath("$.links", is(not(empty())))) //
                 .andExpect(jsonPath("$.actions", is(not(empty()))));
 
-            verify(personService, times(1)).findAll();
+            verify(personService, times(1)).findAll(pageable);
             verifyNoMoreInteractions(personService);
         }
 
         @Test
         void should_return_ok_without_resources_if_none_available() throws Exception {
-            given(personService.findAll()).willReturn(newArrayList());
+            Pageable pageable = PageRequest.of(0, 10);
+            given(personService.findAll(pageable)).willReturn(toPage(newArrayList(), pageable));
 
-            ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).accept(SIREN_JSON));
+            ResultActions actions = mockMvc.perform(get(PATH_FIND_ALL).params(pageableParams(pageable)).accept(SIREN_JSON));
             actions.andExpect(status().isOk());
             actions.andExpect(content().contentType(SIREN_JSON));
 
@@ -114,8 +124,15 @@ class PersonControllerTest {
                 .andExpect(jsonPath("$.links", is(not(empty())))) //
                 .andExpect(jsonPath("$.actions", is(not(empty()))));
 
-            verify(personService, times(1)).findAll();
+            verify(personService, times(1)).findAll(pageable);
             verifyNoMoreInteractions(personService);
+        }
+
+        private MultiValueMap<String, String> pageableParams(Pageable pageable) {
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("page", "" + pageable.getPageNumber());
+            map.add("size", "" + pageable.getPageSize());
+            return map;
         }
     }
 

@@ -1,6 +1,6 @@
 /*-
- * #%L
  * Spring HATEOAS Siren sample
+ * #%L
  * %%
  * Copyright (C) 2018 - 2019 Ingo Griebsch
  * %%
@@ -17,17 +17,19 @@
  * limitations under the License.
  * #L%
  */
-package com.github.ingogriebsch.sample.spring.hateoas.siren;
+package com.github.ingogriebsch.sample.spring.hateoas.siren.person;
 
-import static org.springframework.boot.SpringApplication.run;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.PagedResourcesAssembler;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.NonNull;
 
-@SpringBootApplication
-public class Application {
+@Configuration
+public class PersonHateoasConfiguration {
 
-    public static void main(String[] args) {
-        run(Application.class, args);
+    @Bean
+    public PersonModelAssembler personModelAssembler(@NonNull PagedResourcesAssembler<Person> pagedResourcesAssembler) {
+        return new PersonModelAssembler(pagedResourcesAssembler);
     }
-
 }

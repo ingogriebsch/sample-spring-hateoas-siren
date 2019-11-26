@@ -28,13 +28,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 class PersonServiceTest {
 
@@ -48,11 +50,32 @@ class PersonServiceTest {
                 newArrayList(personInput(), personInput(), personInput(), personInput(), personInput());
             personInputs.stream().forEach(p -> personService.insert(p));
 
-            Collection<Person> persons = personService.findAll();
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Person> persons = personService.findAll(pageable);
             assertThat(persons).isNotNull();
 
-            assertThat(persons).extracting("name", "age").containsExactlyElementsOf(
+            assertThat(persons.getPageable()).isEqualTo(pageable);
+
+            List<Person> content = persons.getContent();
+            assertThat(content).extracting("name", "age").containsExactlyInAnyOrderElementsOf(
                 personInputs.stream().map(pi -> new Tuple(pi.getName(), pi.getAge())).collect(toList()));
+        }
+    }
+
+    @Nested
+    class Search {
+
+        @Test
+        void should_return_matching_persons() throws Exception {
+            PersonInput mary = personInput("Mary");
+            List<PersonInput> personInputs = newArrayList(personInput("Peter"), personInput("Paul"), mary);
+
+            PersonService personService = new PersonService();
+            personInputs.stream().forEach(p -> personService.insert(p));
+
+            List<Person> persons = personService.search(mary.getName().toLowerCase());
+            assertThat(persons).extracting("name", "age")
+                .containsExactlyElementsOf(newArrayList(new Tuple(mary.getName(), mary.getAge())));
         }
     }
 
@@ -177,7 +200,11 @@ class PersonServiceTest {
     }
 
     private static PersonInput personInput() {
-        return new PersonInput(randomAlphabetic(10), nextInt(1, 100));
+        return personInput(randomAlphabetic(10));
+    }
+
+    private static PersonInput personInput(String name) {
+        return new PersonInput(name, nextInt(1, 100));
     }
 
 }
