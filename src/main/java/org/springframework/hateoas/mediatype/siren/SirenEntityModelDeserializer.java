@@ -19,13 +19,17 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static java.lang.String.format;
+
 import static com.fasterxml.jackson.databind.type.TypeFactory.defaultInstance;
 import static com.google.common.collect.Lists.newArrayList;
+import static org.springframework.hateoas.mediatype.PropertyUtils.createObjectFromProperties;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.BeanProperty;
@@ -38,7 +42,6 @@ import com.google.common.primitives.Primitives;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mediatype.JacksonHelper;
-import org.springframework.hateoas.mediatype.PropertyUtils;
 
 import lombok.NonNull;
 
@@ -64,10 +67,13 @@ class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel
     }
 
     @Override
-    public EntityModel<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        SirenEntity sirenEntity = p.getCodec().readValue(p, SirenEntity.class);
+    public EntityModel<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        SirenEntity sirenEntity = jp.getCodec().readValue(jp, SirenEntity.class);
 
         Object content = content(sirenEntity);
+        if (content == null) {
+            throw new JsonParseException(jp, format("No content available!"));
+        }
         List<Link> links = links(sirenEntity);
 
         return new EntityModel<>(content, links);
@@ -78,7 +84,7 @@ class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel
         JavaType targetType = JacksonHelper.findRootType(this.contentType);
         Object properties = entity.getProperties();
         if (properties == null) {
-            // FIXME how to act?
+            return null;
         }
 
         Class<? extends Object> propertiesType = properties.getClass();
@@ -87,7 +93,7 @@ class SirenEntityModelDeserializer extends AbstractSirenDeserializer<EntityModel
         }
 
         if (Map.class.isAssignableFrom(propertiesType)) {
-            return PropertyUtils.createObjectFromProperties(targetType.getRawClass(), (Map<String, Object>) properties);
+            return createObjectFromProperties(targetType.getRawClass(), (Map<String, Object>) properties);
         }
 
         return properties;

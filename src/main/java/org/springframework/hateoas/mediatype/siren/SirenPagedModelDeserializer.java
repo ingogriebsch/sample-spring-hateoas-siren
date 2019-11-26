@@ -19,12 +19,19 @@
  */
 package org.springframework.hateoas.mediatype.siren;
 
+import static java.lang.String.format;
+
+import static com.fasterxml.jackson.core.JsonToken.END_ARRAY;
+import static com.fasterxml.jackson.core.JsonToken.FIELD_NAME;
+import static com.fasterxml.jackson.core.JsonToken.START_ARRAY;
+import static com.fasterxml.jackson.core.JsonToken.START_OBJECT;
 import static com.fasterxml.jackson.databind.type.TypeFactory.defaultInstance;
 import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -70,7 +77,7 @@ class SirenPagedModelDeserializer extends AbstractSirenDeserializer<PagedModel<?
         List<SirenAction> sirenActions = newArrayList();
 
         while (jp.nextToken() != null) {
-            if (JsonToken.FIELD_NAME.equals(jp.currentToken())) {
+            if (FIELD_NAME.equals(jp.currentToken())) {
                 if ("entities".equals(jp.getText())) {
                     content = deserializeContent(jp, ctxt);
                 }
@@ -97,17 +104,18 @@ class SirenPagedModelDeserializer extends AbstractSirenDeserializer<PagedModel<?
     private List<Object> deserializeContent(JsonParser jp, DeserializationContext ctxt) throws IOException {
         List<JavaType> bindings = contentType.getBindings().getTypeParameters();
         if (CollectionUtils.isEmpty(bindings)) {
-            // FIXME how to act?
+            throw new JsonParseException(jp, format("No bindings available through content type '%s'!", contentType));
         }
 
-        JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(bindings.iterator().next());
+        JavaType binding = bindings.iterator().next();
+        JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(binding);
         if (deserializer == null) {
-            // FIXME how to act?
+            throw new JsonParseException(jp, format("No deserializer available for binding '%s'!", binding));
         }
 
         List<Object> content = newArrayList();
-        if (JsonToken.START_ARRAY.equals(jp.nextToken())) {
-            while (!JsonToken.END_ARRAY.equals(jp.nextToken())) {
+        if (START_ARRAY.equals(jp.nextToken())) {
+            while (!END_ARRAY.equals(jp.nextToken())) {
                 content.add(deserializer.deserialize(jp, ctxt));
             }
         }
@@ -118,27 +126,27 @@ class SirenPagedModelDeserializer extends AbstractSirenDeserializer<PagedModel<?
         JavaType type = defaultInstance().constructType(PageMetadata.class);
         JsonDeserializer<Object> deserializer = ctxt.findNonContextualValueDeserializer(type);
         if (deserializer == null) {
-            // FIXME how to act?
+            throw new JsonParseException(jp, format("No deserializer available for type '%s'!", type));
         }
 
         JsonToken nextToken = jp.nextToken();
-        if (!JsonToken.START_OBJECT.equals(nextToken)) {
-            throw new IllegalStateException("Token does not represent " + JsonToken.START_OBJECT + " but " + nextToken);
+        if (!START_OBJECT.equals(nextToken)) {
+            throw new JsonParseException(jp, String.format("Token does not represent '%s' [but '%']!", START_OBJECT, nextToken));
         }
 
         return (PageMetadata) deserializer.deserialize(jp, ctxt);
     }
 
     private List<SirenLink> deserializeLinks(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        JsonDeserializer<Object> deserializer =
-            ctxt.findContextualValueDeserializer(defaultInstance().constructType(SirenLink.class), null);
+        JavaType type = defaultInstance().constructType(SirenLink.class);
+        JsonDeserializer<Object> deserializer = ctxt.findContextualValueDeserializer(type, null);
         if (deserializer == null) {
-            // FIXME how to act?
+            throw new JsonParseException(jp, format("No deserializer available for type '%s'!", type));
         }
 
         List<SirenLink> links = newArrayList();
-        if (JsonToken.START_ARRAY.equals(jp.nextToken())) {
-            while (!JsonToken.END_ARRAY.equals(jp.nextToken())) {
+        if (START_ARRAY.equals(jp.nextToken())) {
+            while (!END_ARRAY.equals(jp.nextToken())) {
                 links.add((SirenLink) deserializer.deserialize(jp, ctxt));
             }
         }
@@ -147,10 +155,10 @@ class SirenPagedModelDeserializer extends AbstractSirenDeserializer<PagedModel<?
     }
 
     private List<SirenAction> deserializeActions(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        JsonDeserializer<Object> deserializer =
-            ctxt.findContextualValueDeserializer(defaultInstance().constructType(SirenAction.class), null);
+        JavaType type = defaultInstance().constructType(SirenAction.class);
+        JsonDeserializer<Object> deserializer = ctxt.findContextualValueDeserializer(type, null);
         if (deserializer == null) {
-            // FIXME how to act?
+            throw new JsonParseException(jp, format("No deserializer available for type '%s'!", type));
         }
 
         List<SirenAction> actions = newArrayList();
