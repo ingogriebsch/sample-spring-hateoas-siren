@@ -62,8 +62,12 @@ class SirenAction {
     @JsonInclude(NON_NULL)
     private String title;
 
+    // FIXME Default needs to be enabled and type needs to be handled in general as soon as
+    // https://github.com/spring-projects/spring-hateoas/issues/1087 is part of Spring HATEOAS
+    // @Default
     @JsonInclude(NON_NULL)
-    private String type;
+    // @NonNull
+    private String type /* = org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE */;
 
     @JsonInclude(NON_EMPTY)
     @Singular
