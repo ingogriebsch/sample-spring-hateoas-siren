@@ -27,6 +27,7 @@ import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonC
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_FIND_ONE;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_INSERT;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonService.toPage;
+import static com.github.ingogriebsch.spring.hateoas.siren.MediaTypes.SIREN_JSON;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.hamcrest.CoreMatchers.is;
@@ -37,7 +38,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.springframework.hateoas.mediatype.siren.MediaTypes.SIREN_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
