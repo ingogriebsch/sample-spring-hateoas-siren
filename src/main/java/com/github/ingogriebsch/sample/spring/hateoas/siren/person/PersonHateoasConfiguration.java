@@ -19,11 +19,10 @@
  */
 package com.github.ingogriebsch.sample.spring.hateoas.siren.person;
 
+import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PagedResourcesAssembler;
-
-import lombok.NonNull;
 
 @Configuration
 public class PersonHateoasConfiguration {

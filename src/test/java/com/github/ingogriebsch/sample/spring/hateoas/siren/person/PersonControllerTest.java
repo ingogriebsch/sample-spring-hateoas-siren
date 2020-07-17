@@ -27,8 +27,8 @@ import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonC
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_FIND_ONE;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonController.PATH_INSERT;
 import static com.github.ingogriebsch.sample.spring.hateoas.siren.person.PersonService.toPage;
-import static com.github.ingogriebsch.spring.hateoas.siren.MediaTypes.SIREN_JSON;
 import static com.google.common.collect.Lists.newArrayList;
+import static de.ingogriebsch.spring.hateoas.siren.MediaTypes.SIREN_JSON;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -50,7 +50,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.ingogriebsch.sample.spring.hateoas.siren.HateoasConfiguration;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
