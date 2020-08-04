@@ -53,20 +53,19 @@ import com.github.ingogriebsch.sample.spring.hateoas.siren.HateoasConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@ExtendWith(SpringExtension.class)
+@ComponentScan(basePackages = "de.ingogriebsch.spring.hateoas.siren")
 @Import(value = { HateoasConfiguration.class, PersonHateoasConfiguration.class })
 @WebMvcTest(PersonController.class)
 class PersonControllerTest {
