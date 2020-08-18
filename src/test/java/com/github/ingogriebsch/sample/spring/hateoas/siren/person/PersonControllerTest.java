@@ -50,13 +50,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.ingogriebsch.sample.spring.hateoas.siren.HateoasConfiguration;
+import de.ingogriebsch.spring.hateoas.siren.SirenMediaTypeConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -65,8 +65,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@ComponentScan(basePackages = "de.ingogriebsch.spring.hateoas.siren")
-@Import(value = { HateoasConfiguration.class, PersonHateoasConfiguration.class })
+@Import(value = { HateoasConfiguration.class, PersonHateoasConfiguration.class, SirenMediaTypeConfiguration.class })
 @WebMvcTest(PersonController.class)
 class PersonControllerTest {
 
